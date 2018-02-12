@@ -1,5 +1,5 @@
-ansible_host: 163.172.50.192
-ansible_user: chmd
+ansible_host: "{{ vault_ansible_host }}"
+ansible_user: "{{ vault_ansible_user }}"
 ansible_become: root
 ansible_become_method: su
 ansible_become_pass: "{{ vault_ansible_become_pass }}"
