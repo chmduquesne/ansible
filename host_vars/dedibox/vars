@@ -3,3 +3,4 @@ ansible_user: chmd
 ansible_become: root
 ansible_become_method: su
 ansible_become_pass: "{{ vault_ansible_become_pass }}"
+ansible_ssh_pass: "{{ vault_ansible_ssh_pass }}"
