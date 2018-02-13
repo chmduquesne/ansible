@@ -1,0 +1,10 @@
+---
+- hosts: all
+  roles:
+    - franklinkim.users
+  vars:
+    users:
+      - username: chmd
+        authorized_keys:
+          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/wgRf8PhTBYMpB0Wb1lbN5lmsOfwJp7xFaZWnGyvdHvb7If+uTdNfrPAastpPB9fzzNZUfXlOKy/PuzJFasE4WH6cA8pjIm9umyT4f8vLc2y9f9tb1+ZgMCfiSgQXh9iuPcn2hfTnAJ1rZrj5/1SigEZ0O6+oMJXCcWz1TpuWReYMUVY5pVLjSGvg9U6mTYiPX6EJrK53Hq1pidEqAhw2GI0y3jYDsfI8CbE9zhopbTNi3B7o3Dhj+mdzmaZ+j8YOQ04dqeb3nMCH+E1F5JYDTdyfcdZ7Uz2KlZx9L++LWe5E/dxWjvOuljsISN7NrIhX+ksbKK4ZKRYzsU6OxdPP me@t450"
+        home_create: yes
