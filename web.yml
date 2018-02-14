@@ -2,3 +2,4 @@
 - hosts: web
   roles:
     - franklinkim.users
+    - salamachinas.sudoers
