@@ -1,7 +1,0 @@
----
-users:
-  - username: chmd
-    authorized_keys:
-      - "{{ vault_t450 }}"
-      - "{{ vault_work }}"
-    home_create: yes

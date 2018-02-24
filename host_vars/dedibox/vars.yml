@@ -1,10 +1,12 @@
+---
+# No longer Necessary after users/sudo are setup
+#ansible_become_user: root
+#ansible_become_method: su
+#ansible_become_pass: "{{ vault_ansible_become_pass }}"
+#ansible_ssh_pass: "{{ vault_ansible_ssh_pass }}"
+#ansible_user: "{{ vault_ansible_user }}"
+
 ansible_host: "{{ vault_ansible_host }}"
-ansible_user: "{{ vault_ansible_user }}"
-ansible_become: true
-ansible_become_user: root
-ansible_become_method: su
-ansible_become_pass: "{{ vault_ansible_become_pass }}"
-ansible_ssh_pass: "{{ vault_ansible_ssh_pass }}"
 dhclient_config:
  - option rfc3442-classless-static-routes code 121 = array of unsigned integer 8;
  - send host-name = gethostname();

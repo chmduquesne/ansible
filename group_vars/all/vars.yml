@@ -1,0 +1,10 @@
+---
+ansible_user: "{{ vault_ssh_user }}"
+users:
+  - username: "{{ vault_ssh_user }}"
+    authorized_keys:
+      - "{{ vault_ssh_pubkey_t450 }}"
+      - "{{ vault_ssh_pubkey_work }}"
+    home_create: yes
+promoted:
+  - {name: "{{ vault_ssh_user }}", promote: ALL, nopasswd: true}
