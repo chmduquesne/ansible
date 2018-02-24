@@ -4,3 +4,4 @@
 - src: kibatic.traefik
 - src: reallyenglish.dhclient
 - src: tersmitten.network-interfaces
+- src: reallyenglish.sshd
