@@ -5,3 +5,27 @@ ansible_become_user: root
 ansible_become_method: su
 ansible_become_pass: "{{ vault_ansible_become_pass }}"
 ansible_ssh_pass: "{{ vault_ansible_ssh_pass }}"
+dhclient_config:
+ - option rfc3442-classless-static-routes code 121 = array of unsigned integer 8;
+ - send host-name = gethostname();
+ - |
+   request subnet-mask, broadcast-address, time-offset, routers,
+           domain-name, domain-name-servers, domain-search, host-name,
+           dhcp6.name-servers, dhcp6.domain-search, dhcp6.fqdn, dhcp6.sntp-servers,
+           netbios-name-servers, netbios-scope, interface-mtu,
+           rfc3442-classless-static-routes, ntp-servers;
+ - |
+   interface "enp0s20" {
+      send dhcp6.client-id {{ vault_dhcp6_clientid }};
+   }
+network_interfaces_manage_devices: true
+network_interfaces_interfaces:
+  - device: enp0s20
+    family: inet
+    method: dhcp
+  - device: enp0s20
+    auto: true
+    family: inet6
+    method: static
+    address: "{{ vault_inet6_address }}"
+    netmask: "{{ vault_inet6_netmask }}"

@@ -1,4 +1,6 @@
 ---
 - src: franklinkim.users
 - src: salamachinas.sudoers
-- src: manala.haproxy
+- src: kibatic.traefik
+- src: reallyenglish.dhclient
+- src: tersmitten.network-interfaces

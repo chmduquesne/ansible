@@ -3,3 +3,5 @@
   roles:
     - franklinkim.users
     - salamachinas.sudoers
+    - reallyenglish.dhclient
+    - tersmitten.network-interfaces
