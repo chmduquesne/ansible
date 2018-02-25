@@ -29,5 +29,6 @@ network_interfaces_interfaces:
     auto: true
     family: inet6
     method: static
+    # up: "dhclient -P $IFACE"
     address: "{{ vault_inet6_address }}"
     netmask: "{{ vault_inet6_netmask }}"
