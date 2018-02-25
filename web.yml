@@ -6,3 +6,6 @@
     - reallyenglish.dhclient
     - tersmitten.network-interfaces
     - reallyenglish.sshd
+  tasks:
+    - name: get latest vim
+      package: name=vim state=latest
