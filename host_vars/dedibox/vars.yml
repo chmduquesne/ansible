@@ -32,6 +32,11 @@ network_interfaces_interfaces:
     method: static
     address: "{{ vault_inet6_address }}"
     netmask: "{{ vault_inet6_netmask }}"
+    up:
+      - "dhclient -pf /run/dhclient6.$IFACE.pid -6 -P $IFACE &"
+      - "sleep 5"
+    down:
+      - "dhclient -x -pf /run/dhclient6.$IFACE.pid"
 #  - device: enp0s20
 #    auto: true
 #    method: manual
