@@ -29,14 +29,9 @@ network_interfaces_interfaces:
   - device: enp0s20
     auto: true
     family: inet6
-    method: static
-    address: "{{ vault_inet6_address }}"
-    netmask: "{{ vault_inet6_netmask }}"
+    method: dhcp
     up:
-      - "dhclient -pf /run/dhclient6.$IFACE.pid -6 -P $IFACE &"
-      - "sleep 5"
-    down:
-      - "dhclient -x -pf /run/dhclient6.$IFACE.pid"
+      - "ip addr add {{ vault_inet6_address }}/{{ vault_inet6_netmask }} dev $IFACE"
 #  - device: enp0s20
 #    auto: true
 #    method: manual
