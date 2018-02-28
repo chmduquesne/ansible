@@ -4,7 +4,7 @@
     - franklinkim.users
     - salamachinas.sudoers
     - reallyenglish.dhclient
-    - tersmitten.network-interfaces
+    - chmduquesne.ansible-network-interfaces
     - reallyenglish.sshd
   tasks:
     - name: get latest vim

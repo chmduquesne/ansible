@@ -27,9 +27,9 @@ network_interfaces_interfaces:
     family: inet
     method: dhcp
   - device: enp0s20
-    auto: true
     family: inet6
     method: dhcp
+    request_prefix: 1
     up:
       - "ip addr add {{ vault_inet6_address }}/{{ vault_inet6_netmask }} dev $IFACE"
 #  - device: enp0s20
