@@ -32,14 +32,3 @@ network_interfaces_interfaces:
     request_prefix: 1
     up:
       - "ip addr add {{ vault_inet6_address }}/{{ vault_inet6_netmask }} dev $IFACE"
-#  - device: enp0s20
-#    auto: true
-#    method: manual
-#    pre-up:
-#      - "ip link set $IFACE up"
-#      - "dhclient -P $IFACE"
-#      - "ip address add {{ vault_inet6_address }}/{{ vault_inet6_netmask }} dev enp0s20"
-#    post-down:
-#      - "dhclient -x"
-#      - "ip address del {{ vault_inet6_address }}/{{ vault_inet6_netmask }} dev enp0s20"
-#      - "ip link set $IFACE down"
