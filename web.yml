@@ -6,6 +6,7 @@
     - reallyenglish.dhclient
     - chmduquesne.ansible-network-interfaces
     - reallyenglish.sshd
+    - wireguard
   tasks:
     - name: get latest vim
       package: name=vim state=latest
