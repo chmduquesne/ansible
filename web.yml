@@ -3,10 +3,10 @@
   roles:
     - franklinkim.users
     - salamachinas.sudoers
-    - reallyenglish.dhclient
-    - chmduquesne.ansible-network-interfaces
     - reallyenglish.sshd
+    - reallyenglish.dhclient
     - wireguard
+    - chmduquesne.ansible-network-interfaces
   tasks:
     - name: get latest vim
       package: name=vim state=latest

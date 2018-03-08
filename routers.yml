@@ -1,0 +1,9 @@
+---
+- hosts: routers
+  roles:
+    - franklinkim.users
+    - salamachinas.sudoers
+    - reallyenglish.sshd
+  tasks:
+    - name: get latest vim
+      package: name=vim state=latest

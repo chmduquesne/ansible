@@ -8,3 +8,9 @@ users:
     home_create: yes
 promoted:
   - {name: "{{ vault_ssh_user }}", promote: ALL, nopasswd: true}
+sshd_config:
+  PasswordAuthentication: "no"
+  ChallengeResponseAuthentication: "no"
+  UsePAM: "yes"
+  AcceptEnv: "LANG LC_*"
+  Subsystem: "sftp {{ sshd_sftp_server }}"
