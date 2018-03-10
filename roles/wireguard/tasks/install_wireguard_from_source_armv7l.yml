@@ -1,0 +1,43 @@
+---
+- name: install libmnl-dev
+  package: name=libmnl-dev state=latest
+
+- name: install libelf-dev
+  package: name=libelf-dev state=latest
+
+- name: install raspberrypi-kernel-headers
+  package: name=raspberrypi-kernel-headers state=latest
+
+- name: install build-essential
+  package: name=build-essential state=latest
+
+- name: install git
+  package: name=git state=latest
+
+- name: clone wireguard
+  git:
+    repo: https://git.zx2c4.com/WireGuard
+    dest: WireGuard
+  become: false
+
+- name: build wireguard
+  command: make
+  args:
+    chdir: WireGuard/src
+  become: false
+
+- name: install wireguard
+  command: make install
+  args:
+    chdir: WireGuard/src
+  become: true
+
+- name: load wireguard kernel module
+  modprobe: name=wireguard state=present
+
+- name: load wireguard at boot
+  copy:
+    dest: /etc/modules-load.d/wireguard.conf
+    content: |
+      # ansible managed
+      wireguard

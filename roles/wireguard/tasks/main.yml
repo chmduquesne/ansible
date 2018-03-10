@@ -1,15 +1,8 @@
 ---
-- copy:
-    src: files/etc/apt/preferences.d/limit-unstable
-    dest: /etc/apt/preferences.d/limit-unstable
-    owner: root
-    group: root
-    mode: 0644
+- name: install wireguard from distrib
+  import_tasks: install_wireguard_debian_x86_64.yml
+  when: ansible_os_family == "Debian" and ansible_machine == "x86_64"
 
-- apt_repository:
-    repo: deb http://deb.debian.org/debian/ unstable main
-    filename: unstable-wireguard
-    state: present
-
-- name: get latest wireguard
-  package: name=wireguard state=latest
+- name: install wireguard from source
+  import_tasks: install_wireguard_from_source_armv7l.yml
+  when: ansible_os_family == "Debian" and ansible_machine == "armv7l"

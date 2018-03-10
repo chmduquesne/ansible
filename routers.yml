@@ -4,6 +4,7 @@
     - franklinkim.users
     - salamachinas.sudoers
     - reallyenglish.sshd
+    - wireguard
   tasks:
     - name: get latest vim
       package: name=vim state=latest
