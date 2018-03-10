@@ -7,6 +7,8 @@
 #ansible_user: "{{ vault_ansible_user }}"
 
 ansible_host: "{{ vault_ansible_host }}"
+
+dhcp6_clientid: "{{ vault_dhcp6_clientid }}"
 dhclient_config:
  - option rfc3442-classless-static-routes code 121 = array of unsigned integer 8;
  - send host-name = gethostname();
@@ -18,9 +20,11 @@ dhclient_config:
            rfc3442-classless-static-routes, ntp-servers;
  - |
    interface "enp0s20" {
-      send dhcp6.client-id {{ vault_dhcp6_clientid }};
+      send dhcp6.client-id {{ dhcp6_clientid }};
       request;
    }
+inet6_address: "{{ vault_inet6_address }}"
+inet6_netmask: "{{ vault_inet6_netmask }}"
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
   - device: enp0s20
@@ -31,4 +35,6 @@ network_interfaces_interfaces:
     method: dhcp
     request_prefix: 1
     up:
-      - "ip addr add {{ vault_inet6_address }}/{{ vault_inet6_netmask }} dev $IFACE"
+      - "ip addr add {{ inet6_address }}/{{ inet6_netmask }} dev $IFACE"
+wg_privkey: "{{ vault_wg_privkey }}"
+wg_pubkey: "{{ vault_wg_pubkey }}"
