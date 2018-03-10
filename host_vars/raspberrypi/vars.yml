@@ -1,2 +1,8 @@
 ---
 #ansible_user: pi
+
+wg_privkey: "{{ vault_wg_privkey }}"
+wg_pubkey: "{{ vault_wg_pubkey }}"
+wg_private_ip6: "{{ vault_wg_private_ip6 }}"
+wg_routed_ip6: "{{ vault_wg_routed_ip6 }}"
+wg_allowed_ips: "{{ wg_private_ip6 }}, {{ wg_routed_ip6 }}"

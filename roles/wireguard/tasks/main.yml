@@ -6,3 +6,11 @@
 - name: install wireguard from source
   import_tasks: install_wireguard_from_source_armv7l.yml
   when: ansible_os_family == "Debian" and ansible_machine == "armv7l"
+
+- name: configure /etc/wireguard/wg0.conf
+  template:
+    src: templates/etc/wireguard/wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: 0644

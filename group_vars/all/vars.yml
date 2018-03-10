@@ -1,13 +1,19 @@
 ---
-ansible_user: "{{ vault_ssh_user }}"
+# vault imported stuff
+ssh_user: "{{ vault_ssh_user }}"
+ssh_pubkey_t450: "{{ vault_ssh_pubkey_t450 }}"
+ssh_pubkey_work: "{{ vault_ssh_pubkey_work }}"
+wg_ula_prefix: "{{ vault_wg_ula_prefix }}"
+
+ansible_user: "{{ ssh_user }}"
 users:
-  - username: "{{ vault_ssh_user }}"
+  - username: "{{ ssh_user }}"
     authorized_keys:
-      - "{{ vault_ssh_pubkey_t450 }}"
-      - "{{ vault_ssh_pubkey_work }}"
+      - "{{ ssh_pubkey_t450 }}"
+      - "{{ ssh_pubkey_work }}"
     home_create: yes
 promoted:
-  - {name: "{{ vault_ssh_user }}", promote: ALL, nopasswd: true}
+  - {name: "{{ ssh_user }}", promote: ALL, nopasswd: true}
 sshd_config:
   PasswordAuthentication: "no"
   ChallengeResponseAuthentication: "no"
