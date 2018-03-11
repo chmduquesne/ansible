@@ -13,4 +13,43 @@
     dest: /etc/wireguard/wg0.conf
     owner: root
     group: root
-    mode: 0644
+    mode: 0600
+
+- name: wg0 pre-up commands create device
+  set_fact:
+    wg0_pre_up: [ "ip link add dev $IFACE type wireguard" ]
+
+- name: wg0 pre-up commands add peers
+  set_fact:
+    wg0_pre_up: "{{ wg0_pre_up }} + [ 'ip address add {{ wg_private_ip6 }} peer {{ hostvars[item].wg_private_ip6 }} dev wg0' ]"
+  with_inventory_hostnames:
+    all
+  when: item != inventory_hostname and "wg_private_ip6" in hostvars[item]
+
+- name: wg0 pre-up commands setconf
+  set_fact:
+    wg0_pre_up: "{{ wg0_pre_up }} + [ 'wg setconf wg0 /etc/wireguard/wg0.conf' ]"
+
+- name: set wg0 fact
+  set_fact:
+    wg0_settings:
+      device: wg0
+      family: inet6
+      method: manual
+      pre-up: "{{ wg0_pre_up }}"
+      up:
+        - ip link set up dev $IFACE
+        - echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding
+      down:
+        - ip link del dev wg0
+
+- debug:
+    var: wg0_settings
+
+- name: add wg0 in network interfaces
+  set_fact:
+    network_interfaces_interfaces: "{{ network_interfaces_interfaces + [wg0_settings] }}"
+
+- debug:
+    var: network_interfaces_interfaces
+

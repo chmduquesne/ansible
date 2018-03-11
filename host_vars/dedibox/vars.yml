@@ -38,3 +38,7 @@ network_interfaces_interfaces:
       - "ip addr add {{ inet6_address }}/{{ inet6_netmask }} dev $IFACE"
 wg_privkey: "{{ vault_wg_privkey }}"
 wg_pubkey: "{{ vault_wg_pubkey }}"
+wg_private_ip6: "{{ vault_wg_private_ip6 }}"
+wg_listenport: 500
+wg_allowed_ips: "::/0"
+wg_endpoint: "{{ ansible_host }}:{{ wg_listenport }}"

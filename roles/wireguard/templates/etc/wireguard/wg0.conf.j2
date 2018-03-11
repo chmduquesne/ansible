@@ -1,14 +1,14 @@
 [Interface]
 PrivateKey = {{ wg_privkey }}
-ListenPort = 500
+ListenPort = {{ wg_listenport }}
 
 {% for peer in hostvars %}
 {% if peer != inventory_hostname and "wg_pubkey" in hostvars[peer] %}
 [Peer]
 PublicKey = {{ hostvars[peer].wg_pubkey }}
 AllowedIPs = {{ hostvars[peer].wg_allowed_ips }}
-{% if "endpoint" in hostvars[peer] %}
-Endpoint = {{ hostvars[peer].endpoint }}
+{% if "wg_endpoint" in hostvars[peer] %}
+Endpoint = {{ hostvars[peer].wg_endpoint }}
 {% endif %}
 {% endif %}
 {% endfor %}
