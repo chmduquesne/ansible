@@ -1,9 +1,23 @@
 ---
 #ansible_user: pi
 
-wg_privkey: "{{ vault_wg_privkey }}"
-wg_pubkey: "{{ vault_wg_pubkey }}"
-wg_private_ip6: "{{ vault_wg_private_ip6 }}"
-wg_routed_ip6: "{{ vault_wg_routed_ip6 }}"
-wg_allowed_ips: "{{ wg_private_ip6 }}, {{ wg_routed_ip6 }}"
-wg_listenport: 4000
+wireguard:
+  privkey: "{{ vault_wg_privkey }}"
+  pubkey: "{{ vault_wg_pubkey }}"
+  private_ip6: "{{ vault_wg_private_ip6 }}"
+  routed_ip6: "{{ vault_wg_routed_ip6 }}"
+  allowed_ips: "{{ vault_wg_private_ip6 }}, {{ vault_wg_routed_ip6 }}"
+  listenport: 4000
+
+network_interfaces_manage_devices: true
+network_interfaces_interfaces:
+  - device: eth0
+    family: inet
+    method: dhcp
+    triggers:
+      - allow-hotplug
+  - device: usb0
+    family: inet
+    method: dhcp
+    triggers:
+      - allow-hotplug

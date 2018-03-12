@@ -36,9 +36,10 @@ network_interfaces_interfaces:
     request_prefix: 1
     up:
       - "ip addr add {{ inet6_address }}/{{ inet6_netmask }} dev $IFACE"
-wg_privkey: "{{ vault_wg_privkey }}"
-wg_pubkey: "{{ vault_wg_pubkey }}"
-wg_private_ip6: "{{ vault_wg_private_ip6 }}"
-wg_listenport: 500
-wg_allowed_ips: "::/0"
-wg_endpoint: "{{ ansible_host }}:{{ wg_listenport }}"
+wireguard:
+  public: true
+  privkey: "{{ vault_wg_privkey }}"
+  pubkey: "{{ vault_wg_pubkey }}"
+  private_ip6: "{{ vault_wg_private_ip6 }}"
+  listenport: 500
+  allowed_ips: "::/0"

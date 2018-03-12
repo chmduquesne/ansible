@@ -1,14 +1,14 @@
 [Interface]
-PrivateKey = {{ wg_privkey }}
-ListenPort = {{ wg_listenport }}
+PrivateKey = {{ wireguard.privkey }}
+ListenPort = {{ wireguard.listenport }}
 
 {% for peer in hostvars %}
-{% if peer != inventory_hostname and "wg_pubkey" in hostvars[peer] %}
+{% if peer != inventory_hostname and "wireguard" in hostvars[peer] %}
 [Peer]
-PublicKey = {{ hostvars[peer].wg_pubkey }}
-AllowedIPs = {{ hostvars[peer].wg_allowed_ips }}
-{% if "wg_endpoint" in hostvars[peer] %}
-Endpoint = {{ hostvars[peer].wg_endpoint }}
+PublicKey = {{ hostvars[peer].wireguard.pubkey }}
+AllowedIPs = {{ hostvars[peer].wireguard.allowed_ips }}
+{% if hostvars[peer].wireguard.public | default(false) %}
+Endpoint = {{ hostvars[peer].ansible_host }}:{{ hostvars[peer].wireguard.listenport }}
 {% endif %}
 {% endif %}
 {% endfor %}

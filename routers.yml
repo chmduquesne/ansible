@@ -5,6 +5,7 @@
     - salamachinas.sudoers
     - reallyenglish.sshd
     - wireguard
+    - chmduquesne.ansible-network-interfaces
   tasks:
     - name: get latest vim
       package: name=vim state=latest
