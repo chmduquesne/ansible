@@ -30,6 +30,22 @@
   set_fact:
     wg0_pre_up: "{{ wg0_pre_up }} + [ 'wg setconf wg0 /etc/wireguard/wg0.conf' ]"
 
+- name: wg0 up commands set device up
+  set_fact:
+    wg0_up:
+      - ip link set up dev $IFACE
+      - echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding
+
+- name: wg0 up commands add route
+  set_fact:
+    wg0_up: "{{ wg0_up }} + [ 'ip route add {{ hostvars[item].wireguard.routed_ip6 }} via {{ hostvars[item].wireguard.private_ip6 }} dev wg0' ]"
+  with_inventory_hostnames:
+    all
+  when:
+    - item != inventory_hostname
+    - hostvars[item].wireguard is defined
+    - hostvars[item].wireguard.routed_ip6 is defined
+
 - name: set wg0 fact
   set_fact:
     wg0_settings:
@@ -37,9 +53,7 @@
       family: inet6
       method: manual
       pre-up: "{{ wg0_pre_up }}"
-      up:
-        - ip link set up dev $IFACE
-        - echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding
+      up: "{{ wg0_up }}"
       down:
         - ip link del dev wg0
 
@@ -52,3 +66,6 @@
     var: network_interfaces_interfaces
   when: network_interfaces_interfaces is defined
 
+- name: enable ipv6 forwarding for all interfaces
+  sysctl: name=net.ipv6.conf.all.forwarding value=1
+  when: wireguard.router

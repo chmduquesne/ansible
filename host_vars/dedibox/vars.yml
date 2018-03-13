@@ -37,6 +37,7 @@ network_interfaces_interfaces:
     up:
       - "ip addr add {{ inet6_address }}/{{ inet6_netmask }} dev $IFACE"
 wireguard:
+  router: true
   public: true
   privkey: "{{ vault_wg_privkey }}"
   pubkey: "{{ vault_wg_pubkey }}"

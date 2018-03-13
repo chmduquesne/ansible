@@ -2,11 +2,12 @@
 #ansible_user: pi
 
 wireguard:
+  router: true
   privkey: "{{ vault_wg_privkey }}"
   pubkey: "{{ vault_wg_pubkey }}"
   private_ip6: "{{ vault_wg_private_ip6 }}"
   routed_ip6: "{{ vault_wg_routed_ip6 }}"
-  allowed_ips: "{{ vault_wg_private_ip6 }}, {{ vault_wg_routed_ip6 }}"
+  allowed_ips: "{{ vault_wg_private_ip6 }}/128, {{ vault_wg_routed_ip6 }}"
   listenport: 4000
 
 network_interfaces_manage_devices: true
