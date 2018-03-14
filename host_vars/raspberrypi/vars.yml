@@ -23,6 +23,12 @@ network_interfaces_interfaces:
     method: dhcp
     triggers:
       - allow-hotplug
+  - device: wlan0
+    family: inet6
+    method: static
+    address: "{{ wireguard.routed_ip6_block }}1"
+    netmask: "{{ wireguard.routed_ip6_blocksize }}"
+    hostapd: /etc/hostapd/hostapd.conf
 
 hostapd:
   ssid: "{{ vault_hostapd_ssid }}"

@@ -116,7 +116,7 @@
 
 - name: add unbound controllers
   set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ wireguard.routed_ip6 }}/{{ wireguard.routed_ip6_blocksize }}' ]"
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ wireguard.routed_ip6_block }}/{{ wireguard.routed_ip6_blocksize }}' ]"
   when:
     - wireguard.routed_ip6_block is defined
 
