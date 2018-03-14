@@ -9,6 +9,7 @@ PublicKey = {{ hostvars[peer].wireguard.pubkey }}
 AllowedIPs = {{ hostvars[peer].wireguard.allowed_ips }}
 {% if hostvars[peer].wireguard.public | default(false) %}
 Endpoint = {{ hostvars[peer].ansible_host }}:{{ hostvars[peer].wireguard.listenport }}
+PersistentKeepalive = 20
 {% endif %}
 {% endif %}
 {% endfor %}

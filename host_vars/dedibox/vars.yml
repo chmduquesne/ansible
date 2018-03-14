@@ -23,6 +23,7 @@ dhclient_config:
       send dhcp6.client-id {{ dhcp6_clientid }};
       request;
    }
+
 inet6_address: "{{ vault_inet6_address }}"
 inet6_netmask: "{{ vault_inet6_netmask }}"
 network_interfaces_manage_devices: true
@@ -36,6 +37,7 @@ network_interfaces_interfaces:
     request_prefix: 1
     up:
       - "ip addr add {{ inet6_address }}/{{ inet6_netmask }} dev $IFACE"
+
 wireguard:
   router: true
   public: true
@@ -44,3 +46,8 @@ wireguard:
   private_ip6: "{{ vault_wg_private_ip6 }}"
   listenport: 500
   allowed_ips: "::/0"
+
+unbound:
+  recursive: true
+  controllers:
+    - "::1"

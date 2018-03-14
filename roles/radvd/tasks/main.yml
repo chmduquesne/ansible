@@ -1,0 +1,11 @@
+---
+- name: get latest radvd
+  package: name=radvd state=latest
+
+- name: configure /etc/radvd.conf
+  template:
+    src: templates/etc/radvd.conf.j2
+    dest: /etc/radvd.conf
+    owner: root
+    group: root
+    mode: 0644

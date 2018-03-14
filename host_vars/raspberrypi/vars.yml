@@ -6,8 +6,9 @@ wireguard:
   privkey: "{{ vault_wg_privkey }}"
   pubkey: "{{ vault_wg_pubkey }}"
   private_ip6: "{{ vault_wg_private_ip6 }}"
-  routed_ip6: "{{ vault_wg_routed_ip6 }}"
-  allowed_ips: "{{ vault_wg_private_ip6 }}/128, {{ vault_wg_routed_ip6 }}"
+  routed_ip6_block: "{{ vault_wg_routed_ip6_block }}"
+  routed_ip6_blocksize: "{{ vault_wg_routed_ip6_blocksize }}"
+  allowed_ips: "{{ vault_wg_private_ip6 }}/128, {{ vault_wg_routed_ip6_block }}/{{ vault_wg_routed_ip6_blocksize }}"
   listenport: 4000
 
 network_interfaces_manage_devices: true
@@ -22,3 +23,11 @@ network_interfaces_interfaces:
     method: dhcp
     triggers:
       - allow-hotplug
+
+hostapd:
+  ssid: "{{ vault_hostapd_ssid }}"
+  wpa_passphrase: "{{ vault_hostapd_wpa_passphrase }}"
+
+radvd:
+  routed_ip6_block: "{{ wireguard.routed_ip6_block }}"
+  routed_ip6_blocksize: "{{ wireguard.routed_ip6_blocksize }}"

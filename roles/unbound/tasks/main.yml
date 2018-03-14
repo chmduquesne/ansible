@@ -1,0 +1,11 @@
+---
+- name: get latest unbound
+  package: name=unbound state=latest
+
+- name: configure /etc/unbound/unbound.conf
+  template:
+    src: templates/etc/unbound/unbound.conf.j2
+    dest: /etc/unbound/unbound.conf
+    owner: root
+    group: root
+    mode: 0644

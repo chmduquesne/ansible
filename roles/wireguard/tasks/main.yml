@@ -15,38 +15,40 @@
     group: root
     mode: 0600
 
-- name: wg0 pre-up commands create device
+- name: set wg0 creation command
   set_fact:
     wg0_pre_up: [ "ip link add dev $IFACE type wireguard" ]
 
-- name: wg0 pre-up commands add peers
+- name: set wg0 add peer command
   set_fact:
     wg0_pre_up: "{{ wg0_pre_up }} + [ 'ip address add {{ wireguard.private_ip6 }} peer {{ hostvars[item].wireguard.private_ip6 }} dev wg0' ]"
-  with_inventory_hostnames:
-    all
-  when: item != inventory_hostname and "wireguard" in hostvars[item]
-
-- name: wg0 pre-up commands setconf
-  set_fact:
-    wg0_pre_up: "{{ wg0_pre_up }} + [ 'wg setconf wg0 /etc/wireguard/wg0.conf' ]"
-
-- name: wg0 up commands set device up
-  set_fact:
-    wg0_up:
-      - ip link set up dev $IFACE
-      - echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding
-
-- name: wg0 up commands add route
-  set_fact:
-    wg0_up: "{{ wg0_up }} + [ 'ip route add {{ hostvars[item].wireguard.routed_ip6 }} via {{ hostvars[item].wireguard.private_ip6 }} dev wg0' ]"
   with_inventory_hostnames:
     all
   when:
     - item != inventory_hostname
     - hostvars[item].wireguard is defined
-    - hostvars[item].wireguard.routed_ip6 is defined
 
-- name: set wg0 fact
+- name: set wg0 setconf command
+  set_fact:
+    wg0_pre_up: "{{ wg0_pre_up }} + [ 'wg setconf wg0 /etc/wireguard/wg0.conf' ]"
+
+- name: set wg0 up commands
+  set_fact:
+    wg0_up:
+      - ip link set up dev $IFACE
+      - echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding
+
+- name: set wg0 routes
+  set_fact:
+    wg0_up: "{{ wg0_up }} + [ 'ip route add {{ hostvars[item].wireguard.routed_ip6_block }}/{{ hostvars[item].wireguard.routed_ip6_blocksize }} via {{ hostvars[item].wireguard.private_ip6 }} dev wg0' ]"
+  with_inventory_hostnames:
+    all
+  when:
+    - item != inventory_hostname
+    - hostvars[item].wireguard is defined
+    - hostvars[item].wireguard.routed_ip6_block is defined
+
+- name: set wg0 general settings
   set_fact:
     wg0_settings:
       device: wg0
@@ -69,3 +71,53 @@
 - name: enable ipv6 forwarding for all interfaces
   sysctl: name=net.ipv6.conf.all.forwarding value=1
   when: wireguard.router
+
+- name: set unbound interface
+  set_fact:
+    unbound_interface: "::0"
+
+- name: override unbound interface
+  set_fact:
+    unbound_interface: "{{ wireguard.routed_ip6_block }}"1
+  when: wireguard.routed_ip6_block is defined
+
+- name: set unbound recursive setting
+  set_fact:
+    unbound_recursive: false
+
+- name: override unbound recursive setting
+  set_fact:
+    unbound_recursive: true
+  when:
+    - wireguard.public is defined
+    - wireguard.public
+
+- name: add unbound controllers
+  set_fact:
+    unbound_controllers: []
+
+- name: add unbound controllers
+  set_fact:
+    unbound_controllers: "{{ unbound_controllers + [ '::1' ] }}"
+  when:
+    - wireguard.public is defined
+    - wireguard.public
+
+- name: add unbound controllers
+  set_fact:
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ hostvars[item].wireguard.private_ip6 }}/128' ]"
+  with_inventory_hostnames:
+    all
+  when:
+    - wireguard.public is defined
+    - wireguard.public
+    - item != inventory_hostname
+    - hostvars[item].wireguard is defined
+
+- name: add unbound controllers
+  set_fact:
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ wireguard.routed_ip6 }}/{{ wireguard.routed_ip6_blocksize }}' ]"
+  when:
+    - wireguard.routed_ip6_block is defined
+
+- name: set unbound upstream

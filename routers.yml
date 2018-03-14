@@ -6,6 +6,8 @@
     - reallyenglish.sshd
     - wireguard
     - chmduquesne.ansible-network-interfaces
+    - hostapd
+    - radvd
   tasks:
     - name: get latest vim
       package: name=vim state=latest
