@@ -46,8 +46,3 @@ wireguard:
   private_ip6: "{{ vault_wg_private_ip6 }}"
   listenport: 500
   allowed_ips: "::/0"
-
-unbound:
-  recursive: true
-  controllers:
-    - "::1"

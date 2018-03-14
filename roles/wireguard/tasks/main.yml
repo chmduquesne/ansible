@@ -78,7 +78,7 @@
 
 - name: override unbound interface
   set_fact:
-    unbound_interface: "{{ wireguard.routed_ip6_block }}"1
+    unbound_interface: "{{ wireguard.routed_ip6_block }}1"
   when: wireguard.routed_ip6_block is defined
 
 - name: set unbound recursive setting
@@ -121,3 +121,20 @@
     - wireguard.routed_ip6_block is defined
 
 - name: set unbound upstream
+  set_fact:
+    unbound_upstream: "{{ hostvars[item].wireguard.private_ip6 }}/128"
+  with_inventory_hostnames:
+    all
+  when:
+    - wireguard.public is not defined
+    - hostvars[item].wireguard is defined
+    - hostvars[item].wireguard.public is defined
+    - hostvars[item].wireguard.public
+
+- name: prepare unbound config
+  set_fact:
+    unbound:
+      interface: "{{ unbound_interface }}"
+      controllers: "{{ unbound_controllers }}"
+      recursive: "{{ unbound_recursive }}"
+      upstream: "{{ unbound_upstream | default(false) }}"
