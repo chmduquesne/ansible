@@ -1,2 +1,3 @@
 ---
-# handlers file for unbound
+- name: restart unbound
+  service: name=unbound state=restarted
