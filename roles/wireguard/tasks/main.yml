@@ -138,3 +138,7 @@
       controllers: "{{ unbound_controllers }}"
       recursive: "{{ unbound_recursive }}"
       upstream: "{{ unbound_upstream | default(false) }}"
+
+- debug:
+    var: unbound
+  when: unbound is defined

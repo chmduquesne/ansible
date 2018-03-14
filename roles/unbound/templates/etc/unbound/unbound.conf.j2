@@ -1,3 +1,5 @@
+# Managed by Ansible
+
 server:
   num-threads: 4
 
@@ -27,7 +29,7 @@ server:
   cache-max-ttl: 14400
   prefetch: yes
 
-{% if not unbound.recursive | default(true) }
+{% if not unbound.recursive | default(true) %}
 forward-zone:
       name: "."
       forward-addr: {{ unbound.upstream }}
