@@ -142,3 +142,53 @@
 - debug:
     var: unbound
   when: unbound is defined
+
+- name: install iptables-persistent
+  package: name=iptables-persistent state=latest
+
+- name: accept input established connections
+  iptables:
+    ip_version: "{{ item }}"
+    chain: INPUT
+    ctstate: RELATED,ESTABLISHED
+    jump: ACCEPT
+  become: yes
+  with_items:
+    - ipv4
+    - ipv6
+  notify:
+    - save iptables v4 rules
+    - save iptables v6 rules
+    - restart iptables-persistent
+
+- name: accept forward established connections
+  iptables:
+    ip_version: "{{ item }}"
+    chain: FORWARD
+    ctstate: RELATED,ESTABLISHED
+    jump: ACCEPT
+  become: yes
+  with_items:
+    - ipv4
+    - ipv6
+  notify:
+    - save iptables v4 rules
+    - save iptables v6 rules
+    - restart iptables-persistent
+
+- name: accept wireguard connections
+  iptables:
+    ip_version: "{{ item }}"
+    chain: INPUT
+    ctstate: NEW
+    destination_port: "{{ wireguard.listenport}}"
+    protocol: udp
+    jump: ACCEPT
+  become: yes
+  with_items:
+    - ipv4
+    - ipv6
+  notify:
+    - save iptables v4 rules
+    - save iptables v6 rules
+    - restart iptables-persistent
