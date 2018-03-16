@@ -1,10 +1,10 @@
 ---
 - name: install wireguard from distrib
-  import_tasks: install_wireguard_debian_x86_64.yml
+  include_tasks: install_wireguard_debian_x86_64.yml
   when: ansible_os_family == "Debian" and ansible_machine == "x86_64"
 
 - name: install wireguard from source
-  import_tasks: install_wireguard_from_source_armv7l.yml
+  include_tasks: install_wireguard_from_source_armv7l.yml
   when: ansible_os_family == "Debian" and ansible_machine == "armv7l"
 
 - name: configure /etc/wireguard/wg0.conf
@@ -70,7 +70,7 @@
 
 - name: enable ipv6 forwarding for all interfaces
   sysctl: name=net.ipv6.conf.all.forwarding value=1
-  when: wireguard.router
+  when: wireguard.routed_ip6_block is defined
 
 - name: set unbound interface
   set_fact:
@@ -143,38 +143,18 @@
     var: unbound
   when: unbound is defined
 
-- name: install iptables-persistent
-  package: name=iptables-persistent state=latest
-
-- name: accept input established connections
+- name: accept established connections
   iptables:
-    ip_version: "{{ item }}"
-    chain: INPUT
+    ip_version: "{{ item.0 }}"
+    chain: "{{ item.1 }}"
     ctstate: RELATED,ESTABLISHED
     jump: ACCEPT
   become: yes
-  with_items:
-    - ipv4
-    - ipv6
+  with_nested:
+    - [ 'ipv4', 'ipv6' ]
+    - [ 'INPUT', 'FORWARD' ]
   notify:
-    - save iptables v4 rules
-    - save iptables v6 rules
-    - restart iptables-persistent
-
-- name: accept forward established connections
-  iptables:
-    ip_version: "{{ item }}"
-    chain: FORWARD
-    ctstate: RELATED,ESTABLISHED
-    jump: ACCEPT
-  become: yes
-  with_items:
-    - ipv4
-    - ipv6
-  notify:
-    - save iptables v4 rules
-    - save iptables v6 rules
-    - restart iptables-persistent
+    - persist iptables
 
 - name: accept wireguard connections
   iptables:
@@ -189,6 +169,62 @@
     - ipv4
     - ipv6
   notify:
-    - save iptables v4 rules
-    - save iptables v6 rules
-    - restart iptables-persistent
+    - persist iptables
+
+# If we are a public instance
+- name: accept dns requests from wireguard peers
+  iptables:
+    ip_version: ipv6
+    chain: INPUT
+    ctstate: NEW
+    jump: ACCEPT
+    destination_port: 53
+    protocol: "{{ item.1 }}"
+    source: "{{ hostvars[item.0].wireguard.private_ip6 }}/128"
+  with_nested:
+    - "{{ hostvars.keys() }}"
+    - [ 'tcp', 'udp' ]
+  when:
+    - wireguard.public is defined
+    - wireguard.public
+    - item.0 != inventory_hostname
+    - hostvars[item.0].wireguard is defined
+  notify:
+    - persist iptables
+
+- name: allow forwarding of packets that stay in the tunnel
+  iptables:
+    ip_version: "{{ item }}"
+    chain: FORWARD
+    ctstate: NEW
+    in_interface: wg0
+    out_interface: wg0
+    jump: ACCEPT
+  with_items:
+    - ipv4
+    - ipv6
+  when:
+    - wireguard.public is defined
+    - wireguard.public
+  notify:
+    - persist iptables
+
+# TODO: parametrize interface names
+- name: allow forwarding of packets from peers to the Internet
+  iptables:
+    ip_version: ipv6
+    chain: FORWARD
+    source: "{{ hostvars[item].wireguard.routed_ip6_block }}/{{ hostvars[item].wireguard.routed_ip6_blocksize }}"
+    in_interface: wg0
+    out_interface: enp0s20
+    ctstate: NEW
+    jump: ACCEPT
+  with_inventory_hostnames:
+    - all
+  when:
+    - wireguard.public is defined
+    - wireguard.public
+    - item != inventory_hostname
+    - hostvars[item].wireguard is defined
+    - hostvars[item].wireguard.routed_ip6_block is defined
+

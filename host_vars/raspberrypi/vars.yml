@@ -2,7 +2,6 @@
 #ansible_user: pi
 
 wireguard:
-  router: true
   privkey: "{{ vault_wg_privkey }}"
   pubkey: "{{ vault_wg_pubkey }}"
   private_ip6: "{{ vault_wg_private_ip6 }}"

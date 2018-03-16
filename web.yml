@@ -5,6 +5,7 @@
     - salamachinas.sudoers
     - reallyenglish.sshd
     - reallyenglish.dhclient
+    - iptables-persistent
     - wireguard
     - chmduquesne.ansible-network-interfaces
     - unbound
