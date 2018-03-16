@@ -1,15 +1,15 @@
-interface wlan0 {
+interface {{ radvd.interface }} {
   IgnoreIfMissing on;
   AdvSendAdvert on;
   MaxRtrAdvInterval 300;
   AdvLinkMTU 1423;
-  prefix {{ radvd.routed_ip6_block }}/{{ radvd.routed_ip6_blocksize}} {
+  prefix {{ radvd.inet6_prefix }}/{{ radvd.inet6_mask}} {
     AdvOnLink on;
     AdvAutonomous on;
     AdvValidLifetime 3600;
     AdvPreferredLifetime 1800;
   };
-  RDNSS {{ radvd.routed_ip6_block }}1 {
+  RDNSS {{ radvd.inet6_prefix }}1 {
     AdvRDNSSLifetime 1800;
   };
 };

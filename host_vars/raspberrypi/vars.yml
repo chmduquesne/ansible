@@ -34,5 +34,6 @@ hostapd:
   wpa_passphrase: "{{ vault_hostapd_wpa_passphrase }}"
 
 radvd:
-  routed_ip6_block: "{{ wireguard.routed_ip6_block }}"
-  routed_ip6_blocksize: "{{ wireguard.routed_ip6_blocksize }}"
+  interface: wlan0
+  inet6_prefix: "{{ wireguard.routed_ip6_block }}"
+  inet6_mask: "{{ wireguard.routed_ip6_blocksize }}"
