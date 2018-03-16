@@ -1,11 +1,6 @@
 ---
-- name: install wireguard from distrib
-  include_tasks: install_wireguard_debian_x86_64.yml
-  when: ansible_os_family == "Debian" and ansible_machine == "x86_64"
-
-- name: install wireguard from source
-  include_tasks: install_wireguard_from_source_armv7l.yml
-  when: ansible_os_family == "Debian" and ansible_machine == "armv7l"
+- name: install wireguard
+  include_tasks: "install_wireguard_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
 
 - name: configure /etc/wireguard/wg0.conf
   template:
@@ -227,4 +222,3 @@
     - item != inventory_hostname
     - hostvars[item].wireguard is defined
     - hostvars[item].wireguard.routed_ip6_block is defined
-

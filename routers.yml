@@ -4,6 +4,7 @@
     - franklinkim.users
     - salamachinas.sudoers
     - reallyenglish.sshd
+    - iptables-persistent
     - wireguard
     - chmduquesne.ansible-network-interfaces
     - hostapd

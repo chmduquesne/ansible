@@ -18,6 +18,7 @@
   git:
     repo: https://git.zx2c4.com/WireGuard
     dest: WireGuard
+  register: git_repo
   become: false
 
 - name: build wireguard
@@ -25,12 +26,14 @@
   args:
     chdir: WireGuard/src
   become: false
+  when: git_repo.before != git_repo.after
 
 - name: install wireguard
   command: make install
   args:
     chdir: WireGuard/src
   become: true
+  when: git_repo.before != git_repo.after
 
 - name: load wireguard kernel module
   modprobe: name=wireguard state=present
