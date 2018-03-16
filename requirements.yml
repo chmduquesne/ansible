@@ -4,4 +4,5 @@
 - src: kibatic.traefik
 - src: reallyenglish.dhclient
 - src: chmduquesne.ansible-network-interfaces
+- src: chmduquesne.iptables-persistent
 - src: reallyenglish.sshd
