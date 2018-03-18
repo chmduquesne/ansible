@@ -1,0 +1,63 @@
+---
+- set_fact:
+    peers: []
+
+- name: collect peers
+  set_fact:
+    peers: "{{ peers + [ item ] }}"
+  with_items:
+    "{{ other_wireguard_hosts }}"
+  when:
+    - net in hostvars[item].wireguard
+
+- name: set creation command
+  set_fact:
+    net_pre_up: [ "ip link add dev $IFACE type wireguard" ]
+
+- name: set add peer command
+  set_fact:
+    net_pre_up: "{{ net_pre_up }} + [ 'ip address add {{ wireguard[net].private_ip6 }} peer {{ hostvars[item].wireguard[net].private_ip6 }} dev {{ net }}' ]"
+  with_items:
+    "{{ peers }}"
+
+- name: set setconf command
+  set_fact:
+    net_pre_up: "{{ net_pre_up }} + [ 'wg setconf $IFACE /etc/wireguard/${IFACE}.conf' ]"
+
+- name: set up commands
+  set_fact:
+    net_up:
+      - ip link set up dev $IFACE
+      - echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding
+
+- name: set routes
+  set_fact:
+    net_up: "{{ net_up }} + [ 'ip route add {{ hostvars[item].wireguard[net].routed_ip6_block }}/{{ hostvars[item].wireguard[net].routed_ip6_blocksize }} via {{ hostvars[item].wireguard[net].private_ip6 }} dev $IFACE' ]"
+  with_items:
+    "{{ peers }}"
+  when:
+    - hostvars[item].wireguard[net].routed_ip6_block is defined
+
+- name: set general settings
+  set_fact:
+    net_settings:
+      device: "{{ net }}"
+      family: inet6
+      method: manual
+      pre-up: "{{ net_pre_up }}"
+      up: "{{ net_up }}"
+      down:
+        - ip link del dev $IFACE
+
+- name: add in network interfaces
+  set_fact:
+    network_interfaces_interfaces: "{{ network_interfaces_interfaces + [ net_settings ] }}"
+  when: network_interfaces_interfaces is defined
+
+- debug:
+    var: network_interfaces_interfaces
+  when: network_interfaces_interfaces is defined
+
+- name: enable ipv6 forwarding for all interfaces
+  sysctl: name=net.ipv6.conf.all.forwarding value=1
+  when: wireguard[net].routed_ip6_block is defined

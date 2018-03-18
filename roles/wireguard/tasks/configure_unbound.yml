@@ -1,0 +1,40 @@
+---
+- set_fact:
+    unbound_controllers: "{{ unbound.controllers | default([]) }}"
+
+- name: add unbound controllers
+  set_fact:
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ hostvars[item].wireguard[net].private_ip6 }}/128' ]"
+  with_items:
+    "{{ other_wireguard_hosts }}"
+  when:
+    - wireguard[net].public is defined
+    - wireguard[net].public
+
+- name: add unbound controllers
+  set_fact:
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ wireguard[net].routed_ip6_block }}/{{ wireguard[net].routed_ip6_blocksize }}' ]"
+  when:
+    - wireguard[net].routed_ip6_block is defined
+
+- name: set unbound upstream
+  set_fact:
+    unbound_upstream: "{{ hostvars[item].wireguard[net].private_ip6 }}/128"
+  with_items:
+    "{{ other_wireguard_hosts }}"
+  when:
+    - wireguard[net].public is not defined
+    - hostvars[item].wireguard[net].public is defined
+    - hostvars[item].wireguard[net].public
+
+- name: prepare unbound config
+  set_fact:
+    unbound:
+      controllers: "{{ unbound_controllers }}"
+      recursive: "{{ unbound.recursive | default(false) }}"
+      upstream: "{{ unbound_upstream | default(false) }}"
+  when: unbound is defined
+
+- debug:
+    var: unbound
+  when: unbound is defined

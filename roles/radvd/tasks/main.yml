@@ -9,3 +9,9 @@
     owner: root
     group: root
     mode: 0644
+
+- name: enable service
+  service: name=radvd enabled=yes
+
+- name: start service
+  service: name=radvd state=started

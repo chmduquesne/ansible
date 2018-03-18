@@ -1,145 +1,49 @@
 ---
 - name: install wireguard
-  include_tasks: "install_wireguard_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
+  include_tasks: "install_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
 
-- name: configure /etc/wireguard/wg0.conf
+- name: collect networks
+  set_fact:
+    wireguard_nets: "{{ wireguard.keys() }}"
+
+- set_fact:
+    other_wireguard_hosts: []
+
+- name: collect hosts list
+  set_fact:
+    other_wireguard_hosts: "{{ other_wireguard_hosts + [ item ] }}"
+  with_inventory_hostnames:
+    all
+  when:
+    - item != inventory_hostname
+    - hostvars[item].wireguard is defined
+
+- name: create config files
   template:
-    src: templates/etc/wireguard/wg0.conf.j2
-    dest: /etc/wireguard/wg0.conf
+    src: templates/etc/wireguard/net.conf.j2
+    dest: "/etc/wireguard/{{ item }}.conf"
     owner: root
     group: root
     mode: 0600
+  with_items:
+    "{{ wireguard_nets }}"
 
-- name: set wg0 creation command
-  set_fact:
-    wg0_pre_up: [ "ip link add dev $IFACE type wireguard" ]
+- name: configure interface
+  include_tasks: configure_interface.yml
+  with_items:
+    "{{ wireguard_nets }}"
+  loop_control:
+    loop_var: net
 
-- name: set wg0 add peer command
-  set_fact:
-    wg0_pre_up: "{{ wg0_pre_up }} + [ 'ip address add {{ wireguard.private_ip6 }} peer {{ hostvars[item].wireguard.private_ip6 }} dev wg0' ]"
-  with_inventory_hostnames:
-    all
-  when:
-    - item != inventory_hostname
-    - hostvars[item].wireguard is defined
+- name: configure unbound
+  include_tasks: configure_unbound.yml
+  with_items:
+    "{{ wireguard_nets }}"
+  loop_control:
+    loop_var: net
 
-- name: set wg0 setconf command
-  set_fact:
-    wg0_pre_up: "{{ wg0_pre_up }} + [ 'wg setconf wg0 /etc/wireguard/wg0.conf' ]"
-
-- name: set wg0 up commands
-  set_fact:
-    wg0_up:
-      - ip link set up dev $IFACE
-      - echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding
-
-- name: set wg0 routes
-  set_fact:
-    wg0_up: "{{ wg0_up }} + [ 'ip route add {{ hostvars[item].wireguard.routed_ip6_block }}/{{ hostvars[item].wireguard.routed_ip6_blocksize }} via {{ hostvars[item].wireguard.private_ip6 }} dev wg0' ]"
-  with_inventory_hostnames:
-    all
-  when:
-    - item != inventory_hostname
-    - hostvars[item].wireguard is defined
-    - hostvars[item].wireguard.routed_ip6_block is defined
-
-- name: set wg0 general settings
-  set_fact:
-    wg0_settings:
-      device: wg0
-      family: inet6
-      method: manual
-      pre-up: "{{ wg0_pre_up }}"
-      up: "{{ wg0_up }}"
-      down:
-        - ip link del dev wg0
-
-- name: add wg0 in network interfaces
-  set_fact:
-    network_interfaces_interfaces: "{{ network_interfaces_interfaces + [wg0_settings] }}"
-  when: network_interfaces_interfaces is defined
-
-- debug:
-    var: network_interfaces_interfaces
-  when: network_interfaces_interfaces is defined
-
-- name: enable ipv6 forwarding for all interfaces
-  sysctl: name=net.ipv6.conf.all.forwarding value=1
-  when: wireguard.routed_ip6_block is defined
-
-- name: set unbound interface
-  set_fact:
-    unbound_interface: "::0"
-
-- name: override unbound interface
-  set_fact:
-    unbound_interface: "{{ wireguard.routed_ip6_block }}1"
-  when: wireguard.routed_ip6_block is defined
-
-- name: set unbound recursive setting
-  set_fact:
-    unbound_recursive: false
-
-- name: override unbound recursive setting
-  set_fact:
-    unbound_recursive: true
-  when:
-    - wireguard.public is defined
-    - wireguard.public
-
-- name: add unbound controllers
-  set_fact:
-    unbound_controllers: []
-
-- name: add unbound controllers
-  set_fact:
-    unbound_controllers: "{{ unbound_controllers + [ '::1' ] }}"
-  when:
-    - wireguard.public is defined
-    - wireguard.public
-
-- name: add unbound controllers
-  set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ hostvars[item].wireguard.private_ip6 }}/128' ]"
-  with_inventory_hostnames:
-    all
-  when:
-    - wireguard.public is defined
-    - wireguard.public
-    - item != inventory_hostname
-    - hostvars[item].wireguard is defined
-
-- name: add unbound controllers
-  set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ wireguard.routed_ip6_block }}/{{ wireguard.routed_ip6_blocksize }}' ]"
-  when:
-    - wireguard.routed_ip6_block is defined
-
-- name: set unbound upstream
-  set_fact:
-    unbound_upstream: "{{ hostvars[item].wireguard.private_ip6 }}/128"
-  with_inventory_hostnames:
-    all
-  when:
-    - wireguard.public is not defined
-    - hostvars[item].wireguard is defined
-    - hostvars[item].wireguard.public is defined
-    - hostvars[item].wireguard.public
-
-- name: prepare unbound config
-  set_fact:
-    unbound:
-      interface: "{{ unbound_interface }}"
-      controllers: "{{ unbound_controllers }}"
-      recursive: "{{ unbound_recursive }}"
-      upstream: "{{ unbound_upstream | default(false) }}"
-
-- debug:
-    var: unbound
-  when: unbound is defined
-
-- name: apply iptables rules for a public instance
-  include_tasks: create_iptable_rules_public_instance.yml
-  when:
-    - wireguard.public is defined
-    - wireguard.public
+    #- name: apply iptables rules for a public instance
+    #  include_tasks: create_iptable_rules_public_instance.yml
+    #  when:
+    #    - wireguard.public is defined
+    #    - wireguard.public

@@ -2,13 +2,14 @@
 #ansible_user: pi
 
 wireguard:
-  privkey: "{{ vault_wg_privkey }}"
-  pubkey: "{{ vault_wg_pubkey }}"
-  private_ip6: "{{ vault_wg_private_ip6 }}"
-  routed_ip6_block: "{{ vault_wg_routed_ip6_block }}"
-  routed_ip6_blocksize: "{{ vault_wg_routed_ip6_blocksize }}"
-  allowed_ips: "{{ vault_wg_private_ip6 }}/128, {{ vault_wg_routed_ip6_block }}/{{ vault_wg_routed_ip6_blocksize }}"
-  listenport: 4000
+  wg0:
+    privkey: "{{ vault_wg_privkey }}"
+    pubkey: "{{ vault_wg_pubkey }}"
+    private_ip6: "{{ vault_wg_private_ip6 }}"
+    routed_ip6_block: "{{ vault_wg_routed_ip6_block }}"
+    routed_ip6_blocksize: "{{ vault_wg_routed_ip6_blocksize }}"
+    allowed_ips: "{{ vault_wg_private_ip6 }}/128, {{ vault_wg_routed_ip6_block }}/{{ vault_wg_routed_ip6_blocksize }}"
+    listenport: 4000
 
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
@@ -25,8 +26,8 @@ network_interfaces_interfaces:
   - device: wlan0
     family: inet6
     method: static
-    address: "{{ wireguard.routed_ip6_block }}1"
-    netmask: "{{ wireguard.routed_ip6_blocksize }}"
+    address: "{{ wireguard.wg0.routed_ip6_block }}1"
+    netmask: "{{ wireguard.wg0.routed_ip6_blocksize }}"
     hostapd: /etc/hostapd/hostapd.conf
 
 hostapd:
@@ -35,5 +36,8 @@ hostapd:
 
 radvd:
   interface: wlan0
-  inet6_prefix: "{{ wireguard.routed_ip6_block }}"
-  inet6_mask: "{{ wireguard.routed_ip6_blocksize }}"
+  inet6_prefix: "{{ wireguard.wg0.routed_ip6_block }}"
+  inet6_mask: "{{ wireguard.wg0.routed_ip6_blocksize }}"
+
+unbound:
+  recursive: false
