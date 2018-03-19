@@ -28,16 +28,22 @@
   set_fact:
     net_up:
       - ip link set up dev $IFACE
-      - echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding
 
-- name: set routes
+- name: collect routing mode
   set_fact:
-    net_up: "{{ net_up }} + [ 'ip route add {{ hostvars[item].wireguard[net].router.inet6_prefix }}::/{{ hostvars[item].wireguard[net].router.inet6_mask }} via {{ hostvars[item].wireguard[net].inet6_addr }} dev $IFACE' ]"
-  with_items:
-    "{{ peers }}"
+    mode: public
   when:
-    - hostvars[item].wireguard[net].router is defined
-    - hostvars[item].wireguard[net].router.inet6_prefix is defined
+    - wireguard[net].public is defined
+    - wireguard[net].public
+
+- name: collect routing mode
+  set_fact:
+    mode: router
+  when:
+    - wireguard[net].router is defined
+
+- name: manage routing
+  include_tasks: "configure_routing_{{ mode }}.yml"
 
 - name: set general settings
   set_fact:
@@ -47,6 +53,7 @@
       method: manual
       pre-up: "{{ net_pre_up }}"
       up: "{{ net_up }}"
+      post-up: "{{ net_post_up }}"
       down:
         - ip link del dev $IFACE
 
@@ -58,7 +65,3 @@
 - debug:
     var: network_interfaces_interfaces
   when: network_interfaces_interfaces is defined
-
-- name: enable ipv6 forwarding for all interfaces
-  sysctl: name=net.ipv6.conf.all.forwarding value=1
-  when: wireguard[net].router is defined

@@ -1,0 +1,17 @@
+---
+- name: enable ipv6 forwarding for all interfaces
+  sysctl: name=net.ipv6.conf.all.forwarding value=1
+
+- name: enable ipv6 forwarding at post-up
+  set_fact:
+    net_post_up:
+      - "echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding"
+
+- name: set routes at post-up
+  set_fact:
+    net_post_up: "{{ net_post_up }} + [ 'ip route add {{ hostvars[item].wireguard[net].router.inet6_prefix }}::/{{ hostvars[item].wireguard[net].router.inet6_mask }} via {{ hostvars[item].wireguard[net].inet6_addr }} dev $IFACE' ]"
+  with_items:
+    "{{ peers }}"
+  when:
+    - hostvars[item].wireguard[net].router is defined
+    - hostvars[item].wireguard[net].router.inet6_prefix is defined

@@ -20,6 +20,7 @@
 - name: post-up routing for the net
   set_fact:
     net_post_up:
+      - "echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding"
       - "ip route flush table {{ net }}.routes"
       - "ip route add default via {{ upstream_inet6_addr }} dev {{ net }} table {{ net }}.routes"
 
@@ -29,5 +30,5 @@
 - name: post-up routing for the wlan interface
   set_fact:
     wlan_post_up:
-      - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[net].wlan_iface }} table {{ net }}.routes"
+      - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[net].router.interface }} table {{ net }}.routes"
       - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ net }}.routes"
