@@ -1,0 +1,33 @@
+---
+
+- name: enable ipv6 forwarding for all interfaces
+  sysctl: name=net.ipv6.conf.all.forwarding value=1
+
+- name: create dedicated routing table
+  lineinfile:
+    dest: /etc/iproute2/rt_tables
+    line: "200 {{ net }}.routes"
+
+- name: get upstream inet6 address
+  set_fact:
+    upstream_inet6_addr: "{{ hostvars[item].wireguard[net].private_ip6 }}"
+  with_items:
+    "{{ peers }}"
+  when:
+    - hostvars[item].wireguard[net].public is defined
+    - hostvars[item].wireguard[net].public
+
+- name: post-up routing for the net
+  set_fact:
+    net_post_up:
+      - "ip route flush table {{ net }}.routes"
+      - "ip route add default via {{ upstream_inet6_addr }} dev {{ net }} table {{ net }}.routes"
+
+- set_fact:
+    routed_inet6_range: "{{ wireguard[net].routed_ip6_block }}/{{ wireguard[net].routed_ip6_blocksize }}"
+
+- name: post-up routing for the wlan interface
+  set_fact:
+    wlan_post_up:
+      - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[net].wlan_iface }} table {{ net }}.routes"
+      - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ net }}.routes"
