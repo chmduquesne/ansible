@@ -40,11 +40,10 @@ network_interfaces_interfaces:
 
 wireguard:
   wg0:
-    router: true
     public: true
-    privkey: "{{ vault_wg_privkey }}"
-    pubkey: "{{ vault_wg_pubkey }}"
-    private_ip6: "{{ vault_wg_private_ip6 }}"
+    privkey: "{{ vault_wg0_privkey }}"
+    pubkey: "{{ vault_wg0_pubkey }}"
+    inet6_addr: "{{ vault_wg0_inet6_addr }}"
     listenport: 500
     allowed_ips: "::/0"
 

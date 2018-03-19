@@ -37,7 +37,7 @@
     jump: ACCEPT
     destination_port: 53
     protocol: "{{ item.1 }}"
-    source: "{{ hostvars[item.0].wireguard.private_ip6 }}/128"
+    source: "{{ hostvars[item.0].wireguard.inet6_addr }}/128"
   with_nested:
     - "{{ hostvars.keys() }}"
     - [ 'tcp', 'udp' ]
@@ -66,7 +66,7 @@
   iptables:
     ip_version: ipv6
     chain: FORWARD
-    source: "{{ hostvars[item].wireguard.routed_ip6_block }}/{{ hostvars[item].wireguard.routed_ip6_blocksize }}"
+    source: "{{ hostvars[item].wireguard.router.inet6_prefix }}::/{{ hostvars[item].wireguard.router.inet6_mask }}"
     in_interface: wg0
     out_interface: enp0s20
     ctstate: NEW
@@ -76,4 +76,5 @@
   when:
     - item != inventory_hostname
     - hostvars[item].wireguard is defined
-    - hostvars[item].wireguard.routed_ip6_block is defined
+    - hostvars[item].wireguard.router is defined
+    - hostvars[item].wireguard.router.inet6_prefix is defined

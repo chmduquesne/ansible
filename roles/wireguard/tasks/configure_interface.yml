@@ -16,7 +16,7 @@
 
 - name: set add peer command
   set_fact:
-    net_pre_up: "{{ net_pre_up }} + [ 'ip address add {{ wireguard[net].private_ip6 }} peer {{ hostvars[item].wireguard[net].private_ip6 }} dev {{ net }}' ]"
+    net_pre_up: "{{ net_pre_up }} + [ 'ip address add {{ wireguard[net].inet6_addr }} peer {{ hostvars[item].wireguard[net].inet6_addr }} dev {{ net }}' ]"
   with_items:
     "{{ peers }}"
 
@@ -32,11 +32,12 @@
 
 - name: set routes
   set_fact:
-    net_up: "{{ net_up }} + [ 'ip route add {{ hostvars[item].wireguard[net].routed_ip6_block }}/{{ hostvars[item].wireguard[net].routed_ip6_blocksize }} via {{ hostvars[item].wireguard[net].private_ip6 }} dev $IFACE' ]"
+    net_up: "{{ net_up }} + [ 'ip route add {{ hostvars[item].wireguard[net].router.inet6_prefix }}::/{{ hostvars[item].wireguard[net].router.inet6_mask }} via {{ hostvars[item].wireguard[net].inet6_addr }} dev $IFACE' ]"
   with_items:
     "{{ peers }}"
   when:
-    - hostvars[item].wireguard[net].routed_ip6_block is defined
+    - hostvars[item].wireguard[net].router is defined
+    - hostvars[item].wireguard[net].router.inet6_prefix is defined
 
 - name: set general settings
   set_fact:
@@ -60,4 +61,4 @@
 
 - name: enable ipv6 forwarding for all interfaces
   sysctl: name=net.ipv6.conf.all.forwarding value=1
-  when: wireguard[net].routed_ip6_block is defined
+  when: wireguard[net].router is defined

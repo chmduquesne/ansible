@@ -4,7 +4,7 @@
 
 - name: add unbound controllers
   set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ hostvars[item].wireguard[net].private_ip6 }}/128' ]"
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ hostvars[item].wireguard[net].inet6_addr }}/128' ]"
   with_items:
     "{{ other_wireguard_hosts }}"
   when:
@@ -13,13 +13,14 @@
 
 - name: add unbound controllers
   set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ wireguard[net].routed_ip6_block }}/{{ wireguard[net].routed_ip6_blocksize }}' ]"
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ wireguard[net].router.inet6_prefix }}::/{{ wireguard[net].router.inet6_mask }}' ]"
   when:
-    - wireguard[net].routed_ip6_block is defined
+    - wireguard[net].router is defined
+    - wireguard[net].router.inet6_prefix is defined
 
 - name: set unbound upstream
   set_fact:
-    unbound_upstream: "{{ hostvars[item].wireguard[net].private_ip6 }}/128"
+    unbound_upstream: "{{ hostvars[item].wireguard[net].inet6_addr }}/128"
   with_items:
     "{{ other_wireguard_hosts }}"
   when:

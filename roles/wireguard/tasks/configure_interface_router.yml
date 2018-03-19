@@ -10,7 +10,7 @@
 
 - name: get upstream inet6 address
   set_fact:
-    upstream_inet6_addr: "{{ hostvars[item].wireguard[net].private_ip6 }}"
+    upstream_inet6_addr: "{{ hostvars[item].wireguard[net].inet6_addr }}"
   with_items:
     "{{ peers }}"
   when:
@@ -24,7 +24,7 @@
       - "ip route add default via {{ upstream_inet6_addr }} dev {{ net }} table {{ net }}.routes"
 
 - set_fact:
-    routed_inet6_range: "{{ wireguard[net].routed_ip6_block }}/{{ wireguard[net].routed_ip6_blocksize }}"
+    routed_inet6_range: "{{ wireguard[net].router.inet6_prefix }}::/{{ wireguard[net].router.inet6_mask }}"
 
 - name: post-up routing for the wlan interface
   set_fact:
