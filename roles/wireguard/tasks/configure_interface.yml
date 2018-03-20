@@ -1,22 +1,11 @@
 ---
-- set_fact:
-    peers: []
-
-- name: collect peers
-  set_fact:
-    peers: "{{ peers + [ item ] }}"
-  with_items:
-    "{{ other_wireguard_hosts }}"
-  when:
-    - net in hostvars[item].wireguard
-
 - name: set creation command
   set_fact:
     net_pre_up: [ "ip link add dev $IFACE type wireguard" ]
 
 - name: set add peer command
   set_fact:
-    net_pre_up: "{{ net_pre_up }} + [ 'ip address add {{ wireguard[net].inet6_addr }} peer {{ hostvars[item].wireguard[net].inet6_addr }} dev {{ net }}' ]"
+    net_pre_up: "{{ net_pre_up }} + [ 'ip address add {{ conf.inet6_addr }} peer {{ hostvars[item].wireguard[net].inet6_addr }} dev {{ net }}' ]"
   with_items:
     "{{ peers }}"
 
@@ -24,23 +13,10 @@
   set_fact:
     net_pre_up: "{{ net_pre_up }} + [ 'wg setconf $IFACE /etc/wireguard/${IFACE}.conf' ]"
 
-- name: set up commands
+- name: set up command
   set_fact:
     net_up:
       - ip link set up dev $IFACE
-
-- name: collect routing mode
-  set_fact:
-    mode: public
-  when:
-    - wireguard[net].public is defined
-    - wireguard[net].public
-
-- name: collect routing mode
-  set_fact:
-    mode: router
-  when:
-    - wireguard[net].router is defined
 
 - name: manage routing
   include_tasks: "configure_routing_{{ mode }}.yml"

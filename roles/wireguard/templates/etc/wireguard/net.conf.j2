@@ -1,10 +1,8 @@
 #jinja2: lstrip_blocks: True
-{% set net = item %}
-{% set conf = wireguard[net] %}
 [Interface]
 PrivateKey = {{ conf.privkey }}
 ListenPort = {{ conf.listenport }}
-{% for peer in other_wireguard_hosts %}
+{% for peer in peers %}
     {% set peervars = hostvars[peer] %}
     {% if net in peervars.wireguard %}
         {% set peerconf = peervars.wireguard[net]%}

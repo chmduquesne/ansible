@@ -2,48 +2,9 @@
 - name: install wireguard
   include_tasks: "install_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
 
-- name: collect networks
-  set_fact:
-    wireguard_nets: "{{ wireguard.keys() }}"
-
-- set_fact:
-    other_wireguard_hosts: []
-
-- name: collect hosts list
-  set_fact:
-    other_wireguard_hosts: "{{ other_wireguard_hosts + [ item ] }}"
-  with_inventory_hostnames:
-    all
-  when:
-    - item != inventory_hostname
-    - hostvars[item].wireguard is defined
-
-- name: create config files
-  template:
-    src: templates/etc/wireguard/net.conf.j2
-    dest: "/etc/wireguard/{{ item }}.conf"
-    owner: root
-    group: root
-    mode: 0600
+- name: configure networks
+  include_tasks: configure_wgnet.yml
   with_items:
-    "{{ wireguard_nets }}"
-
-- name: configure interface
-  include_tasks: configure_interface.yml
-  with_items:
-    "{{ wireguard_nets }}"
+    "{{ wireguard.keys() }}"
   loop_control:
     loop_var: net
-
-- name: configure unbound
-  include_tasks: configure_unbound.yml
-  with_items:
-    "{{ wireguard_nets }}"
-  loop_control:
-    loop_var: net
-
-    #- name: apply iptables rules for a public instance
-    #  include_tasks: create_iptable_rules_public_instance.yml
-    #  when:
-    #    - wireguard.public is defined
-    #    - wireguard.public

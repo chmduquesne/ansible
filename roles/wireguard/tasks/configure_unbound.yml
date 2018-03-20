@@ -6,25 +6,22 @@
   set_fact:
     unbound_controllers: "{{ unbound_controllers }} + [ '{{ hostvars[item].wireguard[net].inet6_addr }}/128' ]"
   with_items:
-    "{{ other_wireguard_hosts }}"
-  when:
-    - wireguard[net].public is defined
-    - wireguard[net].public
+    "{{ peers }}"
 
 - name: add unbound controllers
   set_fact:
     unbound_controllers: "{{ unbound_controllers }} + [ '{{ wireguard[net].router.inet6_prefix }}::/{{ wireguard[net].router.inet6_mask }}' ]"
   when:
-    - wireguard[net].router is defined
-    - wireguard[net].router.inet6_prefix is defined
+    - conf.router is defined
+    - conf.router.inet6_prefix is defined
 
 - name: set unbound upstream
   set_fact:
     unbound_upstream: "{{ hostvars[item].wireguard[net].inet6_addr }}/128"
   with_items:
-    "{{ other_wireguard_hosts }}"
+    "{{ peers }}"
   when:
-    - wireguard[net].public is not defined
+    - conf.public is not defined
     - hostvars[item].wireguard[net].public is defined
     - hostvars[item].wireguard[net].public
 

@@ -1,0 +1,54 @@
+---
+
+- set_fact:
+    peers: []
+
+- name: collect peers
+  set_fact:
+    peers: "{{ peers | union([ item ]) }}"
+  with_inventory_hostnames:
+    all
+  when:
+    - item != inventory_hostname
+    - hostvars[item].wireguard is defined
+    - net in hostvars[item].wireguard
+
+- set_fact:
+    conf: "{{ wireguard[net] }}"
+
+- name: create config file
+  template:
+    src: templates/etc/wireguard/net.conf.j2
+    dest: "/etc/wireguard/{{ net }}.conf"
+    owner: root
+    group: root
+    mode: 0600
+
+- name: collect routing mode 1/3
+  set_fact:
+    mode: "client"
+
+- name: collect routing mode 2/3
+  set_fact:
+    mode: "out_gateway"
+  when:
+    - conf.public is defined
+    - conf.public
+
+- name: collect routing mode 3/3
+  set_fact:
+    mode: "in_gateway"
+  when:
+    - conf.router is defined
+
+- name: configure interface
+  include_tasks: configure_interface.yml
+
+- name: configure unbound
+  include_tasks: configure_unbound.yml
+
+    #- name: apply iptables rules for a public instance
+    #  include_tasks: create_iptable_rules_public_instance.yml
+    #  when:
+    #    - wireguard.public is defined
+    #    - wireguard.public
