@@ -1,0 +1,56 @@
+# iptables rules to apply for a private wifi router
+---
+- name: accept established connections
+  iptables:
+    ip_version: "{{ item.0 }}"
+    chain: "{{ item.1 }}"
+    ctstate: RELATED,ESTABLISHED
+    jump: ACCEPT
+  become: yes
+  with_nested:
+    - [ 'ipv4', 'ipv6' ]
+    - [ 'INPUT', 'FORWARD' ]
+  notify:
+    - persist iptables
+
+- name: accept wireguard connections
+  iptables:
+    ip_version: "{{ item }}"
+    chain: INPUT
+    ctstate: NEW
+    destination_port: "{{ conf.listenport}}"
+    protocol: udp
+    jump: ACCEPT
+  become: yes
+  with_items:
+    - ipv4
+    - ipv6
+  notify:
+    - persist iptables
+
+- name: accept dns requests from clients
+  iptables:
+    ip_version: ipv6
+    chain: INPUT
+    ctstate: NEW
+    jump: ACCEPT
+    destination_port: 53
+    protocol: "{{ item }}"
+    source: "{{ conf.router.inet6_prefix }}::/{{ conf.router.inet6_mask }}"
+  with_items:
+    - tcp
+    - udp
+  notify:
+    - persist iptables
+
+- name: allow packets coming from inside the private wifi to be forwarded to the VPN server
+  iptables:
+    ip_version: ipv6
+    chain: FORWARD
+    ctstate: NEW
+    in_interface: "{{ conf.router.interface }}"
+    out_interface: "{{ net }}"
+    source: "{{ conf.router.inet6_prefix }}::/{{ conf.router.inet6_mask }}"
+    jump: ACCEPT
+  notify:
+    - persist iptables

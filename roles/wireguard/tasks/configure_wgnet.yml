@@ -47,8 +47,5 @@
 - name: configure unbound
   include_tasks: configure_unbound.yml
 
-    #- name: apply iptables rules for a public instance
-    #  include_tasks: create_iptable_rules_public_instance.yml
-    #  when:
-    #    - wireguard.public is defined
-    #    - wireguard.public
+- name: configure firewall
+  include_tasks: "configure_firewall_{{ mode }}.yml"

@@ -21,7 +21,7 @@
   with_items:
     "{{ peers }}"
   when:
-    - conf.public is not defined
+    - mode != "out_gateway"
     - hostvars[item].wireguard[net].public is defined
     - hostvars[item].wireguard[net].public
 
