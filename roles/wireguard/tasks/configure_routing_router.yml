@@ -27,8 +27,28 @@
 - set_fact:
     routed_inet6_range: "{{ wireguard[net].router.inet6_prefix }}::/{{ wireguard[net].router.inet6_mask }}"
 
-- name: post-up routing for the wlan interface
+- name: collect post-up routing commands for the wlan interface
   set_fact:
     wlan_post_up:
       - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[net].router.interface }} table {{ net }}.routes"
       - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ net }}.routes"
+
+- name: get existing wlan settings
+  set_fact:
+    wlan_settings: "{{ item }}"
+  with_items:
+    "{{ network_interfaces_interfaces }}"
+  when:
+    - item.device == wireguard[net].router.interface
+
+- name: removing existing wlan setting
+  set_fact:
+    network_interfaces_interfaces: "{{ network_interfaces_interfaces | difference([ wlan_settings ]) }}"
+
+- name: creating new wlan settings with the additional post-up commands
+  set_fact:
+    wlan_settings: "{{ wlan_settings | combine({'post-up' : wlan_post_up}) }}"
+
+- name: re-adding modified the modified wlan settings
+  set_fact:
+    network_interfaces_interfaces: "{{ network_interfaces_interfaces | union([ wlan_settings ]) }}"
