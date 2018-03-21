@@ -35,6 +35,7 @@ network_interfaces_interfaces:
     family: inet6
     method: dhcp
     request_prefix: 1
+    accept_ra: 2
     up:
       - "ip addr add {{ inet6_address }}/{{ inet6_netmask }} dev $IFACE"
 
