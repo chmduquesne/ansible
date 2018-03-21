@@ -9,6 +9,7 @@
     - chmduquesne.ansible-network-interfaces
     - hostapd
     - radvd
+    - unbound
   tasks:
     - name: get latest vim
       package: name=vim state=latest

@@ -9,5 +9,7 @@
   notify:
     - restart unbound
 
-- name: enable unbound at boot
-  systemd: name=unbound enabled=yes
+- name: enable service
+  service: name=unbound enabled=yes use=service
+  notify:
+    - restart unbound
