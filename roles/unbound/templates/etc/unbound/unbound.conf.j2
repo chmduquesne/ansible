@@ -5,8 +5,10 @@ server:
 
   interface: ::0
   interface-automatic: no
+{% if unbound.recursive | default(false) %}
 
   max-udp-size: 3072
+{% endif %}
 
   access-control: ::0/0                 refuse
 {% for address in unbound.controllers %}
