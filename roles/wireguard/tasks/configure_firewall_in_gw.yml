@@ -49,7 +49,7 @@
     chain: FORWARD
     ctstate: NEW
     in_interface: "{{ conf.in_gw.interface }}"
-    out_interface: "{{ net }}"
+    out_interface: "{{ wgnet }}"
     source: "{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}"
     jump: ACCEPT
   notify:

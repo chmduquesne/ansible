@@ -37,12 +37,14 @@ network_interfaces_interfaces:
 
 wireguard:
   wg0:
-    public: true
     privkey: "{{ vault_wg0_privkey }}"
     pubkey: "{{ vault_wg0_pubkey }}"
     inet6_addr: "{{ vault_wg0_inet6_addr }}"
+    public_addr: "{{ ansible_host }}"
     listenport: 500
     allowed_ips: "::/0"
+    out_gw:
+      interface: enp0s20
 
 unbound:
   recursive: true

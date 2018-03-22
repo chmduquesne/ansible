@@ -6,32 +6,31 @@
 - name: create dedicated routing table
   lineinfile:
     dest: /etc/iproute2/rt_tables
-    line: "200 {{ net }}.routes"
+    line: "200 {{ wgnet }}.routes"
 
 - name: get upstream inet6 address
   set_fact:
-    upstream_inet6_addr: "{{ hostvars[item].wireguard[net].inet6_addr }}"
+    upstream_inet6_addr: "{{ hostvars[item].wireguard[wgnet].inet6_addr }}"
   with_items:
     "{{ peers }}"
   when:
-    - hostvars[item].wireguard[net].public is defined
-    - hostvars[item].wireguard[net].public
+    - hostvars[item].wireguard[wgnet].out_gw is defined
 
 - name: post-up routing for the net
   set_fact:
     net_post_up:
       - "echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding"
-      - "ip route flush table {{ net }}.routes"
-      - "ip route add default via {{ upstream_inet6_addr }} dev {{ net }} table {{ net }}.routes"
+      - "ip route flush table {{ wgnet }}.routes"
+      - "ip route add default via {{ upstream_inet6_addr }} dev {{ wgnet }} table {{ wgnet }}.routes"
 
 - set_fact:
-    routed_inet6_range: "{{ wireguard[net].in_gw.inet6_prefix }}::/{{ wireguard[net].in_gw.inet6_mask }}"
+    routed_inet6_range: "{{ wireguard[wgnet].in_gw.inet6_prefix }}::/{{ wireguard[wgnet].in_gw.inet6_mask }}"
 
 - name: collect post-up routing commands for the wlan interface
   set_fact:
     wlan_post_up:
-      - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[net].in_gw.interface }} table {{ net }}.routes"
-      - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ net }}.routes"
+      - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[wgnet].in_gw.interface }} table {{ wgnet }}.routes"
+      - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ wgnet }}.routes"
 
 - name: get existing wlan settings
   set_fact:
@@ -39,7 +38,7 @@
   with_items:
     "{{ network_interfaces_interfaces }}"
   when:
-    - item.device == wireguard[net].in_gw.interface
+    - item.device == wireguard[wgnet].in_gw.interface
 
 - name: removing existing wlan setting
   set_fact:

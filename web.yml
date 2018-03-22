@@ -12,11 +12,3 @@
   tasks:
     - name: get latest vim
       package: name=vim state=latest
-      #    - name: enable ra on enp0s20
-      #      sysctl: name=net.ipv6.conf.enp0s20.accept_ra value=2
-      #    - name: disable autoconf on enp0s20
-      #      sysctl: name=net.ipv6.conf.enp0s20.autoconf value=0
-      #    - name: enable forwarding by default
-      #      sysctl: name=net.ipv6.conf.default.forwarding value=1
-      #    - name: enable forwarding on all
-      #      sysctl: name=net.ipv6.conf.all.forwarding value=1

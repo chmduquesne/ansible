@@ -11,15 +11,15 @@
   when:
     - item != inventory_hostname
     - hostvars[item].wireguard is defined
-    - net in hostvars[item].wireguard
+    - wgnet in hostvars[item].wireguard
 
 - set_fact:
-    conf: "{{ wireguard[net] }}"
+    conf: "{{ wireguard[wgnet] }}"
 
 - name: create config file
   template:
-    src: templates/etc/wireguard/net.conf.j2
-    dest: "/etc/wireguard/{{ net }}.conf"
+    src: templates/etc/wireguard/wgnet.conf.j2
+    dest: "/etc/wireguard/{{ wgnet }}.conf"
     owner: root
     group: root
     mode: 0600
@@ -32,8 +32,7 @@
   set_fact:
     mode: "out_gw"
   when:
-    - conf.public is defined
-    - conf.public
+    - conf.out_gw is defined
 
 - name: collect routing mode 3/3
   set_fact:

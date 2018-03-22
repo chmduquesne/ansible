@@ -9,9 +9,9 @@
 
 - name: set routes at post-up
   set_fact:
-    net_post_up: "{{ net_post_up }} + [ 'ip route add {{ hostvars[item].wireguard[net].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[net].in_gw.inet6_mask }} via {{ hostvars[item].wireguard[net].inet6_addr }} dev $IFACE' ]"
+    net_post_up: "{{ net_post_up }} + [ 'ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ hostvars[item].wireguard[wgnet].inet6_addr }} dev $IFACE' ]"
   with_items:
     "{{ peers }}"
   when:
-    - hostvars[item].wireguard[net].in_gw is defined
-    - hostvars[item].wireguard[net].in_gw.inet6_prefix is defined
+    - hostvars[item].wireguard[wgnet].in_gw is defined
+    - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined

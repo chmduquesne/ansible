@@ -5,7 +5,7 @@
 
 - name: set add peer command
   set_fact:
-    net_pre_up: "{{ net_pre_up }} + [ 'ip address add {{ conf.inet6_addr }} peer {{ hostvars[item].wireguard[net].inet6_addr }} dev {{ net }}' ]"
+    net_pre_up: "{{ net_pre_up }} + [ 'ip address add {{ conf.inet6_addr }} peer {{ hostvars[item].wireguard[wgnet].inet6_addr }} dev {{ wgnet }}' ]"
   with_items:
     "{{ peers }}"
 
@@ -24,7 +24,7 @@
 - name: set general settings
   set_fact:
     net_settings:
-      device: "{{ net }}"
+      device: "{{ wgnet }}"
       family: inet6
       method: manual
       pre-up: "{{ net_pre_up }}"

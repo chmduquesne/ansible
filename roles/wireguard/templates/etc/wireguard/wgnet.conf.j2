@@ -4,14 +4,14 @@ PrivateKey = {{ conf.privkey }}
 ListenPort = {{ conf.listenport }}
 {% for peer in peers %}
     {% set peervars = hostvars[peer] %}
-    {% if net in peervars.wireguard %}
-        {% set peerconf = peervars.wireguard[net]%}
+    {% if wgnet in peervars.wireguard %}
+        {% set peerconf = peervars.wireguard[wgnet] %}
 
 [Peer]
 PublicKey = {{ peerconf.pubkey }}
 AllowedIPs = {{ peerconf.allowed_ips }}
-        {% if peerconf.public | default(false) %}
-Endpoint = {{ peervars.ansible_host }}:{{ peerconf.listenport }}
+        {% if 'public_addr' in peerconf %}
+Endpoint = {{ peerconf.public_addr }}:{{ peerconf.listenport }}
 PersistentKeepalive = 20
         {% endif %}
     {% endif %}
