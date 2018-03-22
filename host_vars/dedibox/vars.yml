@@ -24,8 +24,6 @@ dhclient_config:
       request;
    }
 
-inet6_address: "{{ vault_inet6_address }}"
-inet6_netmask: "{{ vault_inet6_netmask }}"
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
   - device: enp0s20
@@ -36,8 +34,6 @@ network_interfaces_interfaces:
     method: dhcp
     request_prefix: 1
     accept_ra: 2
-    up:
-      - "ip addr add {{ inet6_address }}/{{ inet6_netmask }} dev $IFACE"
 
 wireguard:
   wg0:
