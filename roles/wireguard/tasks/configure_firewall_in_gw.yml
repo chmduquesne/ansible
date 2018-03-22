@@ -36,7 +36,7 @@
     jump: ACCEPT
     destination_port: 53
     protocol: "{{ item }}"
-    source: "{{ conf.router.inet6_prefix }}::/{{ conf.router.inet6_mask }}"
+    source: "{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}"
   with_items:
     - tcp
     - udp
@@ -48,9 +48,9 @@
     ip_version: ipv6
     chain: FORWARD
     ctstate: NEW
-    in_interface: "{{ conf.router.interface }}"
+    in_interface: "{{ conf.in_gw.interface }}"
     out_interface: "{{ net }}"
-    source: "{{ conf.router.inet6_prefix }}::/{{ conf.router.inet6_mask }}"
+    source: "{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}"
     jump: ACCEPT
   notify:
     - persist iptables

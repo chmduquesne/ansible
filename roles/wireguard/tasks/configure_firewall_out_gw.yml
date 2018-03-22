@@ -63,7 +63,7 @@
   iptables:
     ip_version: ipv6
     chain: FORWARD
-    source: "{{ hostvars[item].wireguard[net].router.inet6_prefix }}::/{{ hostvars[item].wireguard[net].router.inet6_mask }}"
+    source: "{{ hostvars[item].wireguard[net].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[net].in_gw.inet6_mask }}"
     in_interface: "{{ net }}"
     out_interface: enp0s20
     ctstate: NEW
@@ -71,5 +71,5 @@
   with_items:
     - "{{ peers }}"
   when:
-    - hostvars[item].wireguard.router is defined
-    - hostvars[item].wireguard.router.inet6_prefix is defined
+    - hostvars[item].wireguard.in_gw is defined
+    - hostvars[item].wireguard.in_gw.inet6_prefix is defined

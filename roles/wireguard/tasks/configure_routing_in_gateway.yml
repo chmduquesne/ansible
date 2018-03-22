@@ -25,12 +25,12 @@
       - "ip route add default via {{ upstream_inet6_addr }} dev {{ net }} table {{ net }}.routes"
 
 - set_fact:
-    routed_inet6_range: "{{ wireguard[net].router.inet6_prefix }}::/{{ wireguard[net].router.inet6_mask }}"
+    routed_inet6_range: "{{ wireguard[net].in_gw.inet6_prefix }}::/{{ wireguard[net].in_gw.inet6_mask }}"
 
 - name: collect post-up routing commands for the wlan interface
   set_fact:
     wlan_post_up:
-      - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[net].router.interface }} table {{ net }}.routes"
+      - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[net].in_gw.interface }} table {{ net }}.routes"
       - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ net }}.routes"
 
 - name: get existing wlan settings
@@ -39,7 +39,7 @@
   with_items:
     "{{ network_interfaces_interfaces }}"
   when:
-    - item.device == wireguard[net].router.interface
+    - item.device == wireguard[net].in_gw.interface
 
 - name: removing existing wlan setting
   set_fact:

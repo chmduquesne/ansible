@@ -8,7 +8,7 @@ wireguard:
     inet6_addr: "{{ vault_wg0_inet6_addr }}"
     allowed_ips: "{{ vault_wg0_inet6_addr }}/128, {{ vault_wg0_router_inet6_prefix }}::/{{ vault_wg0_router_inet6_mask }}"
     listenport: 4000
-    router:
+    in_gw:
       interface: wlan0
       inet6_prefix: "{{ vault_wg0_router_inet6_prefix }}"
       inet6_mask: "{{ vault_wg0_router_inet6_mask }}"
@@ -28,8 +28,8 @@ network_interfaces_interfaces:
   - device: wlan0
     family: inet6
     method: static
-    address: "{{ wireguard.wg0.router.inet6_prefix }}::1"
-    netmask: "{{ wireguard.wg0.router.inet6_mask }}"
+    address: "{{ wireguard.wg0.in_gw.inet6_prefix }}::1"
+    netmask: "{{ wireguard.wg0.in_gw.inet6_mask }}"
     hostapd: /etc/hostapd/hostapd.conf
 
 hostapd:
@@ -37,9 +37,9 @@ hostapd:
   wpa_passphrase: "{{ vault_hostapd_wpa_passphrase }}"
 
 radvd:
-  interface: "{{ wireguard.wg0.router.interface }}"
-  inet6_prefix: "{{ wireguard.wg0.router.inet6_prefix }}"
-  inet6_mask: "{{ wireguard.wg0.router.inet6_mask }}"
+  interface: "{{ wireguard.wg0.in_gw.interface }}"
+  inet6_prefix: "{{ wireguard.wg0.in_gw.inet6_prefix }}"
+  inet6_mask: "{{ wireguard.wg0.in_gw.inet6_mask }}"
 
 unbound:
   recursive: false

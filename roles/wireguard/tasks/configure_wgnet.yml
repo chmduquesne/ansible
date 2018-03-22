@@ -30,16 +30,16 @@
 
 - name: collect routing mode 2/3
   set_fact:
-    mode: "out_gateway"
+    mode: "out_gw"
   when:
     - conf.public is defined
     - conf.public
 
 - name: collect routing mode 3/3
   set_fact:
-    mode: "in_gateway"
+    mode: "in_gw"
   when:
-    - conf.router is defined
+    - conf.in_gw is defined
 
 - name: configure interface
   include_tasks: configure_interface.yml

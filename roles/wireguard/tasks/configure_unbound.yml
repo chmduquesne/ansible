@@ -10,10 +10,10 @@
 
 - name: add unbound controllers
   set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ conf.router.inet6_prefix }}::/{{ conf.router.inet6_mask }}' ]"
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}' ]"
   when:
-    - conf.router is defined
-    - conf.router.inet6_prefix is defined
+    - conf.in_gw is defined
+    - conf.in_gw.inet6_prefix is defined
 
 - name: set unbound upstream
   set_fact:
