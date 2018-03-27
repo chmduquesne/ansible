@@ -10,6 +10,7 @@
     - hostapd
     - radvd
     - unbound
+    - iptables
   tasks:
     - name: get latest vim
       package: name=vim state=latest

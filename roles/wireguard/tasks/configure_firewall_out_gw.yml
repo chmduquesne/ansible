@@ -1,72 +1,39 @@
 # iptables rules to apply for an out gateway
 ---
-- name: accept established connections
-  iptables:
-    ip_version: "{{ item.0 }}"
-    chain: "{{ item.1 }}"
-    ctstate: RELATED,ESTABLISHED
-    jump: ACCEPT
-  become: yes
-  with_nested:
-    - [ 'ipv4', 'ipv6' ]
-    - [ 'INPUT', 'FORWARD' ]
-  notify:
-    - persist iptables
 
 - name: accept wireguard connections
-  iptables:
-    ip_version: "{{ item }}"
-    chain: INPUT
-    ctstate: NEW
-    destination_port: "{{ conf.listenport}}"
-    protocol: udp
-    jump: ACCEPT
-  become: yes
+  iptables_raw:
+    name: "wireguard_accept_connections"
+    rules: "-A INPUT -p udp -m udp --dport {{ conf.listenport }} -m conntrack --ctstate NEW -j ACCEPT"
+    ipversion: "{{ item }}"
   with_items:
-    - ipv4
-    - ipv6
-  notify:
-    - persist iptables
+    - 4
+    - 6
 
 - name: accept dns requests from peers
-  iptables:
-    ip_version: ipv6
-    chain: INPUT
-    ctstate: NEW
-    jump: ACCEPT
-    destination_port: 53
-    protocol: "{{ item.1 }}"
-    source: "{{ hostvars[item.0].wireguard[wgnet].inet6_addr }}/128"
-  with_nested:
+  iptables_raw:
+    name: "dns_wireguard_{{ item }}"
+    rules: |
+      -A INPUT -s {{ hostvars[item].wireguard[wgnet].inet6_addr }}/128 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -s {{ hostvars[item].wireguard[wgnet].inet6_addr }}/128 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+    ipversion: 6
+  with_items:
     - "{{ peers }}"
-    - [ 'tcp', 'udp' ]
-  notify:
-    - persist iptables
 
 - name: allow forwarding of packets that stay in the tunnel
-  iptables:
-    ip_version: "{{ item }}"
-    chain: FORWARD
-    ctstate: NEW
-    in_interface: "{{ wgnet }}"
-    out_interface: "{{ wgnet }}"
-    jump: ACCEPT
+  iptables_raw:
+    name: wireguard_peer_to_peer_forwarding
+    rules: "-A FORWARD -i {{ wgnet }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
+    ipversion: "{{ item }}"
   with_items:
-    - ipv4
-    - ipv6
-  notify:
-    - persist iptables
+    - 4
+    - 6
 
-# TODO: parametrize interface names
 - name: allow forwarding of packets from peers to the Internet
   iptables:
-    ip_version: ipv6
-    chain: FORWARD
-    source: "{{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }}"
-    in_interface: "{{ wgnet }}"
-    out_interface: "{{ conf.out_gw.interface }}"
-    ctstate: NEW
-    jump: ACCEPT
+    name: "wireguard_{{ item }}_to_internet"
+    rules: "-A FORWARD -s {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} -i {{ wgnet }} -o {{ conf.out_gw.interface }} -m conntrack --ctstate NEW -j ACCEPT"
+    ipversion: 6
   with_items:
     - "{{ peers }}"
   when:

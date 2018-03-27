@@ -1,0 +1,64 @@
+---
+# Default head (allow) rules
+iptables_default_head: |
+  -P INPUT ACCEPT
+  -P FORWARD ACCEPT
+  -P OUTPUT ACCEPT
+  -A INPUT -i lo -j ACCEPT
+  -A OUTPUT -o lo -j ACCEPT
+  -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  -A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
+  -A INPUT -m conntrack --ctstate INVALID -j DROP
+  -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+  -A INPUT -p icmp -j ACCEPT
+
+# Default tail (deny) rules
+iptables_default_tail: |
+  -A INPUT -j REJECT
+  -A FORWARD -j REJECT
+
+iptables_custom_rules: []
+# Example:
+# iptables_custom_rules:
+#   - name: open_port_12345 # 'iptables_custom_rules_' will be prepended to this
+#     rules: '-A INPUT -p tcp --dport 12345 -j ACCEPT'
+#     state: present
+#     weight: 40
+#     ipversion: 4
+#     table: filter
+#
+# NOTE: 'name', 'rules' and 'state' are required, others are optional.
+
+# Default head (allow) rules
+ip6tables_default_head: |
+  -P INPUT ACCEPT
+  -P FORWARD ACCEPT
+  -P OUTPUT ACCEPT
+  -A INPUT -i lo -j ACCEPT
+  -A OUTPUT -o lo -j ACCEPT
+  -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  -A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
+  -A INPUT -m conntrack --ctstate INVALID -j DROP
+  -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+  -A INPUT -p icmpv6 -j ACCEPT
+
+# Default tail (deny) rules
+ip6tables_default_tail: |
+  -A INPUT -j REJECT
+  -A FORWARD -j REJECT
+
+ip6tables_custom_rules: []
+# Example:
+# iptables_custom_rules:
+#   - name: open_port_12345 # 'iptables_custom_rules_' will be prepended to this
+#     rules: '-A INPUT -p tcp --dport 12345 -j ACCEPT'
+#     state: present
+#     weight: 40
+#     ipversion: 4
+#     table: filter
+#
+# NOTE: 'name', 'rules' and 'state' are required, others are optional.
+
+# By default this role deletes all iptables rules which are not managed by Ansible.
+# Set this to 'yes', if you want the role to keep unmanaged rules.
+iptables_keep_unmanaged: no
