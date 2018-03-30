@@ -5,7 +5,7 @@
 
 - name: collect peers
   set_fact:
-    peers: "{{ peers | union([ item ]) }}"
+    peers: "{{ peers }} + [ item ]"
   with_inventory_hostnames:
     all
   when:
