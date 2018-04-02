@@ -5,11 +5,11 @@
 - name: enable ipv6 forwarding at post-up
   set_fact:
     net_post_up:
-      - "echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding"
+      - "echo 1 > /proc/sys/net/ipv6/conf/{{ wgnet }}/forwarding"
 
 - name: set routes at post-up
   set_fact:
-    net_post_up: "{{ net_post_up }} + [ 'ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ hostvars[item].wireguard[wgnet].inet6_addr }} dev $IFACE' ]"
+    net_post_up: "{{ net_post_up }} + [ 'ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ hostvars[item].wireguard[wgnet].inet6_addr }} dev {{ wgnet }}' ]"
   with_items:
     "{{ peers }}"
   when:

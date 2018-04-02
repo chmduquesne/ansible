@@ -1,7 +1,7 @@
 ---
 - name: set creation command
   set_fact:
-    net_pre_up: [ "ip link add dev $IFACE type wireguard" ]
+    net_pre_up: [ "ip link add dev {{ wgnet }} type wireguard" ]
 
 - name: set add peer command
   set_fact:
@@ -11,12 +11,12 @@
 
 - name: set setconf command
   set_fact:
-    net_pre_up: "{{ net_pre_up }} + [ 'wg setconf $IFACE /etc/wireguard/${IFACE}.conf' ]"
+    net_pre_up: "{{ net_pre_up }} + [ 'wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf' ]"
 
 - name: set up command
   set_fact:
     net_up:
-      - ip link set up dev $IFACE
+      - ip link set dev {{ wgnet }} up
 
 - name: manage routing
   include_tasks: "configure_routing_{{ mode }}.yml"
@@ -31,7 +31,7 @@
       up: "{{ net_up }}"
       post-up: "{{ net_post_up }}"
       down:
-        - ip link del dev $IFACE
+        - ip link del dev {{ wgnet }}
 
 - name: add in network interfaces
   set_fact:

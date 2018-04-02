@@ -19,7 +19,7 @@
 - name: post-up routing for the net
   set_fact:
     net_post_up:
-      - "echo 1 > /proc/sys/net/ipv6/conf/$IFACE/forwarding"
+      - "echo 1 > /proc/sys/net/ipv6/conf/{{ wgnet }}/forwarding"
       - "ip route flush table {{ wgnet }}.routes"
       - "ip route add default via {{ upstream_inet6_addr }} dev {{ wgnet }} table {{ wgnet }}.routes"
 
