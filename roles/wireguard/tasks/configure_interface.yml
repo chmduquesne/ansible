@@ -1,17 +1,11 @@
 ---
-- name: set creation command
+# TODO make the prefix configurable
+- name: set pre-up commands
   set_fact:
-    net_pre_up: [ "ip link add dev {{ wgnet }} type wireguard" ]
-
-- name: set add peer command
-  set_fact:
-    net_pre_up: "{{ net_pre_up }} + [ 'ip address add {{ conf.inet6_addr }} peer {{ hostvars[item].wireguard[wgnet].inet6_addr }} dev {{ wgnet }}' ]"
-  with_items:
-    "{{ peers }}"
-
-- name: set setconf command
-  set_fact:
-    net_pre_up: "{{ net_pre_up }} + [ 'wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf' ]"
+    net_pre_up:
+      - ip link add dev {{ wgnet }} type wireguard
+      - ip address add {{ conf.inet6_addr }}/48 dev {{ wgnet }}
+      - wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf
 
 - name: set up command
   set_fact:

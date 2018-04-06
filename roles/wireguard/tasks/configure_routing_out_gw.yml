@@ -6,6 +6,7 @@
   set_fact:
     net_post_up:
       - "echo 1 > /proc/sys/net/ipv6/conf/{{ wgnet }}/forwarding"
+      - "echo 1 > /proc/sys/net/ipv4/ip_forward"
 
 - name: set routes at post-up
   set_fact:

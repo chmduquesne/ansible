@@ -23,7 +23,7 @@
       - "ip route flush table {{ wgnet }}.routes"
       - "ip route add default via {{ upstream_inet6_addr }} dev {{ wgnet }} table {{ wgnet }}.routes"
 
-- set_fact:
+      - set_fact: # TODO: wireguard[wgnet] == conf?
     routed_inet6_range: "{{ wireguard[wgnet].in_gw.inet6_prefix }}::/{{ wireguard[wgnet].in_gw.inet6_mask }}"
 
 - name: collect post-up routing commands for the wlan interface
