@@ -23,13 +23,13 @@
       - "ip route flush table {{ wgnet }}.routes"
       - "ip route add default via {{ upstream_inet6_addr }} dev {{ wgnet }} table {{ wgnet }}.routes"
 
-      - set_fact: # TODO: wireguard[wgnet] == conf?
-    routed_inet6_range: "{{ wireguard[wgnet].in_gw.inet6_prefix }}::/{{ wireguard[wgnet].in_gw.inet6_mask }}"
+- set_fact:
+    routed_inet6_range: "{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}"
 
 - name: collect post-up routing commands for the wlan interface
   set_fact:
     wlan_post_up:
-      - "ip -6 route add {{ routed_inet6_range }} dev {{ wireguard[wgnet].in_gw.interface }} table {{ wgnet }}.routes"
+      - "ip -6 route add {{ routed_inet6_range }} dev {{ conf.in_gw.interface }} table {{ wgnet }}.routes"
       - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ wgnet }}.routes"
 
 - name: get existing wlan settings
@@ -38,7 +38,7 @@
   with_items:
     "{{ network_interfaces_interfaces }}"
   when:
-    - item.device == wireguard[wgnet].in_gw.interface
+    - item.device == conf.in_gw.interface
 
 - name: removing existing wlan setting
   set_fact:
@@ -50,4 +50,4 @@
 
 - name: re-adding modified the modified wlan settings
   set_fact:
-    network_interfaces_interfaces: "{{ network_interfaces_interfaces | union([ wlan_settings ]) }}"
+    network_interfaces_interfaces: "{{ network_interfaces_interfaces }} + [ wlan_settings ]"
