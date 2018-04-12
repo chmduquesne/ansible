@@ -2,21 +2,8 @@
 - name: install wireguard
   include_tasks: "install_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
 
-- name: get latest git
-  package: name=git state=latest
-
-- name: clone wg-ip
-  git:
-    repo: https://github.com/chmduquesne/wg-ip.git
-    dest: wg-ip
-  register: wgip_repo
-  become: false
-
 - name: install wg-ip
-  shell: install -m 755 wg-ip /usr/bin/wg-ip
-  args:
-    chdir: wg-ip
-  when: wgip_repo.before != wgip_repo.after
+  include_tasks: install_wg-ip.yml
 
 - name: configure networks
   include_tasks: configure_wgnet.yml
