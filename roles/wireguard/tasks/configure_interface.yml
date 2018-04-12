@@ -6,6 +6,8 @@
       - ip link add dev {{ wgnet }} type wireguard
       - ip address add {{ conf.inet6_addr }}/48 dev {{ wgnet }}
       - wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf
+      - wg-ip -6 dev {{ wgnet }} apply
+      - wg-ip -4 dev {{ wgnet }} apply
 
 - name: set up command
   set_fact:
