@@ -16,6 +16,38 @@
 - set_fact:
     conf: "{{ wireguard[wgnet] }}"
 
+- name: collect wg-ip generated ipv6 addresses
+  command: wg-ip gen -6 {{ hostvars[item].wireguard[wgnet].pubkey }}
+  register:  wgip_gen_inet6
+  with_items:
+    "{{ peers }}"
+  changed_when: false
+
+- set_fact:
+    inet6_auto_addr: {}
+
+- name: collect inet6 auto addresses
+  set_fact:
+    inet6_auto_addr: "{{ inet6_auto_addr | combine({item['item']: item['stdout']}) }}"
+  with_items:
+    "{{ wgip_gen_inet6.results }}"
+
+- name: collect wg-ip generated ipv4 addresses
+  command: wg-ip gen -4 {{ hostvars[item].wireguard[wgnet].pubkey }}
+  register:  wgip_gen_inet
+  with_items:
+    "{{ peers }}"
+  changed_when: false
+
+- set_fact:
+    inet_auto_addr: {}
+
+- name: collect inet auto addresses
+  set_fact:
+    inet_auto_addr: "{{ inet_auto_addr | combine({item['item']: item['stdout']}) }}"
+  with_items:
+    "{{ wgip_gen_inet.results }}"
+
 - name: create config file
   template:
     src: templates/etc/wireguard/wgnet.conf.j2

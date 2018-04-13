@@ -2,7 +2,7 @@
 - hosts: routers
   roles:
     - common
-    - wireguard
+    - {role: wireguard, tags: wireguard}
     - chmduquesne.ansible-network-interfaces
     - hostapd
     - radvd

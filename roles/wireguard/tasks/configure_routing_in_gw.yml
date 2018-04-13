@@ -8,6 +8,17 @@
     dest: /etc/iproute2/rt_tables
     line: "200 {{ wgnet }}.routes"
 
+- name: get upstream inet6 auto address
+  set_fact:
+    upstream_inet6_auto_addr: "{{ inet6_auto_addr[item] }}"
+  with_items:
+    "{{ peers }}"
+  when:
+    - hostvars[item].wireguard[wgnet].out_gw is defined
+
+- debug:
+    var: upstream_inet6_auto_addr
+
 - name: get upstream inet6 address
   set_fact:
     upstream_inet6_addr: "{{ hostvars[item].wireguard[wgnet].inet6_addr }}"
