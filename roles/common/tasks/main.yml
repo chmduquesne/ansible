@@ -1,0 +1,15 @@
+---
+- name: create users
+  include_role: name=franklinkim.users
+
+- name: install sudoers
+  include_role: name=salamachinas.sudoers
+
+- name: configure ssh
+  include_role: name=reallyenglish.sshd
+
+- name: configure iptables
+  include_role: name=iptables
+
+- name: get latest vim
+  package: name=vim state=latest

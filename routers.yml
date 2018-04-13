@@ -1,16 +1,9 @@
 ---
 - hosts: routers
   roles:
-    - franklinkim.users
-    - salamachinas.sudoers
-    - reallyenglish.sshd
-    - chmduquesne.iptables-persistent
+    - common
     - wireguard
     - chmduquesne.ansible-network-interfaces
     - hostapd
     - radvd
     - unbound
-    - iptables
-  tasks:
-    - name: get latest vim
-      package: name=vim state=latest

@@ -1,14 +1,8 @@
 ---
 - hosts: web
   roles:
-    - franklinkim.users
-    - salamachinas.sudoers
-    - reallyenglish.sshd
+    - common
     - reallyenglish.dhclient
     - wireguard
     - chmduquesne.ansible-network-interfaces
     - unbound
-    - iptables
-  tasks:
-    - name: get latest vim
-      package: name=vim state=latest
