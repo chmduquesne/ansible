@@ -17,7 +17,7 @@
     conf: "{{ wireguard[wgnet] }}"
 
 - name: collect wg-ip generated ipv6 addresses
-  command: wg-ip gen -6 {{ hostvars[item].wireguard[wgnet].pubkey }}
+  command: wg-ip -6 gen {{ hostvars[item].wireguard[wgnet].pubkey }}
   register:  wgip_gen_inet6
   with_items:
     "{{ peers }}"
@@ -33,7 +33,7 @@
     "{{ wgip_gen_inet6.results }}"
 
 - name: collect wg-ip generated ipv4 addresses
-  command: wg-ip gen -4 {{ hostvars[item].wireguard[wgnet].pubkey }}
+  command: wg-ip -4 gen {{ hostvars[item].wireguard[wgnet].pubkey }}
   register:  wgip_gen_inet
   with_items:
     "{{ peers }}"

@@ -10,7 +10,7 @@
 
 - name: set routes at post-up
   set_fact:
-    net_post_up: "{{ net_post_up }} + [ 'ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ hostvars[item].wireguard[wgnet].inet6_addr }} dev {{ wgnet }}' ]"
+    net_post_up: "{{ net_post_up }} + [ 'ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ inet6_auto_addr[item] }} dev {{ wgnet }}' ]"
   with_items:
     "{{ peers }}"
   when:

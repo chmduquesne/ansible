@@ -5,8 +5,7 @@ wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     pubkey: "{{ vault_wg0_pubkey }}"
-    inet6_addr: "{{ vault_wg0_inet6_addr }}"
-    allowed_ips: "{{ vault_wg0_inet6_addr }}/128, {{ vault_wg0_in_gw_inet6_prefix }}::/{{ vault_wg0_in_gw_inet6_mask }}"
+    allowed_ips: "{{ vault_wg0_in_gw_inet6_prefix }}::/{{ vault_wg0_in_gw_inet6_mask }}"
     listenport: 4000
     in_gw:
       interface: wlan0

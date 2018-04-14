@@ -1,10 +1,8 @@
 ---
-# TODO make the prefix configurable
 - name: set pre-up commands
   set_fact:
     net_pre_up:
       - ip link add dev {{ wgnet }} type wireguard
-      - ip address add {{ conf.inet6_addr }}/48 dev {{ wgnet }}
       - wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf
       - wg-ip -6 dev {{ wgnet }} apply
       - wg-ip -4 dev {{ wgnet }} apply

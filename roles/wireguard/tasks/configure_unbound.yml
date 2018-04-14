@@ -2,9 +2,15 @@
 - set_fact:
     unbound_controllers: "{{ unbound.controllers | default([]) }}"
 
-- name: add unbound controllers
+- name: add inet6 unbound controllers
   set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ hostvars[item].wireguard[wgnet].inet6_addr }}/128' ]"
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ inet6_auto_addr[item] }}/128' ]"
+  with_items:
+    "{{ peers }}"
+
+- name: add inet unbound controllers
+  set_fact:
+    unbound_controllers: "{{ unbound_controllers }} + [ '{{ inet_auto_addr[item] }}/32' ]"
   with_items:
     "{{ peers }}"
 
@@ -17,7 +23,7 @@
 
 - name: set unbound upstream
   set_fact:
-    unbound_upstream: "{{ hostvars[item].wireguard[wgnet].inet6_addr }}"
+    unbound_upstream: "{{ inet6_auto_addr[item] }}"
   with_items:
     "{{ peers }}"
   when:

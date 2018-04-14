@@ -14,8 +14,8 @@
   iptables_raw:
     name: "dns_wireguard_{{ item }}"
     rules: |
-      -A INPUT -s {{ hostvars[item].wireguard[wgnet].inet6_addr }}/128 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -s {{ hostvars[item].wireguard[wgnet].inet6_addr }}/128 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -s {{ inet6_auto_addr[item] }}/128 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -s {{ inet6_auto_addr[item] }}/128 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
     ipversion: 6
   with_items:
     - "{{ peers }}"

@@ -16,20 +16,12 @@
   when:
     - hostvars[item].wireguard[wgnet].out_gw is defined
 
-- name: get upstream inet6 address
-  set_fact:
-    upstream_inet6_addr: "{{ hostvars[item].wireguard[wgnet].inet6_addr }}"
-  with_items:
-    "{{ peers }}"
-  when:
-    - hostvars[item].wireguard[wgnet].out_gw is defined
-
 - name: post-up routing for the net
   set_fact:
     net_post_up:
       - "echo 1 > /proc/sys/net/ipv6/conf/{{ wgnet }}/forwarding"
       - "ip route flush table {{ wgnet }}.routes"
-      - "ip route add default via {{ upstream_inet6_addr }} dev {{ wgnet }} table {{ wgnet }}.routes"
+      - "ip route add default via {{ upstream_inet6_auto_addr }} dev {{ wgnet }} table {{ wgnet }}.routes"
 
 - set_fact:
     routed_inet6_range: "{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}"
