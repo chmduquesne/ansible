@@ -16,9 +16,6 @@
   when:
     - hostvars[item].wireguard[wgnet].out_gw is defined
 
-- debug:
-    var: upstream_inet6_auto_addr
-
 - name: get upstream inet6 address
   set_fact:
     upstream_inet6_addr: "{{ hostvars[item].wireguard[wgnet].inet6_addr }}"

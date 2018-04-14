@@ -9,7 +9,9 @@ ListenPort = {{ conf.listenport }}
 
 [Peer]
 PublicKey = {{ peerconf.pubkey }}
+        {% if 'allowed_ips' in peerconf %}
 AllowedIPs = {{ peerconf.allowed_ips }}
+        {% endif %}
         {% if 'public_addr' in peerconf %}
 Endpoint = {{ peerconf.public_addr }}:{{ peerconf.listenport }}
 PersistentKeepalive = 20
