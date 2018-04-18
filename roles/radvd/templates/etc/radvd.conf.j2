@@ -9,7 +9,9 @@ interface {{ radvd.interface }} {
     AdvValidLifetime 3600;
     AdvPreferredLifetime 1800;
   };
-  RDNSS {{ radvd.inet6_prefix }}::1 {
+{% if 'rdnss' in radvd %}
+  RDNSS {{ radvd.rdnss }} {
     AdvRDNSSLifetime 1800;
   };
+{% endif %}
 };

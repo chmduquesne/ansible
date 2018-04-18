@@ -39,6 +39,7 @@ radvd:
   interface: "{{ wireguard.wg0.in_gw.interface }}"
   inet6_prefix: "{{ wireguard.wg0.in_gw.inet6_prefix }}"
   inet6_mask: "{{ wireguard.wg0.in_gw.inet6_mask }}"
+  rdnss: "{{ wireguard.wg0.in_gw.inet6_prefix }}::1"
 
 unbound:
   recursive: false
