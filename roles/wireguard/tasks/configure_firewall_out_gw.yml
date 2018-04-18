@@ -30,12 +30,12 @@
     - 6
 
 - name: allow forwarding of packets from peers to the Internet
-  iptables:
+  iptables_raw:
     name: "wireguard_{{ item }}_to_internet"
     rules: "-A FORWARD -s {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} -i {{ wgnet }} -o {{ conf.out_gw.interface }} -m conntrack --ctstate NEW -j ACCEPT"
     ipversion: 6
   with_items:
     - "{{ peers }}"
   when:
-    - hostvars[item].wireguard.in_gw is defined
-    - hostvars[item].wireguard.in_gw.inet6_prefix is defined
+    - hostvars[item].wireguard[wgnet].in_gw is defined
+    - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined

@@ -3,6 +3,6 @@
   roles:
     - common
     - reallyenglish.dhclient
-    - wireguard
+    - { role: 'wireguard', tags: [ 'wireguard' ] }
     - chmduquesne.ansible-network-interfaces
     - unbound
