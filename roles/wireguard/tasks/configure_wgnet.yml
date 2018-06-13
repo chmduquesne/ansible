@@ -13,6 +13,10 @@
     - hostvars[item].wireguard is defined
     - wgnet in hostvars[item].wireguard
 
+- name: sort peers
+  set_fact:
+    peers: "{{ peers | sort }}"
+
 - set_fact:
     conf: "{{ wireguard[wgnet] }}"
 
