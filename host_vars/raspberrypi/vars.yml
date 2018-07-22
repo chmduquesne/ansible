@@ -11,6 +11,8 @@ wireguard:
       interface: wlan0
       inet6_prefix: "{{ vault_wg0_in_gw_inet6_prefix }}"
       inet6_mask: "{{ vault_wg0_in_gw_inet6_mask }}"
+      inet_prefix: "{{ vault_wg0_in_gw_inet_prefix }}"
+      inet_mask: "{{ vault_wg0_in_gw_inet_mask }}"
 
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
