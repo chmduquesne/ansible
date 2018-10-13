@@ -49,3 +49,10 @@
     - "{{ peers }}"
   when:
     - hostvars[item].wireguard[wgnet].in_gw is defined
+
+- name: masquerade v4 packets
+  iptables_raw:
+    name: masquerade_wireguard_to_internet
+    table: nat
+    rules: "-A POSTROUTING -o {{ conf.out_gw.interface }} -j MASQUERADE"
+    ipversion: 4
