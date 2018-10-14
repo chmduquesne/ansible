@@ -39,16 +39,14 @@
 - set_fact:
     routed_inet6_range: "{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}"
 
-- set_fact:
-    routed_inet_range: "{{ conf.in_gw.inet_prefix }}/{{ conf.in_gw.inet_mask }}"
+#- set_fact:
+#    routed_inet_range: "{{ conf.in_gw.inet_prefix }}/{{ conf.in_gw.inet_mask }}"
 
 - name: collect post-up routing commands for the wlan interface
   set_fact:
     wlan_post_up:
       - "ip -6 route add {{ routed_inet6_range }} dev {{ conf.in_gw.interface }} table {{ wgnet }}.routes"
       - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ wgnet }}.routes"
-      - "ip -4 route add {{ routed_inet_range }} dev {{ conf.in_gw.interface }} table {{ wgnet }}.routes"
-      - "ip -4 rule add from {{ routed_inet_range }} lookup {{ wgnet }}.routes"
 
 - name: get existing wlan settings
   set_fact:
