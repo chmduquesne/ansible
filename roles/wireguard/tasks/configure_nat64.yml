@@ -1,0 +1,34 @@
+---
+- name: get latest tayga
+  package:
+    name: tayga
+    state: latest
+  tags:
+    - install
+    - network
+
+- name: configure tayga.conf
+  template:
+    src: templates/etc/tayga.conf.j2
+    dest: /etc/tayga.conf
+
+- name:
+  set_fact:
+    nat64_settings:
+      device: nat64
+      family: inet6
+      method: manual
+      pre-up:
+        - tayga --mktun
+        - ip addr add 192.168.255.1 dev nat64
+        - ip addr add {{ nat64_inet6_pub }} dev nat64
+        - ip addr add {{ nat64_inet6_req }} dev nat64
+      up:
+        - ip link set nat64 up
+      post-up:
+        - ip route add 192.168.255.0/24 dev nat64
+        - ip route add 64:ff9b::/96 dev nat64
+        - tayga -p /var/run/tayga.pid
+      down:
+        - kill $(cat /var/run/tayga.pid)
+        - tayga --rmtun
