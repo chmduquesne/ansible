@@ -32,6 +32,11 @@ network_interfaces_interfaces:
     address: "{{ wireguard.wg0.in_gw.inet6_prefix }}::1"
     netmask: "{{ wireguard.wg0.in_gw.inet6_mask }}"
     hostapd: /etc/hostapd/hostapd.conf
+  - device: wlan0
+    family: inet
+    method: static
+    address: 192.168.1.1
+    netmask: 24
 
 hostapd:
   ssid: "{{ vault_hostapd_ssid }}"
