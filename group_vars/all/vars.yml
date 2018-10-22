@@ -3,7 +3,6 @@
 ssh_user: "{{ vault_ssh_user }}"
 ssh_pubkey_t450: "{{ vault_ssh_pubkey_t450 }}"
 ssh_pubkey_work: "{{ vault_ssh_pubkey_work }}"
-wg_ula_prefix: "{{ vault_wg_ula_prefix }}"
 
 ansible_user: "{{ ssh_user }}"
 users:
