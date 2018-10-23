@@ -18,4 +18,4 @@ sshd_config:
   ChallengeResponseAuthentication: "no"
   UsePAM: "yes"
   AcceptEnv: "LANG LC_*"
-  Subsystem: "sftp {{ sshd_sftp_server }}"
+  Subsystem: "sftp /usr/lib/sftp-server"

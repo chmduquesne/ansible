@@ -50,3 +50,17 @@ radvd:
 
 unbound:
   recursive: false
+
+dhcpd_mode: 'server'
+dhcpd_ipversion: '4'
+dhcpd_interfaces:
+  - 'wlan0'
+dhcpd_authoritative: true
+dhcpd_nameservers:
+  - '192.168.1.1'
+dhcpd_subnets:
+  - subnet: '192.168.1.0/24'
+    routers: '192.168.1.1'
+    comment: "basic subnet"
+    pools:
+      - range: '192.168.1.1 192.168.1.254'

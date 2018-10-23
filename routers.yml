@@ -7,3 +7,4 @@
     - hostapd
     - radvd
     - unbound
+    - debops.dhcpd

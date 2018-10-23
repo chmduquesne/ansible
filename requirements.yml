@@ -1,8 +1,21 @@
 ---
 - src: franklinkim.users
+  version: 1.9.2
+
 - src: salamachinas.sudoers
-- src: kibatic.traefik
+  version: 1.1.0
+
 - src: reallyenglish.dhclient
+  version: 1.0.0
+
 - src: chmduquesne.ansible-network-interfaces
+  version: v2.0.5
+
 - src: chmduquesne.iptables-persistent
+  version: v1.0.6
+
 - src: reallyenglish.sshd
+  version: 1.1.0
+
+- src: debops.debops
+  version: v0.8.0
