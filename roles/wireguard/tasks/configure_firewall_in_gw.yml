@@ -4,9 +4,12 @@
   iptables_raw:
     name: dns_wireguard
     rules: |
-      -A INPUT -s {{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -s {{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-    ipversion: 6
+      -A INPUT -i {{ conf.in_gw.interface }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -i {{ conf.in_gw.interface }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+    ipversion: "{{ item }}"
+  with_items:
+    - 4
+    - 6
 
 - name: allow v6 packets coming from inside the private wifi to be forwarded to the VPN server
   iptables_raw:
