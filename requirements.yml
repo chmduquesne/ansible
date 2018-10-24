@@ -9,7 +9,7 @@
   version: 1.0.0
 
 - src: chmduquesne.ansible-network-interfaces
-  version: v2.0.5
+  version: v2.0.6
 
 - src: chmduquesne.iptables-persistent
   version: v1.0.6
