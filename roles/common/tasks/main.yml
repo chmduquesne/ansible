@@ -1,6 +1,6 @@
 ---
 - name: create users
-  include_role: name=franklinkim.users
+  include_role: name=weareinteractive.users
 
 - name: install sudoers
   include_role: name=salamachinas.sudoers
