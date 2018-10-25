@@ -47,4 +47,6 @@ wireguard:
 unbound:
   recursive: true
   controllers:
-    - "::1"
+    - '::1'
+    - 'fd1a:6126:2887::/48'
+    - '10.0.0.0/8'

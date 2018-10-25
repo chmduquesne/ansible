@@ -50,6 +50,11 @@ radvd:
 
 unbound:
   recursive: false
+  controllers:
+    - 'fd1a:6126:2887::/48'
+    - '10.0.0.0/8'
+    - '192.168.1.0/24'
+    - '{{ vault_wg0_in_gw_inet6_prefix }}::/{{ vault_wg0_in_gw_inet6_mask }}'
 
 dhcpd_mode: 'server'
 dhcpd_ipversion: '4'
