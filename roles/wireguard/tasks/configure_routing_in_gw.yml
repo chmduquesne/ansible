@@ -11,22 +11,6 @@
     dest: /etc/iproute2/rt_tables
     line: "200 {{ wgnet }}.routes"
 
-- name: get upstream inet6 auto address
-  set_fact:
-    upstream_inet6_auto_addr: "{{ inet6_auto_addr[item] }}"
-  with_items:
-    "{{ peers }}"
-  when:
-    - hostvars[item].wireguard[wgnet].out_gw is defined
-
-- name: get upstream inet auto address
-  set_fact:
-    upstream_inet_auto_addr: "{{ inet_auto_addr[item] }}"
-  with_items:
-    "{{ peers }}"
-  when:
-    - hostvars[item].wireguard[wgnet].out_gw is defined
-
 - name: post-up routing for the net
   set_fact:
     net_post_up:
@@ -35,8 +19,6 @@
       - "ip -4 route flush table {{ wgnet }}.routes"
       - "ip -6 route add default dev {{ wgnet }} table {{ wgnet }}.routes"
       - "ip -4 route add default dev {{ wgnet }} table {{ wgnet }}.routes"
-      - "ip -6 rule add table main suppress_prefixlength 0"
-      - "ip -4 rule add table main suppress_prefixlength 0"
 
 - name: collect post-up routing commands for the wlan interface
   set_fact:
