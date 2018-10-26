@@ -2,7 +2,7 @@
 - name: enable ipv6 forwarding for all interfaces
   sysctl: name=net.ipv6.conf.all.forwarding value=1
 
-- name: enable ipv6 forwarding at post-up
+- name: enable ip forwarding at post-up
   set_fact:
     net_post_up:
       - "echo 1 > /proc/sys/net/ipv6/conf/{{ wgnet }}/forwarding"

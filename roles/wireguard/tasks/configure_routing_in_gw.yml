@@ -35,10 +35,8 @@
       - "ip -4 route flush table {{ wgnet }}.routes"
       - "ip -6 route add default dev {{ wgnet }} table {{ wgnet }}.routes"
       - "ip -4 route add default dev {{ wgnet }} table {{ wgnet }}.routes"
-      #- "ip -6 rule add table main suppress_prefixlength 0"
-      #- "ip -4 rule add table main suppress_prefixlength 0"
-      #- "ip -6 route add default via {{ upstream_inet6_auto_addr }} dev {{ wgnet }} table {{ wgnet }}.routes"
-      #- "ip -4 route add default via {{ upstream_inet_auto_addr }} dev {{ wgnet }} table {{ wgnet }}.routes"
+      - "ip -6 rule add table main suppress_prefixlength 0"
+      - "ip -4 rule add table main suppress_prefixlength 0"
 
 - set_fact:
     routed_inet6_range: "{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}"
@@ -49,10 +47,8 @@
 - name: collect post-up routing commands for the wlan interface
   set_fact:
     wlan_post_up:
-      - "ip -6 route add {{ routed_inet6_range }} dev {{ conf.in_gw.interface }} table {{ wgnet }}.routes"
-      - "ip -6 rule add from {{ routed_inet6_range }} lookup {{ wgnet }}.routes"
-      - "ip -4 route add {{ routed_inet_range }} dev {{ conf.in_gw.interface }} table {{ wgnet }}.routes"
-      - "ip -4 rule add from {{ routed_inet_range }} lookup {{ wgnet }}.routes"
+      - "ip -6 rule add iif {{ conf.in_gw.interface }} lookup {{ wgnet }}.routes"
+      - "ip -4 rule add iif {{ conf.in_gw.interface }} lookup {{ wgnet }}.routes"
 
 - name: get existing wlan settings
   set_fact:
