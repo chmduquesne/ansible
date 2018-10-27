@@ -14,7 +14,7 @@
 - name: allow v6 packets coming from inside the private wifi to be forwarded to the VPN server
   iptables_raw:
     name: wireguard_wifi_to_tunnel_v6
-    rules: "-A FORWARD -i {{ conf.in_gw.interface }} -o {{ wgnet }} -s {{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }} -m conntrack --ctstate NEW -j ACCEPT"
+    rules: "-A FORWARD -i {{ conf.in_gw.interface }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
     ipversion: 6
 
 - name: allow forwarding of packets from peers to the Internet

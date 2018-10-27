@@ -14,7 +14,7 @@ iptables_default_head: |
   -A OUTPUT -o lo -j ACCEPT
   -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
   -A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
-  -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+  -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
   -A INPUT -m conntrack --ctstate INVALID -j DROPLOG
   -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
   -A INPUT -p udp --dport 67:68 --sport 67:68 -j ACCEPT
@@ -53,7 +53,7 @@ ip6tables_default_head: |
   -A OUTPUT -o lo -j ACCEPT
   -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
   -A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
-  -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+  -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
   -A INPUT -m conntrack --ctstate INVALID -j DROPLOG
   -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
   -A OUTPUT -p udp --sport 546 --dport 547 -j ACCEPT

@@ -2,18 +2,6 @@
 - set_fact:
     unbound_controllers: "{{ unbound.controllers | default([]) }}"
 
-- name: add inet6 unbound controllers
-  set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ inet6_auto_addr[item] }}/128' ]"
-  with_items:
-    "{{ peers }}"
-
-- name: add inet unbound controllers
-  set_fact:
-    unbound_controllers: "{{ unbound_controllers }} + [ '{{ inet_auto_addr[item] }}/32' ]"
-  with_items:
-    "{{ peers }}"
-
 - name: add unbound controllers
   set_fact:
     unbound_controllers: "{{ unbound_controllers }} + [ '{{ conf.in_gw.inet6_prefix }}::/{{ conf.in_gw.inet6_mask }}' ]"
