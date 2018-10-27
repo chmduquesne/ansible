@@ -2,7 +2,7 @@ interface {{ radvd.interface }} {
   IgnoreIfMissing on;
   AdvSendAdvert on;
   MaxRtrAdvInterval 300;
-  AdvLinkMTU 1423;
+  AdvLinkMTU 1420;
   prefix {{ radvd.inet6_prefix }}::/{{ radvd.inet6_mask}} {
     AdvOnLink on;
     AdvAutonomous on;

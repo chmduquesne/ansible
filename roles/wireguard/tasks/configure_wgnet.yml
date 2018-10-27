@@ -37,12 +37,12 @@
   with_items:
     "{{ wgip_gen_inet6.results }}"
 
-#- name: collect out_gw private inet6 address
-#  set_fact: {"wireguard_{{ wgnet }}_upstream_inet6_auto_addr":"{{ inet6_auto_addr[item] }}"}
-#  with_items:
-#    "{{ peers }}"
-#  when:
-#    - hostvars[item].wireguard[wgnet].out_gw is defined
+- name: collect out_gw private inet6 address
+  set_fact: {"wireguard_{{ wgnet }}_upstream_inet6_auto_addr":"{{ inet6_auto_addr[item] }}"}
+  with_items:
+    "{{ peers }}"
+  when:
+    - hostvars[item].wireguard[wgnet].out_gw is defined
 
 - name: collect wg-ip generated ipv4 addresses
   command: wg-ip -4 gen {{ hostvars[item].wireguard[wgnet].pubkey }}
