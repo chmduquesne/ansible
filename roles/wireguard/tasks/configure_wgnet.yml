@@ -37,8 +37,8 @@
   with_items:
     "{{ wgip_gen_inet6.results }}"
 
-- name: collect out_gw private inet6 address
-  set_fact: {"wireguard_{{ wgnet }}_upstream_inet6_auto_addr":"{{ inet6_auto_addr[item] }}"}
+- name: collect the address of the outgoing gateway
+  set_fact: {"wireguard_dns_{{ wgnet }}": "{{ inet6_auto_addr[item] }}"}
   with_items:
     "{{ peers }}"
   when:

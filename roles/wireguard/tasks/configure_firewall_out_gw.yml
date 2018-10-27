@@ -57,17 +57,17 @@
     rules: "-A POSTROUTING -o {{ conf.out_gw.interface }} -j MASQUERADE"
     ipversion: 4
 
-# https://en.wikipedia.org/wiki/Reserved_IP_addresses
-# subnet of 100.64.0.0/10
-- name: mangle legacy TCP connections to force a lower MSS
-  iptables_raw:
-    name: lower_mss
-    table: mangle
-    rules: "-A FORWARD -o {{ wgnet }} -p tcp -m tcp --tcp-flags SYN,RST SYN -s 100.120.0.0/24 -j TCPMSS --set-mss 1360"
-    ipversion: 4
-
-- iptables_raw:
-    name: lower_mss
-    table: mangle
-    ipversion: 4
-    state: absent
+## https://en.wikipedia.org/wiki/Reserved_IP_addresses
+## subnet of 100.64.0.0/10
+#- name: mangle legacy TCP connections to force a lower MSS
+#  iptables_raw:
+#    name: lower_mss
+#    table: mangle
+#    rules: "-A FORWARD -o {{ wgnet }} -p tcp -m tcp --tcp-flags SYN,RST SYN -s 100.120.0.0/24 -j TCPMSS --set-mss 1360"
+#    ipversion: 4
+#
+#- iptables_raw:
+#    name: lower_mss
+#    table: mangle
+#    ipversion: 4
+#    state: absent
