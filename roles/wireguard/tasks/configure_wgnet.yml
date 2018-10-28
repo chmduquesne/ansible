@@ -38,7 +38,7 @@
     "{{ wgip_gen_inet6.results }}"
 
 - name: collect the address of the outgoing gateway
-  set_fact: {"wireguard_dns_{{ wgnet }}": "{{ inet6_auto_addr[item] }}"}
+  set_fact: {"wireguard_upstream_dns": "{{ inet6_auto_addr[item] }}"}
   with_items:
     "{{ peers }}"
   when:
@@ -87,9 +87,6 @@
 
 - name: configure interface
   include_tasks: configure_interface.yml
-
-- name: configure unbound
-  include_tasks: configure_unbound.yml
 
 - name: configure firewall
   include_tasks: "configure_firewall_{{ mode }}.yml"

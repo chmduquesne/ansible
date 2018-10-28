@@ -7,6 +7,10 @@
     - name: configure wireguard
       include_role: name=wireguard
 
+    - name: inject wireguard out_gw address in unbound configuration
+      set_fact:
+        unbound: "{{ unbound | combine({'upstream': wireguard_upstream_dns}) }}"
+
     - name: configure network
       include_role: name=chmduquesne.ansible-network-interfaces
 
