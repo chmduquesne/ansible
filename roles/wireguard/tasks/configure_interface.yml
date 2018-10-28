@@ -22,6 +22,9 @@
     - hostvars[item].wireguard[wgnet].in_gw is defined
     - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined
 
+# TODO: generate the table number from the hash of {{ wgnet }}
+# -> printf "%d" 0x$(echo "wg0" | sha1sum | cut -b-4))
+# 12749
 - name: routing all wlan traffic to wireguard
   set_fact:
     net_post_up:
