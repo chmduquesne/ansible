@@ -1,8 +1,17 @@
 ---
 - hosts: web
-  roles:
-    - common
-    - reallyenglish.dhclient
-    - { role: 'wireguard', tags: [ 'wireguard' ] }
-    - chmduquesne.ansible-network-interfaces
-    - unbound
+  tasks:
+    - name: apply common settings
+      include_role: name=common
+
+    - name: configure dhclient
+      include_role: name=reallyenglish.dhclient
+
+    - name: configure wireguard
+      include_role: name=wireguard
+
+    - name: configure network
+      include_role: name=chmduquesne.ansible-network-interfaces
+
+    - name: configure unbound
+      include_role: name=unbound

@@ -1,10 +1,23 @@
 ---
 - hosts: routers
-  roles:
-    - common
-    - {role: wireguard, tags: wireguard}
-    - chmduquesne.ansible-network-interfaces
-    - hostapd
-    - radvd
-    - unbound
-    - debops.dhcpd
+  tasks:
+    - name: apply common settings
+      include_role: name=common
+
+    - name: configure wireguard
+      include_role: name=wireguard
+
+    - name: configure network
+      include_role: name=chmduquesne.ansible-network-interfaces
+
+    - name: configure hostapd
+      include_role: name=hostapd
+
+    - name: configure radvd
+      include_role: name=radvd
+
+    - name: configure unbound
+      include_role: name=unbound
+
+    - name: configure dhcpd
+      include_role: name=debops.dhcpd
