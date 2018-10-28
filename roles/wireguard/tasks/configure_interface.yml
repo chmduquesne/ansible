@@ -6,7 +6,7 @@
       - wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf
       - wg-ip -6 dev {{ wgnet }} apply
       - wg-ip -4 dev {{ wgnet }} apply
-      #- ip link set mtu 1420 dev {{ wgnet }}
+      - ip link set mtu 1360 dev {{ wgnet }}
 
 - name: set up command
   set_fact:
