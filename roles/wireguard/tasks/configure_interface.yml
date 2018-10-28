@@ -1,20 +1,38 @@
 ---
-- name: set pre-up commands
-  set_fact:
-    net_pre_up:
-      - ip link add dev {{ wgnet }} type wireguard
-      - wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf
-      - wg-ip -6 dev {{ wgnet }} apply
-      - wg-ip -4 dev {{ wgnet }} apply
-      - ip link set mtu 1360 dev {{ wgnet }}
+- name: enable ipv6 forwarding for all interfaces
+  sysctl: name=net.ipv6.conf.all.forwarding value=1
+  when: (mode == 'in_gw') or (mode == 'out_gw')
 
-- name: set up command
-  set_fact:
-    net_up:
-      - ip link set dev {{ wgnet }} up
+- name: enable ipv6 forwarding by default
+  sysctl: name=net.ipv6.conf.default.forwarding value=1
+  when: (mode == 'in_gw') or (mode == 'out_gw')
 
-- name: manage routing
-  include_tasks: "configure_routing_{{ mode }}.yml"
+- name: enable ipv4 forwarding for all interfaces
+  sysctl: name=net.ipv4.ip_forward value=1
+  when: (mode == 'in_gw') or (mode == 'out_gw')
+
+- name: routing dedicated subnet from out_gw to in_gw
+  set_fact:
+    net_post_up:
+      - 'ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ inet6_auto_addr[item] }} dev {{ wgnet }}'
+  with_items:
+    "{{ peers }}"
+  when:
+    - mode == 'out_gw'
+    - hostvars[item].wireguard[wgnet].in_gw is defined
+    - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined
+
+- name: routing all wlan traffic to wireguard
+  set_fact:
+    net_post_up:
+      - ip -6 route flush table 51820
+      - ip -4 route flush table 51820
+      - ip -6 route add default dev {{ wgnet }} table 51820
+      - ip -4 route add default dev {{ wgnet }} table 51820
+      - ip -6 rule add iif {{ conf.in_gw.interface }} lookup 51820
+      - ip -4 rule add iif {{ conf.in_gw.interface }} lookup 51820
+  when:
+    - mode == 'in_gw'
 
 - name: set general settings
   set_fact:
@@ -22,8 +40,14 @@
       device: "{{ wgnet }}"
       family: inet6
       method: manual
-      pre-up: "{{ net_pre_up }}"
-      up: "{{ net_up }}"
+      pre-up:
+        - ip link add dev {{ wgnet }} type wireguard
+        - wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf
+        - wg-ip -6 dev {{ wgnet }} apply
+        - wg-ip -4 dev {{ wgnet }} apply
+        - ip link set mtu 1360 dev {{ wgnet }}
+      up:
+        - ip link set dev {{ wgnet }} up
       post-up: "{{ net_post_up }}"
       down:
         - ip link del dev {{ wgnet }}
