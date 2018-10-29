@@ -1,15 +1,18 @@
 ---
 - name: install wireguard
   include_tasks: "install_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
-  tags: [ install ]
+  tags:
+    - install
 
 - name: install wg-ip
   include_tasks: install_wg-ip.yml
-  tags: [ install ]
+  tags:
+    - install
 
 - name: configure networks
   include_tasks: configure_wgnet.yml
   with_items: "{{ wireguard.keys() | list | sort }}"
   loop_control:
     loop_var: wgnet
-  tags: [ configure ]
+  tags:
+    - install

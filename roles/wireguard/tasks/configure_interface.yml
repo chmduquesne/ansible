@@ -1,15 +1,15 @@
 ---
 - name: enable ipv6 forwarding for all interfaces
   sysctl: name=net.ipv6.conf.all.forwarding value=1
-  when: (mode == 'in_gw') or (mode == 'out_gw')
+  when: ('in_gw' in conf) or ('out_gw' in conf)
 
 - name: enable ipv6 forwarding by default
   sysctl: name=net.ipv6.conf.default.forwarding value=1
-  when: (mode == 'in_gw') or (mode == 'out_gw')
+  when: ('in_gw' in conf) or ('out_gw' in conf)
 
 - name: enable ipv4 forwarding for all interfaces
   sysctl: name=net.ipv4.ip_forward value=1
-  when: (mode == 'in_gw') or (mode == 'out_gw')
+  when: ('in_gw' in conf) or ('out_gw' in conf)
 
 - name: routing dedicated subnet from out_gw to in_gw
   set_fact:
@@ -18,7 +18,7 @@
   with_items:
     "{{ peers }}"
   when:
-    - mode == 'out_gw'
+    - ('out_gw' in conf)
     - hostvars[item].wireguard[wgnet].in_gw is defined
     - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined
 
@@ -35,7 +35,7 @@
       - ip -6 rule add iif {{ conf.in_gw.interface }} lookup 51820
       - ip -4 rule add iif {{ conf.in_gw.interface }} lookup 51820
   when:
-    - mode == 'in_gw'
+    - ('in_gw' in conf)
 
 - name: set general settings
   set_fact:

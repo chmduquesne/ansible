@@ -3,26 +3,27 @@
 
 - name: accept wireguard connections
   iptables_raw:
-    name: "wireguard_accept_connections"
+    name: wireguard_protocol
     rules: "-A INPUT -p udp -m udp --dport {{ conf.listenport }} -m conntrack --ctstate NEW -j ACCEPT"
     ipversion: "{{ item }}"
   with_items:
     - 4
     - 6
 
-- name: accept dns requests from peers
+- name: accept dns requests from the wireguard interface
   iptables_raw:
-    name: "dns_wireguard_{{ item }}"
+    name: wireguard_dns
     rules: |
-      -A INPUT -s {{ inet6_auto_addr[item] }}/128 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -s {{ inet6_auto_addr[item] }}/128 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-    ipversion: 6
+      -A INPUT -i {{ wgnet }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -i {{ wgnet }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+    ipversion: "{{ item }}"
   with_items:
-    - "{{ peers }}"
+    - 4
+    - 6
 
 - name: allow forwarding of packets that stay in the tunnel
   iptables_raw:
-    name: wireguard_peer_to_peer_forwarding
+    name: wireguard_to_wireguard
     rules: "-A FORWARD -i {{ wgnet }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
     ipversion: "{{ item }}"
   with_items:
@@ -31,24 +32,12 @@
 
 - name: allow forwarding of packets from peers to the Internet
   iptables_raw:
-    name: "wireguard_{{ item }}_to_internet"
+    name: wireguard_to_internet
     rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.out_gw.interface }} -m conntrack --ctstate NEW -j ACCEPT"
-    ipversion: 6
+    ipversion: "{{ item }}"
   with_items:
-    - "{{ peers }}"
-  when:
-    - hostvars[item].wireguard[wgnet].in_gw is defined
-    - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined
-
-- name: allow forwarding of packets from peers to the Internet
-  iptables_raw:
-    name: "wireguard_{{ item }}_to_internet"
-    rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.out_gw.interface }} -m conntrack --ctstate NEW -j ACCEPT"
-    ipversion: 4
-  with_items:
-    - "{{ peers }}"
-  when:
-    - hostvars[item].wireguard[wgnet].in_gw is defined
+    - 4
+    - 6
 
 - name: masquerade v4 packets
   iptables_raw:
@@ -56,18 +45,3 @@
     table: nat
     rules: "-A POSTROUTING -o {{ conf.out_gw.interface }} -j MASQUERADE"
     ipversion: 4
-
-## https://en.wikipedia.org/wiki/Reserved_IP_addresses
-## subnet of 100.64.0.0/10
-#- name: mangle legacy TCP connections to force a lower MSS
-#  iptables_raw:
-#    name: lower_mss
-#    table: mangle
-#    rules: "-A FORWARD -o {{ wgnet }} -p tcp -m tcp --tcp-flags SYN,RST SYN -s 100.120.0.0/24 -j TCPMSS --set-mss 1360"
-#    ipversion: 4
-#
-#- iptables_raw:
-#    name: lower_mss
-#    table: mangle
-#    ipversion: 4
-#    state: absent
