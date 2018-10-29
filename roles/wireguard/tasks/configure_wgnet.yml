@@ -13,8 +13,7 @@
     - hostvars[item].wireguard is defined
     - wgnet in hostvars[item].wireguard
 
-- name: sort peers
-  set_fact:
+- set_fact:
     peers: "{{ peers | sort }}"
 
 - set_fact:
@@ -43,23 +42,6 @@
     "{{ peers }}"
   when:
     - hostvars[item].wireguard[wgnet].out_gw is defined
-
-- name: collect wg-ip generated ipv4 addresses
-  command: wg-ip -4 gen {{ hostvars[item].wireguard[wgnet].pubkey }}
-  register:  wgip_gen_inet
-  with_items:
-    "{{ peers }}"
-  changed_when: false
-  check_mode: no
-
-- set_fact:
-    inet_auto_addr: {}
-
-- name: collect inet auto addresses
-  set_fact:
-    inet_auto_addr: "{{ inet_auto_addr | combine({item['item']: item['stdout']}) }}"
-  with_items:
-    "{{ wgip_gen_inet.results }}"
 
 - name: create config file
   template:
