@@ -1,47 +1,64 @@
 # iptables rules to apply for an out gateway
 ---
 
+- set_fact:
+    rules_v4: []
+    rules_v6: []
+
 - name: accept wireguard connections
-  iptables_raw:
-    name: wireguard_protocol
-    rules: "-A INPUT -p udp -m udp --dport {{ conf.listenport }} -m conntrack --ctstate NEW -j ACCEPT"
-    ipversion: "{{ item }}"
-  with_items:
-    - 4
-    - 6
+  set_fact:
+    rule:
+      name: wireguard_protocol
+      rules: "-A INPUT -p udp -m udp --dport {{ conf.listenport }} -m conntrack --ctstate NEW -j ACCEPT"
+
+- set_fact:
+    rules_v4: "{{ rules_v4 + [ rule ] }}"
+    rules_v6: "{{ rules_v6 + [ rule ] }}"
 
 - name: accept dns requests from the wireguard interface
-  iptables_raw:
-    name: wireguard_dns
-    rules: |
-      -A INPUT -i {{ wgnet }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -i {{ wgnet }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-    ipversion: "{{ item }}"
-  with_items:
-    - 4
-    - 6
+  set_fact:
+    rule:
+      name: wireguard_dns
+      rules: |
+        -A INPUT -i {{ wgnet }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+        -A INPUT -i {{ wgnet }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+
+- set_fact:
+    rules_v4: "{{ rules_v4 + [ rule ] }}"
+    rules_v6: "{{ rules_v6 + [ rule ] }}"
 
 - name: allow forwarding of packets that stay in the tunnel
-  iptables_raw:
-    name: wireguard_to_wireguard
-    rules: "-A FORWARD -i {{ wgnet }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
-    ipversion: "{{ item }}"
-  with_items:
-    - 4
-    - 6
+  set_fact:
+    rule:
+      name: wireguard_to_wireguard
+      rules: "-A FORWARD -i {{ wgnet }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
+
+- set_fact:
+    rules_v4: "{{ rules_v4 + [ rule ] }}"
+    rules_v6: "{{ rules_v6 + [ rule ] }}"
 
 - name: allow forwarding of packets from peers to the Internet
-  iptables_raw:
-    name: wireguard_to_internet
-    rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.out_gw.interface }} -m conntrack --ctstate NEW -j ACCEPT"
-    ipversion: "{{ item }}"
-  with_items:
-    - 4
-    - 6
+  set_fact:
+    rule:
+      name: wireguard_to_internet
+      rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.out_gw.interface }} -m conntrack --ctstate NEW -j ACCEPT"
+
+- set_fact:
+    rules_v4: "{{ rules_v4 + [ rule ] }}"
+    rules_v6: "{{ rules_v6 + [ rule ] }}"
 
 - name: masquerade v4 packets
-  iptables_raw:
-    name: masquerade_wireguard_to_internet
-    table: nat
-    rules: "-A POSTROUTING -o {{ conf.out_gw.interface }} -j MASQUERADE"
-    ipversion: 4
+  set_fact:
+    rule:
+      name: masquerade_wireguard_to_internet
+      table: nat
+      rules: "-A POSTROUTING -o {{ conf.out_gw.interface }} -j MASQUERADE"
+
+- set_fact:
+    rules_v4: "{{ rules_v4 + [ rule ] }}"
+
+- set_fact:
+    wireguard_suggested_iptables: "{{ wireguard_suggested_iptables | default([]) }} + rules_v4"
+
+- set_fact:
+    wireguard_suggested_ip6tables: "{{ wireguard_suggested_ip6tables | default([]) }} + rules_v6"

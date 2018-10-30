@@ -10,6 +10,22 @@
     - name: configure wireguard
       include_role: name=wireguard
 
+    - name: apply wireguard suggested iptables rules
+      iptables_raw:
+        name: "{{ item.name }}"
+        rules: "{{ item.rules }}"
+        table: "{{ item.table | default(omit) }}"
+        ipversion: 4
+      with_items: "{{ wireguard_suggested_iptables | default([]) }}"
+
+    - name: apply wireguard suggested ip6tables rules
+      iptables_raw:
+        name: "{{ item.name }}"
+        rules: "{{ item.rules }}"
+        table: "{{ item.table | default(omit) }}"
+        ipversion: 6
+      with_items: "{{ wireguard_suggested_ip6tables | default([]) }}"
+
     - name: configure network
       include_role: name=chmduquesne.ansible-network-interfaces
 
