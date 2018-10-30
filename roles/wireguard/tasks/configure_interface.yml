@@ -22,18 +22,20 @@
     - hostvars[item].wireguard[wgnet].in_gw is defined
     - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined
 
+- set_fact:
+    wgtable: "{{ wgnet | as_uint32 }}"
+
 # TODO: generate the table number from the hash of {{ wgnet }}
-# -> printf "%d" 0x$(echo "wg0" | sha1sum | cut -b-4))
-# 12749
+# -> printf "%d" "0x$(echo "wg0" -n | sha1sum | cut -b-4)"
 - name: routing all wlan traffic to wireguard
   set_fact:
     net_post_up:
-      - ip -6 route flush table 51820
-      - ip -4 route flush table 51820
-      - ip -6 route add default dev {{ wgnet }} table 51820
-      - ip -4 route add default dev {{ wgnet }} table 51820
-      - ip -6 rule add iif {{ conf.in_gw.interface }} lookup 51820
-      - ip -4 rule add iif {{ conf.in_gw.interface }} lookup 51820
+      - ip -6 route flush table {{ wgtable }}
+      - ip -4 route flush table {{ wgtable }}
+      - ip -6 route add default dev {{ wgnet }} table {{ wgtable }}
+      - ip -4 route add default dev {{ wgnet }} table {{ wgtable }}
+      - ip -6 rule add iif {{ conf.in_gw.interface }} lookup {{ wgtable }}
+      - ip -4 rule add iif {{ conf.in_gw.interface }} lookup {{ wgtable }}
   when:
     - ('in_gw' in conf)
 
