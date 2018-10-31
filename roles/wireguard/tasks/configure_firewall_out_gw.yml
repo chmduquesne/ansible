@@ -8,57 +8,54 @@
 - name: accept wireguard connections
   set_fact:
     rule:
-      name: wireguard_protocol
+      name: "{{ wgnet }}_protocol"
       rules: "-A INPUT -p udp -m udp --dport {{ conf.listenport }} -m conntrack --ctstate NEW -j ACCEPT"
 
 - set_fact:
-    rules_v4: "{{ rules_v4 + [ rule ] }}"
-    rules_v6: "{{ rules_v6 + [ rule ] }}"
+    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
+    rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
 
 - name: accept dns requests from the wireguard interface
   set_fact:
     rule:
-      name: wireguard_dns
+      name: "{{ wgnet }}_dns"
       rules: |
         -A INPUT -i {{ wgnet }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
         -A INPUT -i {{ wgnet }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
 
 - set_fact:
-    rules_v4: "{{ rules_v4 + [ rule ] }}"
-    rules_v6: "{{ rules_v6 + [ rule ] }}"
+    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
+    rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
 
 - name: allow forwarding of packets that stay in the tunnel
   set_fact:
     rule:
-      name: wireguard_to_wireguard
+      name: "{{ wgnet }}_to_{{ wgnet }}"
       rules: "-A FORWARD -i {{ wgnet }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
 
 - set_fact:
-    rules_v4: "{{ rules_v4 + [ rule ] }}"
-    rules_v6: "{{ rules_v6 + [ rule ] }}"
+    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
+    rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
 
 - name: allow forwarding of packets from peers to the Internet
   set_fact:
     rule:
-      name: wireguard_to_internet
+      name: "{{ wgnet }}_to_{{ conf.out_gw.interface }}"
       rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.out_gw.interface }} -m conntrack --ctstate NEW -j ACCEPT"
 
 - set_fact:
-    rules_v4: "{{ rules_v4 + [ rule ] }}"
-    rules_v6: "{{ rules_v6 + [ rule ] }}"
+    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
+    rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
 
 - name: masquerade v4 packets
   set_fact:
     rule:
-      name: masquerade_wireguard_to_internet
+      name: "{{ wgnet }}_masquerade"
       table: nat
       rules: "-A POSTROUTING -o {{ conf.out_gw.interface }} -j MASQUERADE"
 
 - set_fact:
-    rules_v4: "{{ rules_v4 + [ rule ] }}"
+    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
 
 - set_fact:
-    wireguard_suggested_iptables: "{{ wireguard_suggested_iptables | default([]) }} + rules_v4"
-
-- set_fact:
-    wireguard_suggested_ip6tables: "{{ wireguard_suggested_ip6tables | default([]) }} + rules_v6"
+    wireguard_suggested_iptables: "{{ wireguard_suggested_iptables | default([]) }} + rules_v4 + rules_v6"

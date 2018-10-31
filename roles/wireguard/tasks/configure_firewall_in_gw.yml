@@ -7,37 +7,34 @@
 - name: accept dns requests from clients
   set_fact:
     rule:
-      name: dns_wireguard
+      name: "{{ wgnet }}_dns"
       rules: |
         -A INPUT -i {{ conf.in_gw.interface }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
         -A INPUT -i {{ conf.in_gw.interface }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
 
 - set_fact:
-    rules_v4: "{{ rules_v4 + [ rule ] }}"
-    rules_v6: "{{ rules_v6 + [ rule ] }}"
+    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
+    rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
 
 - name: allow wifi traffic to be forwarded to wireguard
   set_fact:
     rule:
-      name: wireguard_wifi_to_tunnel
+      name: "{{ wgnet }}_wifi_to_vpn"
       rules: "-A FORWARD -i {{ conf.in_gw.interface }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
 
 - set_fact:
-    rules_v4: "{{ rules_v4 + [ rule ] }}"
-    rules_v6: "{{ rules_v6 + [ rule ] }}"
+    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
+    rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
 
 - name: masquerade v4 packets coming from inside the private wifi
   set_fact:
     rule:
-      name: wireguard_wifi_to_tunnel
+      name: "{{ wgnet }}_masquerade_wifi"
       table: nat
       rules: "-A POSTROUTING -o {{ wgnet }} -j MASQUERADE"
 
 - set_fact:
-    rules_v4: "{{ rules_v4 + [ rule ] }}"
+    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
 
 - set_fact:
-    wireguard_suggested_iptables: "{{ wireguard_suggested_iptables | default([]) }} + rules_v4"
-
-- set_fact:
-    wireguard_suggested_ip6tables: "{{ wireguard_suggested_ip6tables | default([]) }} + rules_v6"
+    wireguard_suggested_iptables: "{{ wireguard_suggested_iptables | default([]) }} + rules_v4 + rules_v6"
