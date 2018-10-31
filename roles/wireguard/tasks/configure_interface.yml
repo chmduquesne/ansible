@@ -22,11 +22,16 @@
     - hostvars[item].wireguard[wgnet].in_gw is defined
     - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined
 
+# We generate a table number from the interface name.
+# as_uint32 is a custom filter (see filter_plugins/as_uint32.py)
+# which hashes the input and turns the result into an uin32. It can be
+# reproduced in shell, with the following function:
+# as_uint32(){
+#   printf "%d" "0x$(echo $1 -n | sha1sum | cut -b-4)
+# }
 - set_fact:
     wgtable: "{{ wgnet | as_uint32 }}"
 
-# TODO: generate the table number from the hash of {{ wgnet }}
-# -> printf "%d" "0x$(echo "wg0" -n | sha1sum | cut -b-4)"
 - name: routing all wlan traffic to wireguard
   set_fact:
     net_post_up:
