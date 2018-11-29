@@ -18,6 +18,10 @@
         ipversion: "{{ item.ipversion }}"
       with_items: "{{ wireguard_suggested_iptables | default([]) }}"
 
+    - name: adding suggested wireguard interfaces
+      set_fact:
+         network_interfaces_interfaces: "{{ network_interfaces_interfaces | default([]) }} + wireguard_suggested_interfaces"
+
     - name: configure network
       include_role: name=chmduquesne.ansible-network-interfaces
 

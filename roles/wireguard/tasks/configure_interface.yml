@@ -13,7 +13,7 @@
 
 - name: routing dedicated subnet from out_gw to in_gw
   set_fact:
-    net_post_up:
+    post_up:
       - 'ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ inet6_auto_addr[item] }} dev {{ wgnet }}'
   with_items:
     "{{ peers }}"
@@ -34,7 +34,7 @@
 
 - name: routing all wlan traffic to wireguard
   set_fact:
-    net_post_up:
+    post_up:
       - ip -6 route flush table {{ wgtable }}
       - ip -4 route flush table {{ wgtable }}
       - ip -6 route add default dev {{ wgnet }} table {{ wgtable }}
@@ -46,7 +46,7 @@
 
 - name: set general settings
   set_fact:
-    net_settings:
+    interface:
       device: "{{ wgnet }}"
       family: inet6
       method: manual
@@ -58,15 +58,10 @@
         - ip link set mtu 1360 dev {{ wgnet }}
       up:
         - ip link set dev {{ wgnet }} up
-      post-up: "{{ net_post_up }}"
+      post-up: "{{ post_up }}"
       down:
         - ip link del dev {{ wgnet }}
 
-- name: add in network interfaces
+- name: adding interface suggestion
   set_fact:
-    network_interfaces_interfaces: "{{ network_interfaces_interfaces + [ net_settings ] }}"
-  when: network_interfaces_interfaces is defined
-
-- debug:
-    var: network_interfaces_interfaces
-  when: network_interfaces_interfaces is defined
+    wireguard_suggested_interfaces: "{{ wireguard_suggested_interfaces | default([]) }} + [ interface ]"
