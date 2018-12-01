@@ -42,32 +42,20 @@ hostapd:
   ssid: "{{ vault_hostapd_ssid }}"
   wpa_passphrase: "{{ vault_hostapd_wpa_passphrase }}"
 
-radvd:
-  interface: "{{ wireguard.wg0.in_gw.interface }}"
-  inet6_prefix: "{{ wireguard.wg0.in_gw.inet6_prefix }}"
-  inet6_mask: "{{ wireguard.wg0.in_gw.inet6_mask }}"
-  rdnss: "{{ wireguard.wg0.in_gw.inet6_prefix }}::1"
-
-unbound:
-  recursive: false
-  controllers:
-    - 'fd1a:6126:2887::/48'
-    - '10.0.0.0/8'
-    - '192.168.1.0/24'
-    - '{{ vault_wg0_in_gw_inet6_prefix }}::/{{ vault_wg0_in_gw_inet6_mask }}'
-
-dhcpd_mode: 'server'
-dhcpd_ipversion: '4'
-dhcpd_interfaces:
-  - 'wlan0'
-dhcpd_authoritative: true
-dhcpd_nameservers:
-  - '192.168.1.1'
-dhcpd_subnets:
-  - subnet: '192.168.1.0/24'
-    routers: '192.168.1.1'
-    comment: "basic subnet"
-    pools:
-      - range: '192.168.1.2 192.168.1.254'
-    options: |
-      option interface-mtu 1360;
+dnsmasq_dnsmasq_conf:
+  - |
+    domain-needed
+    bogus-priv
+    no-resolv
+    server={{ vault_wg0_upstream_dns }}
+    dnssec
+    conf-file=/usr/share/dnsmasq-base/trust-anchors.conf
+    local=/rpi/
+    domain=rpi
+    dhcp-fqdn
+    dhcp-range=192.168.1.2,192.168.1.254,12h
+    dhcp-authoritative
+    dhcp-range=::,constructor:wlan0,ra-stateless,ra-names,12h
+    dhcp-option={{ wireguard.wg0.in_gw.interface }},26,1360
+    ra-param=mtu:1360
+    enable-ra
