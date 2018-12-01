@@ -3,7 +3,9 @@
 
 [Interface]
 PrivateKey = {{ conf.privkey }}
+{% if 'listenport' in conf %}
 ListenPort = {{ conf.listenport }}
+{% endif %}
 {% for peer in peers %}
     {% set peervars = hostvars[peer] %}
     {% if wgnet in peervars.wireguard %}
