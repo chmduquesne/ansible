@@ -5,6 +5,7 @@ wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     pubkey: "{{ vault_wg0_pubkey }}"
+    mtu: 1360
     allowed_ips: "{{ vault_wg0_in_gw_inet6_prefix }}::/{{ vault_wg0_in_gw_inet6_mask }}"
     in_gw:
       interface: wlan0
@@ -53,6 +54,6 @@ dnsmasq_dnsmasq_conf:
     dhcp-range=192.168.1.2,192.168.1.254,12h
     dhcp-authoritative
     dhcp-range=::,constructor:wlan0,ra-stateless,ra-names,12h
-    dhcp-option={{ wireguard.wg0.in_gw.interface }},26,1360
-    ra-param=mtu:1360
+    dhcp-option={{ wireguard.wg0.in_gw.interface }},26,{{ wireguard.wg0.mtu }}
+    ra-param=mtu:{{ wireguard.wg0.mtu }}
     enable-ra
