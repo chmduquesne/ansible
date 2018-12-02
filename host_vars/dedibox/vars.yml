@@ -43,6 +43,8 @@ wireguard:
     mtu: 1360
     out_gw:
       interface: enp0s20
+      inet6_prefix: "{{ vault_wg0_out_gw_inet6_prefix }}"
+      inet6_mask: "{{ vault_wg0_out_gw_inet6_mask }}"
 
 unbound:
   recursive: true
