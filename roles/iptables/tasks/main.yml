@@ -6,9 +6,10 @@
 - name: Set custom iptables rules
   iptables_raw:
     name: 'iptables_custom_rules_{{ item.name }}'
-    rules: '{{ item.rules }}'
-    state: '{{ item.state }}'
     weight: '{{ item.weight|default(omit) }}'
+    keep_unmanaged: '{{ iptables_keep_unmanaged }}'
+    rules: '{{ item.rules }}'
+    state: '{{ item.state|default(omit) }}'
     table: '{{ item.table|default(omit) }}'
     ipversion: 4
   with_items: '{{ iptables_custom_rules }}'
@@ -37,9 +38,10 @@
 - name: Set custom ip6tables rules
   iptables_raw:
     name: 'ip6tables_custom_rules_{{ item.name }}'
-    rules: '{{ item.rules }}'
-    state: '{{ item.state }}'
     weight: '{{ item.weight|default(omit) }}'
+    keep_unmanaged: '{{ iptables_keep_unmanaged }}'
+    rules: '{{ item.rules }}'
+    state: '{{ item.state|default(omit) }}'
     table: '{{ item.table|default(omit) }}'
     ipversion: 6
   with_items: '{{ ip6tables_custom_rules }}'
