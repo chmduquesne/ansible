@@ -40,7 +40,6 @@ wireguard:
     pubkey: "{{ vault_wg0_pubkey }}"
     public_addr: "{{ ansible_host }}"
     listenport: 500
-    allowed_ips: "::/0,0.0.0.0/0"
     mtu: 1360
     out_gw:
       interface: enp0s20

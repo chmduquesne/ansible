@@ -13,8 +13,11 @@ ListenPort = {{ conf.listenport }}
 
 [Peer]
 PublicKey = {{ peerconf.pubkey }}
-        {% if 'allowed_ips' in peerconf %}
-AllowedIPs = {{ peerconf.allowed_ips }}
+        {% if 'out_gw' in peerconf %}
+AllowedIPs = ::/0,0.0.0.0/0
+        {% endif %}
+        {% if 'in_gw' in peerconf and 'inet6_prefix' in peerconf.in_gw %}
+AllowedIPs = {{ peerconf.in_gw.inet6_prefix }}::/{{ peerconf.in_gw.inet6_mask }}
         {% endif %}
         {% if 'public_addr' in peerconf %}
 Endpoint = {{ peerconf.public_addr }}:{{ peerconf.listenport }}
