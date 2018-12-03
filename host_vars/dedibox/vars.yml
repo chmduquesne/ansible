@@ -43,8 +43,10 @@ wireguard:
     mtu: 1360
     out_gw:
       interface: enp0s20
-      inet6_prefix: "{{ vault_wg0_out_gw_inet6_prefix }}"
-      inet6_mask: "{{ vault_wg0_out_gw_inet6_mask }}"
+    wg-ip:
+      - 10.0.0.0/8
+      - fd1a:6126:2887::/48
+      - "{{ vault_wg0_wg-ip_inet6_prefix }}/{{ vault_wg0_wg-ip_inet6_mask }}"
 
 iptables_custom_rules:
   - name: "wg0_dns"
