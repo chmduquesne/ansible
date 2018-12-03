@@ -15,18 +15,6 @@
     rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
     rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
 
-- name: accept dns requests from the wireguard interface
-  set_fact:
-    rule:
-      name: "{{ wgnet }}_dns"
-      rules: |
-        -A INPUT -i {{ wgnet }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-        -A INPUT -i {{ wgnet }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-
-- set_fact:
-    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
-    rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
-
 - name: allow forwarding of packets that stay in the tunnel
   set_fact:
     rule:

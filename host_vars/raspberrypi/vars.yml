@@ -11,6 +11,14 @@ wireguard:
       inet6_prefix: "{{ vault_wg0_in_gw_inet6_prefix }}"
       inet6_mask: "{{ vault_wg0_in_gw_inet6_mask }}"
 
+iptables_custom_rules:
+  - name: "wg0_dns"
+    rules: |
+      -A INPUT -i {{ wireguard.wg0.in_gw.interface }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -i {{ wireguard.wg0.in_gw.interface }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+
+ip6tables_custom_rules: "{{ iptables_custom_rules }}"
+
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
   - device: eth0
