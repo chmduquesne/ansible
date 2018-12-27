@@ -1,0 +1,5 @@
+---
+- hosts: clients
+  tasks:
+    - name: apply common settings
+      include_role: name=common

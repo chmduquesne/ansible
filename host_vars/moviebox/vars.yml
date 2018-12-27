@@ -1,0 +1,23 @@
+---
+#ansible_user: pi
+#ansible_ssh_pass: raspberry
+
+network_interfaces_manage_devices: true
+network_interfaces_interfaces:
+  - device: eth0
+    family: inet
+    method: dhcp
+    triggers:
+      - allow-hotplug
+  - device: usb0
+    family: inet
+    method: dhcp
+    triggers:
+      - allow-hotplug
+
+sshd_config_match:
+  - condition: User pi
+    keyword:
+      PasswordAuthentication: "yes"
+      ForceCommand: "internal-sftp"
+      ChrootDirectory: "/home"
