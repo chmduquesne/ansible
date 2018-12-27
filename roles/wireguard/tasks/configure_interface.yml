@@ -14,7 +14,7 @@
 - name: routing dedicated subnet from out_gw to in_gw
   set_fact:
     post_up:
-      - 'ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ inet6_auto_addr[item] }} dev {{ wgnet }}'
+      - "ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ hostvars[item].wireguard[wgnet].pubkey | gen_ip(subnet='fd1a:6126:2887::/48') }} dev {{ wgnet }}"
   with_items:
     "{{ peers }}"
   when:
@@ -22,15 +22,10 @@
     - hostvars[item].wireguard[wgnet].in_gw is defined
     - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined
 
-# We generate a table number from the interface name.
-# as_uint32 is a custom filter (see filter_plugins/as_uint32.py)
-# which hashes the input and turns the result into an uin32. It can be
-# reproduced in shell, with the following function:
-# as_uint32(){
-#   printf "%d" "0x$(echo $1 -n | sha1sum | cut -b-4)
-# }
+# Generate a table number from the interface name.
+# see filter_plugins/gen_uint32.py
 - set_fact:
-    wgtable: "{{ wgnet | as_uint32 }}"
+    wgtable: "{{ wgnet | gen_uint32 }}"
 
 - name: routing all wlan traffic to wireguard
   set_fact:
