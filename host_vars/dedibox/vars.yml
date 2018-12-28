@@ -47,6 +47,7 @@ wireguard:
       - 10.0.0.0/8
       - fd1a:6126:2887::/48
       - "{{ vault_wg0_wg_ip_inet6_prefix }}/{{ vault_wg0_wg_ip_inet6_mask }}"
+    peers: "{{ wireguard_wg0_peers }}"
 
 iptables_custom_rules:
   - name: "wg0_dns"

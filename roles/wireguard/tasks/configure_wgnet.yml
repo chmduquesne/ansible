@@ -27,24 +27,13 @@
     group: root
     mode: 0600
 
-- name: collect routing mode 1/3
-  set_fact:
-    mode: "client"
-
-- name: collect routing mode 2/3
-  set_fact:
-    mode: "out_gw"
-  when:
-    - conf.out_gw is defined
-
-- name: collect routing mode 3/3
-  set_fact:
-    mode: "in_gw"
-  when:
-    - conf.in_gw is defined
-
 - name: configure interface
   include_tasks: configure_interface.yml
 
-- name: configure firewall
-  include_tasks: "configure_firewall_{{ mode }}.yml"
+- name: configure firewall in gateway
+  include_tasks: configure_firewall_in_gw.yml
+  when: conf.in_gw is defined
+
+- name: configure firewall out gateway
+  include_tasks: configure_firewall_out_gw.yml
+  when: conf.out_gw is defined
