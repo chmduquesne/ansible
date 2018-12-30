@@ -6,22 +6,25 @@ PrivateKey = {{ conf.privkey }}
 {% if 'listenport' in conf %}
 ListenPort = {{ conf.listenport }}
 {% endif %}
-{% for peer in peers %}
-    {% set peervars = hostvars[peer] %}
-    {% if wgnet in peervars.wireguard %}
-        {% set peerconf = peervars.wireguard[wgnet] %}
+{% if not is_gw %}
+{% if 'address' in conf %}
+Address = {{ conf.address | join(', ')}}
+{% endif %}
+{% endif %}
+
+{% for hostname, peervars in conf.peers | dictsort %}
+    {% if hostname != inventory_hostname %}
 
 [Peer]
-PublicKey = {{ peerconf.pubkey }}
-        {% if 'out_gw' in peerconf %}
-AllowedIPs = ::/0,0.0.0.0/0
+PublicKey = {{ peervars.pubkey }}
+        {% if 'allowedips' in peervars %}
+AllowedIPs = {{ peervars.allowedips | join(', ') }}
         {% endif %}
-        {% if 'in_gw' in peerconf and 'inet6_prefix' in peerconf.in_gw %}
-AllowedIPs = {{ peerconf.in_gw.inet6_prefix }}::/{{ peerconf.in_gw.inet6_mask }}
+        {% if 'endpoint' in peervars %}
+Endpoint = {{ peervars.endpoint }}
         {% endif %}
-        {% if 'public_addr' in peerconf %}
-Endpoint = {{ peerconf.public_addr }}:{{ peerconf.listenport }}
-PersistentKeepalive = 20
+        {% if 'persistentkeepalive' in peervars %}
+PersistentKeepalive = {{ peervars.persistentkeepalive }}
         {% endif %}
     {% endif %}
 {% endfor %}

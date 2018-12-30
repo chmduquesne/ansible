@@ -37,17 +37,12 @@ network_interfaces_interfaces:
 wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
-    pubkey: "{{ vault_wg0_pubkey }}"
     public_addr: "{{ ansible_host }}"
     listenport: 500
-    mtu: 1360
-    out_gw:
-      interface: enp0s20
-    wg-ip:
-      - 10.0.0.0/8
-      - fd1a:6126:2887::/48
-      - "{{ vault_wg0_wg_ip_inet6_prefix }}/{{ vault_wg0_wg_ip_inet6_mask }}"
+    mtu: "{{ wireguard_wg0_mtu }}"
+    auto_assign_ips: "{{ wireguard_wg0_auto_assign_ips }}"
     peers: "{{ wireguard_wg0_peers }}"
+    gw: "{{ wireguard_wg0_gw }}"
 
 iptables_custom_rules:
   - name: "wg0_dns"

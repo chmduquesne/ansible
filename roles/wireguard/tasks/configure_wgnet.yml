@@ -1,23 +1,19 @@
 ---
 
 - set_fact:
-    peers: []
-
-- name: collect peers
-  set_fact:
-    peers: "{{ peers }} + [ item ]"
-  with_inventory_hostnames:
-    all
-  when:
-    - item != inventory_hostname
-    - hostvars[item].wireguard is defined
-    - wgnet in hostvars[item].wireguard
+    conf: "{{ wireguard[wgnet] | auto_assign_ips(host=inventory_hostname) }}"
 
 - set_fact:
-    peers: "{{ peers | sort }}"
+    is_in_gw: "{{ ('gw' in conf) and ('in' in conf.gw) and (conf.gw.in.hostname == inventory_hostname) }}"
 
 - set_fact:
-    conf: "{{ wireguard[wgnet] }}"
+    is_out_gw: "{{ ('gw' in conf) and ('out' in conf.gw) and (conf.gw.out.hostname == inventory_hostname) }}"
+
+- set_fact:
+    is_gw: "{{ is_in_gw or is_out_gw }}"
+
+- debug:
+    var: conf
 
 - name: create config file
   template:
@@ -32,8 +28,8 @@
 
 - name: configure firewall in gateway
   include_tasks: configure_firewall_in_gw.yml
-  when: conf.in_gw is defined
+  when: is_in_gw
 
 - name: configure firewall out gateway
   include_tasks: configure_firewall_out_gw.yml
-  when: conf.out_gw is defined
+  when: is_out_gw

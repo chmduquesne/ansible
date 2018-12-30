@@ -23,14 +23,39 @@ sshd_config:
 wireguard_wg0_peers:
   dedibox:
     pubkey: "{{ vault_wg0_dedibox_pubkey }}"
+    endpoint: "{{ vault_wg0_dedibox_endpoint }}"
+    allowedips:
+      - "0.0.0.0/0"
+      - "::/0"
+    persistentkeepalive: 20
   raspberrypi:
     pubkey: "{{ vault_wg0_raspberrypi_pubkey }}"
+    allowedips:
+      - "{{ vault_wg0_raspberrypi_inet6_prefix }}::/{{ vault_wg0_raspberrypi_inet6_mask }}"
   t450:
     pubkey: "{{ vault_wg0_t450_pubkey }}"
   op3t:
     pubkey: "{{ vault_wg0_op3t_pubkey }}"
   moviebox:
     pubkey: "{{ vault_wg0_moviebox_pubkey }}"
+
+wireguard_wg0_gw:
+  routed_inet6:
+    prefix: "{{ vault_wg0_raspberrypi_inet6_prefix }}"
+    mask: "{{ vault_wg0_raspberrypi_inet6_mask }}"
+  in:
+    hostname: raspberrypi
+    interface: wlan0
+  out:
+    hostname: dedibox
+    interface: enp0s20
+
+wireguard_wg0_auto_assign_ips:
+  - 10.0.0.0/8
+  - fd1a:6126:2887::/48
+  - "{{ vault_wg0_global_inet6_prefix }}::/{{ vault_wg0_global_inet6_mask }}"
+
+wireguard_wg0_mtu: 1360
 
 #wireguard_global_settings:
 #  wg0:

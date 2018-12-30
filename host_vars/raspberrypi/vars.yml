@@ -4,18 +4,16 @@
 wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
-    pubkey: "{{ vault_wg0_pubkey }}"
-    mtu: 1360
-    in_gw:
-      interface: wlan0
-      inet6_prefix: "{{ vault_wg0_in_gw_inet6_prefix }}"
-      inet6_mask: "{{ vault_wg0_in_gw_inet6_mask }}"
+    mtu: "{{ wireguard_wg0_mtu }}"
+    auto_assign_ips: "{{ wireguard_wg0_auto_assign_ips }}"
+    peers: "{{ wireguard_wg0_peers }}"
+    gw: "{{ wireguard_wg0_gw }}"
 
 iptables_custom_rules:
   - name: "wg0_dns"
     rules: |
-      -A INPUT -i {{ wireguard.wg0.in_gw.interface }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -i {{ wireguard.wg0.in_gw.interface }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -i {{ wireguard.wg0.gw.in.interface }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -i {{ wireguard.wg0.gw.in.interface }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
 
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 
@@ -34,8 +32,8 @@ network_interfaces_interfaces:
   - device: wlan0
     family: inet6
     method: static
-    address: "{{ wireguard.wg0.in_gw.inet6_prefix }}::1"
-    netmask: "{{ wireguard.wg0.in_gw.inet6_mask }}"
+    address: "{{ wireguard.wg0.gw.routed_inet6.prefix }}::1"
+    netmask: "{{ wireguard.wg0.gw.routed_inet6.mask }}"
     hostapd: /etc/hostapd/hostapd.conf
   - device: wlan0
     family: inet
@@ -61,6 +59,6 @@ dnsmasq_dnsmasq_conf:
     dhcp-range=192.168.1.2,192.168.1.254,12h
     dhcp-authoritative
     dhcp-range=::,constructor:wlan0,ra-stateless,ra-names,12h
-    dhcp-option={{ wireguard.wg0.in_gw.interface }},26,{{ wireguard.wg0.mtu }}
+    dhcp-option={{ wireguard.wg0.gw.in.interface }},26,{{ wireguard.wg0.mtu }}
     ra-param=mtu:{{ wireguard.wg0.mtu }}
     enable-ra

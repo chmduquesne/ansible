@@ -11,16 +11,19 @@
   sysctl: name=net.ipv4.ip_forward value=1
   when: ('in_gw' in conf) or ('out_gw' in conf)
 
+- name: get first ipv6 subnet
+  set_fact:
+    subnet: "{{ conf.auto_assign_ips | ipv6 | first }}"
+
+- name: set addresses
+  set_fact:
+    post_up: "{{ post_up | default([]) }} + ['ip address add {{ item }} dev {{ wgnet }}']"
+  with_items: "{{ conf.address }}"
+
 - name: routing dedicated subnet from out_gw to in_gw
   set_fact:
-    post_up:
-      - "ip route add {{ hostvars[item].wireguard[wgnet].in_gw.inet6_prefix }}::/{{ hostvars[item].wireguard[wgnet].in_gw.inet6_mask }} via {{ hostvars[item].wireguard[wgnet].pubkey | gen_ip(subnet='fd1a:6126:2887::/48') }} dev {{ wgnet }}"
-  with_items:
-    "{{ peers }}"
-  when:
-    - ('out_gw' in conf)
-    - hostvars[item].wireguard[wgnet].in_gw is defined
-    - hostvars[item].wireguard[wgnet].in_gw.inet6_prefix is defined
+    post_up: "{{ post_up | default([]) }} + ['ip route add {{ conf.gw.routed_inet6.prefix }}::/{{ conf.gw.routed_inet6.mask }} via {{ conf.peers[conf.gw.in.hostname].pubkey | gen_ip(subnet=subnet) }} dev {{ wgnet }}']"
+  when: is_out_gw
 
 # Generate a table number from the interface name.
 # see filter_plugins/gen_uint32.py
@@ -29,15 +32,17 @@
 
 - name: routing all wlan traffic to wireguard
   set_fact:
-    post_up:
+    post_up2:
       - ip -6 route flush table {{ wgtable }}
       - ip -4 route flush table {{ wgtable }}
       - ip -6 route add default dev {{ wgnet }} table {{ wgtable }}
       - ip -4 route add default dev {{ wgnet }} table {{ wgtable }}
-      - ip -6 rule add iif {{ conf.in_gw.interface }} lookup {{ wgtable }}
-      - ip -4 rule add iif {{ conf.in_gw.interface }} lookup {{ wgtable }}
-  when:
-    - ('in_gw' in conf)
+      - ip -6 rule add iif {{ conf.gw.in.interface }} lookup {{ wgtable }}
+      - ip -4 rule add iif {{ conf.gw.in.interface }} lookup {{ wgtable }}
+  when: is_in_gw
+
+- set_fact:
+    post_up: "{{ post_up }} + {{ post_up2 | default([]) }}"
 
 - name: set general settings
   set_fact:
@@ -48,8 +53,6 @@
       pre-up:
         - ip link add dev {{ wgnet }} type wireguard
         - wg setconf {{ wgnet }} /etc/wireguard/{{ wgnet }}.conf
-        - wg-ip -6 dev {{ wgnet }} apply
-        - wg-ip -4 dev {{ wgnet }} apply
         - ip link set mtu {{ conf.mtu | default(1420) }} dev {{ wgnet }}
       up:
         - ip link set dev {{ wgnet }} up

@@ -28,8 +28,8 @@
 - name: allow forwarding of packets from peers to the Internet
   set_fact:
     rule:
-      name: "{{ wgnet }}_to_{{ conf.out_gw.interface }}"
-      rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.out_gw.interface }} -m conntrack --ctstate NEW -j ACCEPT"
+      name: "{{ wgnet }}_to_{{ conf.gw.out.interface }}"
+      rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.gw.out.interface }} -m conntrack --ctstate NEW -j ACCEPT"
 
 - set_fact:
     rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
@@ -40,7 +40,7 @@
     rule:
       name: "{{ wgnet }}_masquerade"
       table: nat
-      rules: "-A POSTROUTING -o {{ conf.out_gw.interface }} -j MASQUERADE"
+      rules: "-A POSTROUTING -o {{ conf.gw.out.interface }} -j MASQUERADE"
 
 - set_fact:
     rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"

@@ -8,7 +8,7 @@
   set_fact:
     rule:
       name: "{{ wgnet }}_wifi_to_vpn"
-      rules: "-A FORWARD -i {{ conf.in_gw.interface }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
+      rules: "-A FORWARD -i {{ conf.gw.in.interface }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
 
 - set_fact:
     rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
