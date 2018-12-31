@@ -6,3 +6,10 @@
 
     - name: configure wireguard
       include_role: name=wireguard
+
+    - name: enable wg-quick
+      systemd:
+        name: "wg-quick@{{ item }}"
+        enabled: yes
+        state: started
+      with_items: "{{ wireguard.keys() | list }}"
