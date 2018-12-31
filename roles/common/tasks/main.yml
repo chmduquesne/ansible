@@ -11,5 +11,8 @@
 - name: configure iptables
   include_role: name=iptables
 
-- name: get latest vim
-  package: name=vim state=latest
+- name: install useful packages
+  package: name={{ item }} state=latest
+  with_items:
+    - vim
+    - mlocate

@@ -1,28 +1,17 @@
-# iptables rules to apply for a private wifi router
+# iptables rules for a private wifi router
 ---
-- set_fact:
-    rules_v4: []
-    rules_v6: []
-
 - name: allow wifi traffic to be forwarded to wireguard
-  set_fact:
-    rule:
-      name: "{{ wgnet }}_wifi_to_vpn"
-      rules: "-A FORWARD -i {{ conf.gw.in.interface }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
-
-- set_fact:
-    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
-    rules_v6: "{{ rules_v6 }} + [ {{ rule | combine({'ipversion': 6}) }} ]"
+  iptables_raw:
+    name: "{{ wgnet }}_wifi_to_vpn"
+    rules: "-A FORWARD -i {{ conf.gw.in.interface }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
+    ipversion: "{{ item }}"
+  with_items:
+    - 4
+    - 6
 
 - name: masquerade v4 packets coming from inside the private wifi
-  set_fact:
-    rule:
-      name: "{{ wgnet }}_masquerade_wifi"
-      table: nat
-      rules: "-A POSTROUTING -o {{ wgnet }} -j MASQUERADE"
-
-- set_fact:
-    rules_v4: "{{ rules_v4 }} + [ {{ rule | combine({'ipversion': 4}) }} ]"
-
-- set_fact:
-    wireguard_suggested_iptables: "{{ wireguard_suggested_iptables | default([]) }} + rules_v4 + rules_v6"
+  iptables_raw:
+    name: "{{ wgnet }}_masquerade_wifi"
+    table: nat
+    rules: "-A POSTROUTING -o {{ wgnet }} -j MASQUERADE"
+    ipversion: 4

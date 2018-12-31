@@ -10,14 +10,6 @@
     - name: configure wireguard
       include_role: name=wireguard
 
-    - name: apply wireguard suggested iptables rules
-      iptables_raw:
-        name: "{{ item.name }}"
-        rules: "{{ item.rules }}"
-        table: "{{ item.table | default(omit) }}"
-        ipversion: "{{ item.ipversion }}"
-      with_items: "{{ wireguard_suggested_iptables | default([]) }}"
-
     - name: adding suggested wireguard interfaces
       set_fact:
          network_interfaces_interfaces: "{{ network_interfaces_interfaces | default([]) }} + wireguard_suggested_interfaces"

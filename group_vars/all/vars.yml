@@ -56,3 +56,4 @@ wireguard_default:
       - "{{ vault_wg0_global_inet6_prefix }}::/{{ vault_wg0_global_inet6_mask }}"
     mtu: 1360
     iptable_raw: True
+    unbound_records: True
