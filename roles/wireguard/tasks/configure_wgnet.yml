@@ -1,7 +1,7 @@
 ---
 
 - set_fact:
-    conf: "{{ wireguard[wgnet] | auto_assign_ips(host=inventory_hostname) }}"
+    conf: "{{ wireguard[wgnet] | add_pubkey(inventory_hostname) | remove_peer(inventory_hostname) | auto_assign_ips }}"
 
 - set_fact:
     is_in_gw: "{{ ('gw' in conf) and ('in' in conf.gw) and (conf.gw.in.hostname == inventory_hostname) }}"

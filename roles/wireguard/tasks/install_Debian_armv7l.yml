@@ -1,18 +1,12 @@
 ---
-- name: install libmnl-dev
-  package: name=libmnl-dev state=latest
-
-- name: install libelf-dev
-  package: name=libelf-dev state=latest
-
-- name: install raspberrypi-kernel-headers
-  package: name=raspberrypi-kernel-headers state=latest
-
-- name: install build-essential
-  package: name=build-essential state=latest
-
-- name: install git
-  package: name=git state=latest
+- name: install the packages required to compile wireguard
+  package: name={{ item }} state=latest
+  with_items:
+    - libmnl-dev
+    - libelf-dev
+    - raspberrypi-kernel-headers
+    - build-essential
+    - git
 
 - name: clone wireguard
   git:
@@ -38,7 +32,7 @@
 - name: load wireguard kernel module
   modprobe: name=wireguard state=present
 
-- name: load wireguard at boot
+- name: load wireguard kernel module automatically at boot
   copy:
     dest: /etc/modules-load.d/wireguard.conf
     content: |

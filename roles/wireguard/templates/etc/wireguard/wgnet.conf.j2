@@ -13,18 +13,16 @@ Address = {{ conf.address | join(', ')}}
 {% endif %}
 
 {% for hostname, peervars in conf.peers | dictsort %}
-    {% if hostname != inventory_hostname %}
 
 [Peer]
 PublicKey = {{ peervars.pubkey }}
-        {% if 'allowedips' in peervars %}
+    {% if 'allowedips' in peervars %}
 AllowedIPs = {{ peervars.allowedips | join(', ') }}
-        {% endif %}
-        {% if 'endpoint' in peervars %}
+    {% endif %}
+    {% if 'endpoint' in peervars %}
 Endpoint = {{ peervars.endpoint }}
-        {% endif %}
-        {% if 'persistentkeepalive' in peervars %}
+    {% endif %}
+    {% if 'persistentkeepalive' in peervars %}
 PersistentKeepalive = {{ peervars.persistentkeepalive }}
-        {% endif %}
     {% endif %}
 {% endfor %}

@@ -22,7 +22,7 @@
 
 - name: routing dedicated subnet from out_gw to in_gw
   set_fact:
-    post_up: "{{ post_up | default([]) }} + ['ip route add {{ conf.gw.routed_inet6.prefix }}::/{{ conf.gw.routed_inet6.mask }} via {{ conf.peers[conf.gw.in.hostname].pubkey | gen_ip(subnet=subnet) }} dev {{ wgnet }}']"
+    post_up: "{{ post_up | default([]) }} + ['ip route add {{ conf.gw.routed_inet6.prefix }}::/{{ conf.gw.routed_inet6.mask }} via {{ conf.pubkey | gen_ip(subnet=subnet) }} dev {{ wgnet }}']"
   when: is_out_gw
 
 # Generate a table number from the interface name.
