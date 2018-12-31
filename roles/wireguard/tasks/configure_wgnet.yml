@@ -12,9 +12,6 @@
 - set_fact:
     is_gw: "{{ is_in_gw or is_out_gw }}"
 
-- debug:
-    var: conf
-
 - name: create config file
   template:
     src: templates/etc/wireguard/wgnet.conf.j2

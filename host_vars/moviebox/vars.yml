@@ -21,3 +21,11 @@ sshd_config_match:
       PasswordAuthentication: "yes"
       ForceCommand: "internal-sftp"
       ChrootDirectory: "/home"
+
+wireguard:
+  wg0:
+    privkey: "{{ vault_wg0_privkey }}"
+    mtu: "{{ wireguard_wg0_mtu }}"
+    auto_assign_ips: "{{ wireguard_wg0_auto_assign_ips }}"
+    peers: "{{ wireguard_wg0_peers }}"
+    gw: "{{ wireguard_wg0_gw }}"

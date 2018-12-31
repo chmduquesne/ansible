@@ -10,6 +10,12 @@ ListenPort = {{ conf.listenport }}
 {% if 'address' in conf %}
 Address = {{ conf.address | join(', ')}}
 {% endif %}
+{% if 'mtu' in conf %}
+MTU = {{ conf.mtu }}
+{% endif %}
+{% if 'dns' in conf %}
+DNS = {{ conf.dns }}
+{% endif %}
 {% endif %}
 
 {% for hostname, peervars in conf.peers | dictsort %}

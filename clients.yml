@@ -3,3 +3,6 @@
   tasks:
     - name: apply common settings
       include_role: name=common
+
+    - name: configure wireguard
+      include_role: name=wireguard
