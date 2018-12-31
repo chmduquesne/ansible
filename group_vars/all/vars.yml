@@ -55,3 +55,4 @@ wireguard_default:
       - fd1a:6126:2887::/48
       - "{{ vault_wg0_global_inet6_prefix }}::/{{ vault_wg0_global_inet6_mask }}"
     mtu: 1360
+    iptable_raw: True
