@@ -1,48 +1,41 @@
 ---
-- name: enable ipv6 forwarding for all interfaces
-  sysctl: name=net.ipv6.conf.all.forwarding value=1
-  when: ('in_gw' in conf) or ('out_gw' in conf)
-
-- name: enable ipv6 forwarding by default
-  sysctl: name=net.ipv6.conf.default.forwarding value=1
-  when: ('in_gw' in conf) or ('out_gw' in conf)
-
-- name: enable ipv4 forwarding for all interfaces
-  sysctl: name=net.ipv4.ip_forward value=1
-  when: ('in_gw' in conf) or ('out_gw' in conf)
-
-- name: get first ipv6 subnet
-  set_fact:
-    subnet: "{{ conf.auto_assign_ips | ipv6 | first }}"
+- name: enable ip forwarding
+  sysctl: name={{ item }} value=1
+  with_items:
+    - net.ipv6.conf.all.forwarding
+    - net.ipv6.conf.default.forwarding
+    - net.ipv4.ip_forward
+  when: is_gw
 
 - name: set addresses
   set_fact:
-    post_up: "{{ post_up | default([]) }} + ['ip address add {{ item }} dev {{ wgnet }}']"
+    addr: "{{ addr | default([]) }} + ['ip address add {{ item }} dev {{ wgnet }}']"
   with_items: "{{ conf.address }}"
+
+- name: collect routing infos
+  set_fact:
+    subnet: "{{ conf.auto_assign_ips | ipv6 | first }}"
+    routed_inet6: "{{ conf.gw.routed_inet6.prefix }}::/{{ conf.gw.routed_inet6.mask }}"
+  when: ('gw' in conf) and ('routed_inet6' in conf.gw)
 
 - name: routing dedicated subnet from out_gw to in_gw
   set_fact:
-    post_up: "{{ post_up | default([]) }} + ['ip route add {{ conf.gw.routed_inet6.prefix }}::/{{ conf.gw.routed_inet6.mask }} via {{ conf.pubkey | gen_ip(subnet=subnet) }} dev {{ wgnet }}']"
-  when: is_out_gw
+    route: "{{ route | default([]) }} + ['ip route add {{ routed_inet6 }} via {{ conf.peers[conf.gw.in.hostname].pubkey | gen_ip(subnet=subnet) }} dev {{ wgnet }}']"
+  when: is_out_gw and 'in' in conf.gw and ('routed_inet6' in conf.gw)
 
-# Generate a table number from the interface name.
-# see filter_plugins/gen_uint32.py
 - set_fact:
     wgtable: "{{ wgnet | gen_uint32 }}"
 
 - name: routing all wlan traffic to wireguard
   set_fact:
-    post_up2:
-      - ip -6 route flush table {{ wgtable }}
+    table:
       - ip -4 route flush table {{ wgtable }}
-      - ip -6 route add default dev {{ wgnet }} table {{ wgtable }}
       - ip -4 route add default dev {{ wgnet }} table {{ wgtable }}
-      - ip -6 rule add iif {{ conf.gw.in.interface }} lookup {{ wgtable }}
       - ip -4 rule add iif {{ conf.gw.in.interface }} lookup {{ wgtable }}
+      - ip -6 route flush table {{ wgtable }}
+      - ip -6 route add default dev {{ wgnet }} table {{ wgtable }}
+      - ip -6 rule add iif {{ conf.gw.in.interface }} lookup {{ wgtable }}
   when: is_in_gw
-
-- set_fact:
-    post_up: "{{ post_up }} + {{ post_up2 | default([]) }}"
 
 - name: set general settings
   set_fact:
@@ -56,7 +49,7 @@
         - ip link set mtu {{ conf.mtu | default(1420) }} dev {{ wgnet }}
       up:
         - ip link set dev {{ wgnet }} up
-      post-up: "{{ post_up }}"
+      post-up: "{{ addr | default([]) }} + {{ route | default([]) }} + {{ table | default([]) }}"
       down:
         - ip link del dev {{ wgnet }}
 
