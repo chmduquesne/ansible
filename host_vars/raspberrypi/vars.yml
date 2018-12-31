@@ -1,13 +1,11 @@
 ---
 #ansible_user: pi
 
-wireguard:
+wireguard_override:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
-    mtu: "{{ wireguard_wg0_mtu }}"
-    auto_assign_ips: "{{ wireguard_wg0_auto_assign_ips }}"
-    peers: "{{ wireguard_wg0_peers }}"
-    gw: "{{ wireguard_wg0_gw }}"
+
+wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
 
 iptables_custom_rules:
   - name: "wg0_dns"

@@ -20,131 +20,38 @@ sshd_config:
   AcceptEnv: "LANG LC_*"
   Subsystem: "sftp /usr/lib/sftp-server"
 
-wireguard_wg0_peers:
-  dedibox:
-    pubkey: "{{ vault_wg0_dedibox_pubkey }}"
-    endpoint: "{{ vault_wg0_dedibox_endpoint }}"
-    allowedips:
-      - "0.0.0.0/0"
-      - "::/0"
-    persistentkeepalive: 20
-  raspberrypi:
-    pubkey: "{{ vault_wg0_raspberrypi_pubkey }}"
-    allowedips:
-      - "{{ vault_wg0_raspberrypi_inet6_prefix }}::/{{ vault_wg0_raspberrypi_inet6_mask }}"
-  t450:
-    pubkey: "{{ vault_wg0_t450_pubkey }}"
-  op3t:
-    pubkey: "{{ vault_wg0_op3t_pubkey }}"
-  moviebox:
-    pubkey: "{{ vault_wg0_moviebox_pubkey }}"
-
-wireguard_wg0_gw:
-  routed_inet6:
-    prefix: "{{ vault_wg0_raspberrypi_inet6_prefix }}"
-    mask: "{{ vault_wg0_raspberrypi_inet6_mask }}"
-  in:
-    hostname: raspberrypi
-    interface: wlan0
-  out:
-    hostname: dedibox
-    interface: enp0s20
-
-wireguard_wg0_auto_assign_ips:
-  - 10.0.0.0/8
-  - fd1a:6126:2887::/48
-  - "{{ vault_wg0_global_inet6_prefix }}::/{{ vault_wg0_global_inet6_mask }}"
-
-wireguard_wg0_mtu: 1360
-
-#wireguard_global_settings:
-#  wg0:
-#    mtu: 1360
-#    peers:
-#      dedibox:
-#        pubkey: "{{ vault_wg0_dedibox_pubkey }}"
-#      raspberrypi:
-#        pubkey: "{{ vault_wg0_raspberrypi_pubkey }}"
-#    out_gw:
-#      host: dedibox
-#      interface: enp0s20
-#    in_gw:
-#      host: raspberrypi
-#      interface: wlan0
-#    routed_inet6:
-#      prefix: "{{ vault_wg0_routed_inet6_prefix }}"
-#      netlen: "{{ vault_wg0_routed_inet6_netlen }}"
-#    auto_assign_ips:
-#      - 172.16.0.0/12
-#      - fd1a:6126:2887::/48
-
-
-#wireguard_peers:
-#  wg0:
-#    dedibox:
-#      pubkey: "{{ vault_wg0_dedibox_pubkey }}"
-#      public_addr: "{{ vault_dedibox_public_addr }}"
-#      listenport: 500
-#    raspberrypi:
-#      pubkey: "{{ vault_wg0_raspberrypi_pubkey }}"
-#
-#wireguard_out_gw:
-#  wg0:
-#    host: dedibox
-#    interface: enp0s20
-#
-#wireguard_in_gw:
-#  wg0:
-#    host: raspberrypi
-#    interface: wlan0
-#
-#wireguard_routed_inet6:
-#  wg0:
-#    mask: "{{ vault_wg1_out_gw_inet6_mask }}"
-#    prefix: "{{ vault_wg1_out_gw_inet6_prefix }}"
-#
-#wireguard_auto_assign_ips:
-#  wg0:
-#    - 10.0.0.0/10
-#    - fd28:4e12:bf64::/48
-
-
-#wireguard:
-#  wg0:
-#    mtu: 1360
-#    peers:
-#      dedibox:
-#        privkey: "{{ vault_wg0_dedibox_privkey }}"
-#        pubkey: "{{ vault_wg0_dedibox_pubkey }}"
-#        #public_addr: "{{ ansible_host }}"
-#        listenport: 500
-#      raspberrypi:
-#        privkey: "{{ vault_wg0_raspberrypi_privkey }}"
-#        pubkey: "{{ vault_wg0_raspberrypi_pubkey }}"
-#    out_gw:
-#      host: dedibox
-#      interface: enp0s20
-#      inet6_mask: "{{ vault_wg0_out_gw_inet6_mask }}"
-#      inet6_prefix: "{{ vault_wg0_out_gw_inet6_prefix }}"
-#    in_gw:
-#      host: raspberrypi
-#      interface: wlan0
-#    wgip:
-#      - 10.0.0.0/10
-#      - fd28:4e12:bf64::/48
-#  wg1:
-#    mtu: 1280
-#    peers:
-#      dedibox:
-#        privkey: "{{ vault_wg0_dedibox_privkey }}"
-#        pubkey: "{{ vault_wg0_dedibox_pubkey }}"
-#        #public_addr: "{{ ansible_host }}"
-#        listenport: 501
-#    out_gw:
-#      host: dedibox
-#      interface: enp0s20
-#      inet6_mask: "{{ vault_wg1_out_gw_inet6_mask }}"
-#      inet6_prefix: "{{ vault_wg1_out_gw_inet6_prefix }}"
-#    wgip:
-#      - 10.64.0.0/10
-#      - fd17:152c:32de::/48
+wireguard_default:
+  wg0:
+    peers:
+      dedibox:
+        pubkey: "{{ vault_wg0_dedibox_pubkey }}"
+        endpoint: "{{ vault_wg0_dedibox_endpoint }}"
+        allowedips:
+          - "0.0.0.0/0"
+          - "::/0"
+        persistentkeepalive: 20
+      raspberrypi:
+        pubkey: "{{ vault_wg0_raspberrypi_pubkey }}"
+        allowedips:
+          - "{{ vault_wg0_raspberrypi_inet6_prefix }}::/{{ vault_wg0_raspberrypi_inet6_mask }}"
+      t450:
+        pubkey: "{{ vault_wg0_t450_pubkey }}"
+      op3t:
+        pubkey: "{{ vault_wg0_op3t_pubkey }}"
+      moviebox:
+        pubkey: "{{ vault_wg0_moviebox_pubkey }}"
+    gw:
+      routed_inet6:
+        prefix: "{{ vault_wg0_raspberrypi_inet6_prefix }}"
+        mask: "{{ vault_wg0_raspberrypi_inet6_mask }}"
+      in:
+        hostname: raspberrypi
+        interface: wlan0
+      out:
+        hostname: dedibox
+        interface: enp0s20
+    auto_assign_ips:
+      - 10.0.0.0/8
+      - fd1a:6126:2887::/48
+      - "{{ vault_wg0_global_inet6_prefix }}::/{{ vault_wg0_global_inet6_mask }}"
+    mtu: 1360
