@@ -1,17 +1,17 @@
 ---
 - hosts: routers
   tasks:
-    #- name: apply common settings
-    #  include_role: name=common
+    - name: apply common settings
+      include_role: name=common
 
     - name: configure wireguard
       include_role: name=wireguard
 
-      #- name: configure network
-      #  include_role: name=chmduquesne.ansible-network-interfaces
+    - name: configure network
+      include_role: name=chmduquesne.ansible-network-interfaces
 
-      #- name: configure hostapd
-      #  include_role: name=hostapd
+    - name: configure hostapd
+      include_role: name=hostapd
 
-      #- name: configure dnsmasq
-      #  include_role: name=oefenweb.dnsmasq
+    - name: configure dnsmasq
+      include_role: name=oefenweb.dnsmasq

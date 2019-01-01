@@ -2,7 +2,7 @@
 
 - name: expand the configuration
   set_fact:
-    conf: "{{ wireguard[wgnet] | add_pubkey(inventory_hostname) | remove_peer(inventory_hostname) | auto_assign_ips }}"
+    conf: "{{ wireguard[wgnet]|add_pubkey(inventory_hostname)|remove_peer(inventory_hostname)|auto_assign_ips }}"
 
 - name: create config file
   template:
@@ -24,12 +24,12 @@
     - net.ipv6.conf.all.forwarding
     - net.ipv6.conf.default.forwarding
     - net.ipv4.ip_forward
-  when: "{{ conf | in_gw(inventory_hostname) }}" or "{{ conf | out_gw(inventory_hostname) }}"
+  when: conf|in_gw(inventory_hostname) or conf|out_gw(inventory_hostname)
 
 - name: configure firewall in gateway
   include_tasks: configure_firewall_in_gw.yml
-  when: "{{ conf | in_gw(inventory_hostname) }}"
+  when: conf|in_gw(inventory_hostname)
 
 - name: configure firewall out gateway
   include_tasks: configure_firewall_out_gw.yml
-  when: "{{ conf | out_gw(inventory_hostname) }}"
+  when: conf|out_gw(inventory_hostname)

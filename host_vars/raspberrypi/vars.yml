@@ -31,8 +31,8 @@ network_interfaces_interfaces:
   - device: wlan0
     family: inet6
     method: static
-    address: "{{ wireguard.wg0.gw.routed_inet6.prefix }}::1"
-    netmask: "{{ wireguard.wg0.gw.routed_inet6.mask }}"
+    address: "{{ wireguard.wg0.peers.raspberrypi.allowedips.0.split('::/') | first }}::1"
+    netmask: "{{ wireguard.wg0.peers.raspberrypi.allowedips.0.split('::/') | last }}"
     hostapd: /etc/hostapd/hostapd.conf
     post-up:
       - ip -6 rule add iif wlan0 lookup {{ wireguard.wg0.table }}

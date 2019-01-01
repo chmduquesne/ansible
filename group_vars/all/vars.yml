@@ -41,9 +41,6 @@ wireguard_default:
       moviebox:
         pubkey: "{{ vault_wg0_moviebox_pubkey }}"
     gw:
-      routed_inet6:
-        prefix: "{{ vault_wg0_raspberrypi_inet6_prefix }}"
-        mask: "{{ vault_wg0_raspberrypi_inet6_mask }}"
       in:
         hostname: raspberrypi
         interface: wlan0
