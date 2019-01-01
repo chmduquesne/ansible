@@ -33,7 +33,7 @@ wireguard_default:
       raspberrypi:
         pubkey: "{{ vault_wg0_raspberrypi_pubkey }}"
         allowedips:
-          - "{{ vault_wg0_raspberrypi_inet6_prefix }}::/{{ vault_wg0_raspberrypi_inet6_mask }}"
+          - "{{ vault_wg0_raspberrypi_inet6_range }}"
       t450:
         pubkey: "{{ vault_wg0_t450_pubkey }}"
       op3t:
@@ -50,7 +50,7 @@ wireguard_default:
     auto_assign_ips:
       - 10.0.0.0/8
       - fd1a:6126:2887::/48
-      - "{{ vault_wg0_global_inet6_prefix }}::/{{ vault_wg0_global_inet6_mask }}"
+      - "{{ vault_wg0_global_inet6_range }}"
     mtu: 1360
     iptable_raw: True
     unbound_records: True
