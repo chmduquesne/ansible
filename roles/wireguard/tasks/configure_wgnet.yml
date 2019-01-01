@@ -1,16 +1,8 @@
 ---
 
-- set_fact:
+- name: expand the configuration
+  set_fact:
     conf: "{{ wireguard[wgnet] | add_pubkey(inventory_hostname) | remove_peer(inventory_hostname) | auto_assign_ips }}"
-
-- set_fact:
-    is_in_gw: "{{ conf | in_gw(inventory_hostname) }}"
-
-- set_fact:
-    is_out_gw: "{{ conf | out_gw(inventory_hostname) }}"
-
-- set_fact:
-    is_gw: "{{ is_in_gw or is_out_gw }}"
 
 - name: create config file
   template:
@@ -26,6 +18,18 @@
     enabled: yes
     state: started
 
-- name: configure firewall
-  include_tasks: configure_firewall.yml
-  when: conf.iptable_raw
+- name: enable ip forwarding
+  sysctl: name={{ item }} value=1
+  with_items:
+    - net.ipv6.conf.all.forwarding
+    - net.ipv6.conf.default.forwarding
+    - net.ipv4.ip_forward
+  when: "{{ conf | in_gw(inventory_hostname) }}" or "{{ conf | out_gw(inventory_hostname) }}"
+
+- name: configure firewall in gateway
+  include_tasks: configure_firewall_in_gw.yml
+  when: "{{ conf | in_gw(inventory_hostname) }}"
+
+- name: configure firewall out gateway
+  include_tasks: configure_firewall_out_gw.yml
+  when: "{{ conf | out_gw(inventory_hostname) }}"

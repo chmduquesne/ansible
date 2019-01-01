@@ -1,8 +1,0 @@
----
-- name: configure firewall in gateway
-  include_tasks: configure_firewall_in_gw.yml
-  when: is_in_gw
-
-- name: configure firewall out gateway
-  include_tasks: configure_firewall_out_gw.yml
-  when: is_out_gw
