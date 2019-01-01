@@ -26,7 +26,6 @@ Table = {{ conf.table }}
 PostUp = {{ cmd }}
 {% endfor %}
 {% endif %}
-
 {% for hostname, peervars in conf.peers | dictsort %}
 
 [Peer]
