@@ -1,0 +1,5 @@
+---
+- hosts: t450
+  tasks:
+    - name: configure wireguard
+      include_role: name=wireguard
