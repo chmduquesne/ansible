@@ -1,6 +1,9 @@
 #jinja2: lstrip_blocks: True
 # {{ ansible_managed }}
 
+# Convert this file to a qr-code:
+# qrencode -t ansiutf8 < this_file
+
 [Interface]
 PrivateKey = {{ conf.privkey }}
 {% if 'listenport' in conf %}
