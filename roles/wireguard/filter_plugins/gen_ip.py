@@ -15,6 +15,24 @@ def sha256(s):
     return hashlib.sha256(s.encode()).digest()
 
 
+def gen_uint32(s, forbidden=[0, 253, 254, 255]):
+    """
+    - Hash the input
+    - Take the first 4 bytes of the result
+    - Interpret as a uint32
+
+    Can be reproduced in shell:
+
+    printf "%d" "0x$(echo -n "$1" | sha256sum | cut -b-4)"
+    """
+    h = hashlib.sha256(s.encode()).hexdigest()
+    res = int(h[:4], 16)
+    if res in forbidden:
+        return gen_uint32(h, forbidden)
+    else:
+        return res
+
+
 def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
         with_maxprefixlen=False):
     """
@@ -76,6 +94,30 @@ def remove_peer(config, host):
     return c
 
 
+def in_gw(config, host):
+    if 'gw' not in config:
+        return False
+    if 'in' not in config['gw']:
+        return False
+    if 'hostname' not in config['gw']['in']:
+        raise AnsibleFilterError('missing field "hostname" in config.gw.in')
+    return host == config['gw']['in']['hostname']
+
+
+def out_gw(config, host):
+    if 'gw' not in config:
+        return False
+    if 'out' not in config['gw']:
+        return False
+    if 'hostname' not in config['gw']['out']:
+        raise AnsibleFilterError('missing field "hostname" in config.gw.out')
+    return host == config['gw']['out']['hostname']
+
+
+def gw(config, host):
+    return in_gw(config, host) or out_gw(config, host)
+
+
 def auto_assign_ips(config):
     c = dict(config)
 
@@ -114,41 +156,6 @@ class FilterModule(object):
             'auto_assign_ips': auto_assign_ips,
             'remove_peer': remove_peer,
             'add_pubkey': add_pubkey,
+            'in_gw': in_gw,
+            'out_gw': out_gw,
         }
-
-
-#d = {
-#        "auto_assign_ips": [
-#            "10.0.0.0/8",
-#            "fd1a:6126:2887::/48",
-#            "2001:bc8:3a53:2::/64"
-#        ],
-#        "listenport": 500,
-#        "mtu": 1360,
-#        "out_gw": {
-#            "interface": "enp0s20"
-#        },
-#        "peers": {
-#            "dedibox": {
-#                "pubkey": "aTtMVKe4OEsdK+hTcqiaRAKI6eZtyuTdy2jTAHL+e08="
-#            },
-#            "moviebox": {
-#                "pubkey": "uI/MzgCdWyh3YcrKIA4SBd4U441DEsckIOJqxjxyaE0="
-#            },
-#            "op3t": {
-#                "pubkey": "tuyKLuVJ8LwAut7lb4dGKsEVfFkIoIASnGgjymtsSH8="
-#            },
-#            "raspberrypi": {
-#                "allowedips": ["2001:bc8:3a53:1::/64"],
-#                "pubkey": "xKsITz2UCFdco1s2OdL+i9+8DBglDzLLS6S64MeVCi4="
-#            },
-#            "t450": {
-#                "pubkey": "nmwGdVs+24O9KMo5zlqyAQCLz3qEaHO9HliXARd5xFg="
-#            }
-#        },
-#        "privkey": "AIiwnm1deR5flW+iU/8ksQOZiB0HjqNQhVAbSdSlEHs=",
-#        "pubkey": "aTtMVKe4OEsdK+hTcqiaRAKI6eZtyuTdy2jTAHL+e08=",
-#        "public_addr": "163.172.50.192"
-#    }
-#
-#print(auto_assign_ips(d))

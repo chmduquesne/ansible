@@ -4,6 +4,7 @@
 wireguard_override:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
+    table: "{{ 'wg0' | checksum | truncate(4, end='') | int(base=16) }}"
 
 wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
 
@@ -33,11 +34,15 @@ network_interfaces_interfaces:
     address: "{{ wireguard.wg0.gw.routed_inet6.prefix }}::1"
     netmask: "{{ wireguard.wg0.gw.routed_inet6.mask }}"
     hostapd: /etc/hostapd/hostapd.conf
+    post-up:
+      - ip -6 rule add iif wlan0 lookup {{ wireguard.wg0.table }}
   - device: wlan0
     family: inet
     method: static
     address: 192.168.1.1
     netmask: 24
+    post-up:
+      - ip -4 rule add iif wlan0 lookup {{ wireguard.wg0.table }}
 
 hostapd:
   ssid: "{{ vault_hostapd_ssid }}"
@@ -60,3 +65,6 @@ dnsmasq_dnsmasq_conf:
     dhcp-option={{ wireguard.wg0.gw.in.interface }},26,{{ wireguard.wg0.mtu }}
     ra-param=mtu:{{ wireguard.wg0.mtu }}
     enable-ra
+
+dnsmasq_etc_default_options:
+  - DNSMASQ_EXCEPT=lo

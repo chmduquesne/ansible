@@ -4,10 +4,10 @@
     conf: "{{ wireguard[wgnet] | add_pubkey(inventory_hostname) | remove_peer(inventory_hostname) | auto_assign_ips }}"
 
 - set_fact:
-    is_in_gw: "{{ ('gw' in conf) and ('in' in conf.gw) and (conf.gw.in.hostname == inventory_hostname) }}"
+    is_in_gw: "{{ conf | in_gw(inventory_hostname) }}"
 
 - set_fact:
-    is_out_gw: "{{ ('gw' in conf) and ('out' in conf.gw) and (conf.gw.out.hostname == inventory_hostname) }}"
+    is_out_gw: "{{ conf | out_gw(inventory_hostname) }}"
 
 - set_fact:
     is_gw: "{{ is_in_gw or is_out_gw }}"
@@ -20,8 +20,11 @@
     group: root
     mode: 0600
 
-- name: configure interface
-  include_tasks: configure_interface.yml
+- name: enable wg-quick
+  systemd:
+    name: "wg-quick@{{ wgnet }}"
+    enabled: yes
+    state: started
 
 - name: configure firewall
   include_tasks: configure_firewall.yml

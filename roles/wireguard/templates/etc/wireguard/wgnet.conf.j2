@@ -6,7 +6,6 @@ PrivateKey = {{ conf.privkey }}
 {% if 'listenport' in conf %}
 ListenPort = {{ conf.listenport }}
 {% endif %}
-{% if not is_gw %}
 {% if 'address' in conf %}
 Address = {{ conf.address | join(', ')}}
 {% endif %}
@@ -16,6 +15,13 @@ MTU = {{ conf.mtu }}
 {% if 'dns' in conf %}
 DNS = {{ conf.dns }}
 {% endif %}
+{% if 'table' in conf %}
+Table = {{ conf.table }}
+{% endif %}
+{% if 'postup' in conf %}
+{% for cmd in conf.postup %}
+PostUp = {{ cmd }}
+{% endfor %}
 {% endif %}
 
 {% for hostname, peervars in conf.peers | dictsort %}
