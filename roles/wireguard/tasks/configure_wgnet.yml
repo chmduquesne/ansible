@@ -17,6 +17,7 @@
     name: "wg-quick@{{ wgnet }}"
     enabled: yes
     state: started
+  when: not wireguard_mobile
 
 - name: enable ip forwarding
   sysctl: name={{ item }} value=1
@@ -24,12 +25,12 @@
     - net.ipv6.conf.all.forwarding
     - net.ipv6.conf.default.forwarding
     - net.ipv4.ip_forward
-  when: conf|in_gw(inventory_hostname) or conf|out_gw(inventory_hostname)
+  when: (conf|in_gw(inventory_hostname) or conf|out_gw(inventory_hostname)) and not wireguard_mobile
 
 - name: configure firewall in gateway
   include_tasks: configure_firewall_in_gw.yml
-  when: conf|in_gw(inventory_hostname)
+  when: conf|in_gw(inventory_hostname) and not wireguard_mobile
 
 - name: configure firewall out gateway
   include_tasks: configure_firewall_out_gw.yml
-  when: conf|out_gw(inventory_hostname)
+  when: conf|out_gw(inventory_hostname) and not wireguard_mobile

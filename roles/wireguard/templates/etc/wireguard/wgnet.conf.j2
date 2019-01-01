@@ -2,7 +2,7 @@
 # {{ ansible_managed }}
 
 # Use this configuration on a mobile device:
-# qrencode -t ansiutf8 < this_file
+# qrencode -o- < this_file | display
 
 [Interface]
 PrivateKey = {{ conf.privkey }}
