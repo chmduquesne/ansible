@@ -43,6 +43,7 @@ wireguard_override:
 wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
 
 wireguard_generate_mobile: true
+wireguard_mobile_confdir: "wg_configs"
 
 iptables_custom_rules:
   - name: "wg0_dns"
