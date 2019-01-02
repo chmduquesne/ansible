@@ -40,13 +40,6 @@ wireguard_default:
         pubkey: "{{ vault_wg0_op3t_pubkey }}"
       moviebox:
         pubkey: "{{ vault_wg0_moviebox_pubkey }}"
-    gw:
-      in:
-        hostname: raspberrypi
-        interface: wlan0
-      out:
-        hostname: dedibox
-        interface: enp0s20
     auto_assign_ips:
       - 10.0.0.0/8
       - fd1a:6126:2887::/48

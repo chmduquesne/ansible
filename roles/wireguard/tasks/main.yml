@@ -5,6 +5,6 @@
 
 - name: configure networks
   include_tasks: configure_wgnet.yml
-  with_items: "{{ wireguard.keys() | list | sort }}"
+  with_items: "{{ wireguard.keys()|list|sort }}"
   loop_control:
     loop_var: wgnet

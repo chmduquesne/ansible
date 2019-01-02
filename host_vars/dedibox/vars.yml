@@ -38,6 +38,7 @@ wireguard_override:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     listenport: 500
+    out_gw: enp0s20
 
 wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
 

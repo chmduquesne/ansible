@@ -94,30 +94,6 @@ def remove_peer(config, host):
     return c
 
 
-def in_gw(config, host):
-    if 'gw' not in config:
-        return False
-    if 'in' not in config['gw']:
-        return False
-    if 'hostname' not in config['gw']['in']:
-        raise AnsibleFilterError('missing field "hostname" in config.gw.in')
-    return host == config['gw']['in']['hostname']
-
-
-def out_gw(config, host):
-    if 'gw' not in config:
-        return False
-    if 'out' not in config['gw']:
-        return False
-    if 'hostname' not in config['gw']['out']:
-        raise AnsibleFilterError('missing field "hostname" in config.gw.out')
-    return host == config['gw']['out']['hostname']
-
-
-def gw(config, host):
-    return in_gw(config, host) or out_gw(config, host)
-
-
 def auto_assign_ips(config):
     c = dict(config)
 
@@ -156,6 +132,4 @@ class FilterModule(object):
             'auto_assign_ips': auto_assign_ips,
             'remove_peer': remove_peer,
             'add_pubkey': add_pubkey,
-            'in_gw': in_gw,
-            'out_gw': out_gw,
         }

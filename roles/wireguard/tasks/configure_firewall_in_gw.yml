@@ -3,7 +3,7 @@
 - name: allow wifi traffic to be forwarded to wireguard
   iptables_raw:
     name: "{{ wgnet }}_wifi_to_vpn"
-    rules: "-A FORWARD -i {{ conf.gw.in.interface }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
+    rules: "-A FORWARD -i {{ conf.in_gw }} -o {{ wgnet }} -m conntrack --ctstate NEW -j ACCEPT"
     ipversion: "{{ item }}"
   with_items:
     - 4

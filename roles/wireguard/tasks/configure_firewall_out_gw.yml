@@ -21,8 +21,8 @@
 
 - name: allow forwarding of packets from peers to the Internet
   iptables_raw:
-    name: "{{ wgnet }}_to_{{ conf.gw.out.interface }}"
-    rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.gw.out.interface }} -m conntrack --ctstate NEW -j ACCEPT"
+    name: "{{ wgnet }}_to_{{ conf.out_gw }}"
+    rules: "-A FORWARD -i {{ wgnet }} -o {{ conf.out_gw }} -m conntrack --ctstate NEW -j ACCEPT"
     ipversion: "{{ item }}"
   with_items:
     - 4
@@ -32,5 +32,5 @@
   iptables_raw:
     name: "{{ wgnet }}_masquerade"
     table: nat
-    rules: "-A POSTROUTING -o {{ conf.gw.out.interface }} -j MASQUERADE"
+    rules: "-A POSTROUTING -o {{ conf.out_gw }} -j MASQUERADE"
     ipversion: 4
