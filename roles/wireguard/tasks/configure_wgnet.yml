@@ -2,7 +2,7 @@
 
 - name: expand the configuration
   set_fact:
-    conf: "{{ wireguard[wgnet]|add_pubkey(inventory_hostname)|remove_peer(inventory_hostname)|auto_assign_ips }}"
+    conf: "{{ wireguard[wgnet]|auto_assign_ips(inventory_hostname)|remove_peer(inventory_hostname) }}"
 
 - name: create config file
   template:

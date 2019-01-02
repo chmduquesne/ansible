@@ -75,16 +75,6 @@ def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
     return to_text(res)
 
 
-def add_pubkey(config, host):
-    c = dict(config)
-    if 'pubkey' in c:
-        return c
-    if host not in c['peers']:
-        raise AnsibleFilterError('pubkey missing for "%s"' % host)
-    c['pubkey'] = c['peers'][host]['pubkey']
-    return c
-
-
 def remove_peer(config, host):
     c = dict(config)
     peers = dict(c['peers'])
@@ -94,19 +84,26 @@ def remove_peer(config, host):
     return c
 
 
-def auto_assign_ips(config):
+def auto_assign_ips(config, host):
     c = dict(config)
 
     subnets = c.get('auto_assign_ips', [])
     if not subnets:
         return c
 
+    if 'pubkey' in c:
+        pubkey = c['pubkey']
+    else:
+        if host not in c['peers']:
+            raise AnsibleFilterError('pubkey missing for "%s"' % host)
+        pubkey = c['peers'][host]['pubkey']
+
     address = c.get('address', [])
     if not isinstance(address, list):
         raise AnsibleFilterError('Expecting "address" to be a list')
 
     for subnet in subnets:
-        address += [ gen_ip(c['pubkey'], subnet=subnet, with_prefixlen=True) ]
+        address += [ gen_ip(pubkey, subnet=subnet, with_prefixlen=True) ]
     c['address'] = address
 
     for host, peervars in c.get('peers', dict()).items():
@@ -131,5 +128,4 @@ class FilterModule(object):
             'gen_ip': gen_ip,
             'auto_assign_ips': auto_assign_ips,
             'remove_peer': remove_peer,
-            'add_pubkey': add_pubkey,
         }
