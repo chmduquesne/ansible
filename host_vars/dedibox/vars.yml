@@ -40,6 +40,7 @@ wireguard_override:
     listenport: 500
     out_gw: enp0s20
     unbound_records: True
+    dns: False
 
 wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
 

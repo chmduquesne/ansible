@@ -5,6 +5,7 @@ wireguard_override:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     in_gw: wlan0
+    dns: False
     # Generate an uint32 from the interface name
     table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
 
@@ -55,7 +56,7 @@ dnsmasq_dnsmasq_conf:
     domain-needed
     bogus-priv
     no-resolv
-    server={{ vault_wg0_upstream_dns }}
+    server={{ wireguard.wg0.dns }}
     dnssec
     conf-file=/usr/share/dnsmasq-base/trust-anchors.conf
     local=/rpi/

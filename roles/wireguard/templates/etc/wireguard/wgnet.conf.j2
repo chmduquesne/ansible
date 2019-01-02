@@ -15,7 +15,7 @@ Address = {{ conf.address | join(', ')}}
 {% if 'mtu' in conf %}
 MTU = {{ conf.mtu }}
 {% endif %}
-{% if 'dns' in conf %}
+{% if 'dns' in conf and conf.dns %}
 DNS = {{ conf.dns }}
 {% endif %}
 {% if 'table' in conf %}
