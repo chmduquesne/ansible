@@ -1,0 +1,23 @@
+---
+
+- name: "collect the private key of {{ host }}"
+  set_fact:
+    privkey: "{{ wireguard[wgnet].peers[host].privkey | default('<your private key>') }}"
+
+- name: "adjusting {{ host }} config variables"
+  set_fact:
+    conf: {}
+    _conf: "{{ wireguard[wgnet]|combine({'privkey': privkey})|auto_assign_ips(host)|remove_peer(host) }}"
+
+- name: "removing irrelevant fields"
+  set_fact:
+    conf: "{{ conf|combine({item.key: item.value}) }}"
+  with_dict: "{{ _conf }}"
+  when: (item.key not in ('listenport', 'table', 'preup', 'postup', 'predown', 'postdown'))
+
+- name: "create {{ host }} config"
+  template:
+    src: templates/etc/wireguard/wgnet.conf.j2
+    dest: "{{ wireguard_mobile_confdir }}/{{ wgnet }}.{{host}}.conf"
+  delegate_to: 127.0.0.1
+  become: false

@@ -1,7 +1,6 @@
 ---
 - name: install wireguard
   include_tasks: "install_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
-  when: not wireguard_mobile
 
 - name: configure networks
   include_tasks: configure_wgnet.yml

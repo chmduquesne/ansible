@@ -36,8 +36,12 @@ wireguard_default:
           - "{{ vault_wg0_raspberrypi_inet6_range }}"
       t450:
         pubkey: "{{ vault_wg0_t450_pubkey }}"
+        privkey: "{{ vault_wg0_t450_privkey }}"
+        mobile: true
       op3t:
         pubkey: "{{ vault_wg0_op3t_pubkey }}"
+        privkey: "{{ vault_wg0_op3t_privkey }}"
+        mobile: true
       moviebox:
         pubkey: "{{ vault_wg0_moviebox_pubkey }}"
     auto_assign_ips:
@@ -45,5 +49,5 @@ wireguard_default:
       - fd1a:6126:2887::/48
       - "{{ vault_wg0_global_inet6_range }}"
     mtu: 1360
-    iptable_raw: True
     unbound_records: True
+    iptables: iptable_raw

@@ -21,9 +21,24 @@ DNS = {{ conf.dns }}
 {% if 'table' in conf %}
 Table = {{ conf.table }}
 {% endif %}
+{% if 'preup' in conf %}
+{% for cmd in conf.preup %}
+PreUp = {{ cmd }}
+{% endfor %}
+{% endif %}
 {% if 'postup' in conf %}
 {% for cmd in conf.postup %}
 PostUp = {{ cmd }}
+{% endfor %}
+{% endif %}
+{% if 'predown' in conf %}
+{% for cmd in conf.predown %}
+PreDown = {{ cmd }}
+{% endfor %}
+{% endif %}
+{% if 'postdown' in conf %}
+{% for cmd in conf.postdown %}
+PostDown = {{ cmd }}
 {% endfor %}
 {% endif %}
 {% for hostname, peervars in conf.peers | dictsort %}
