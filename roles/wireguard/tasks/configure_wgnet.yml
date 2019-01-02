@@ -29,6 +29,10 @@
 - name: configure firewall
   include_tasks: configure_firewall.yml
 
+- name: configure unbound records
+  include_tasks: configure_unbound_records.yml
+  when: conf.unbound_records|default(false)
+
 - name: create mobile config
   include_tasks: configure_mobile.yml
   with_items: "{{ conf.peers.keys()|list|sort }}"

@@ -1,0 +1,16 @@
+---
+- name: ensure unbound custom records directory exists
+  file:
+    path: "{{ wireguard_unbound_records_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: create config file
+  template:
+    src: templates/etc/unbound/records.d/wgnet.conf.j2
+    dest: "{{ wireguard_unbound_records_dir }}/{{ wgnet }}.conf"
+    owner: root
+    group: root
+    mode: 0644

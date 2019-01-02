@@ -1,3 +1,4 @@
 ---
 wireguard_mobile_confdir: "."
 wireguard_generate_mobile: False
+wireguard_unbound_records_dir: "/etc/unbound/records.d"

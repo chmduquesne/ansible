@@ -5,17 +5,14 @@ server:
 
   interface: ::0
   interface-automatic: no
-{% if unbound.recursive | default(false) %}
 
   max-udp-size: 3072
-{% endif %}
 
   access-control: ::0/0                 refuse
 {% for address in unbound.controllers %}
   access-control: {{ address }}         allow
 {% endfor %}
 
-{% if unbound.recursive | default(false) %}
   harden-glue: yes
   harden-dnssec-stripped: yes
   harden-referral-path: yes
@@ -25,14 +22,9 @@ server:
   val-permissive-mode: yes
   val-log-level: 1
   prefetch-key: yes
-{% endif %}
 
   cache-min-ttl: 1800
   cache-max-ttl: 14400
   prefetch: yes
 
-{% if not unbound.recursive | default(true) %}
-forward-zone:
-      name: "."
-      forward-addr: {{ unbound.upstream }}
-{% endif %}
+  include: /etc/unbound/records.d/*.conf

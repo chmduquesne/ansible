@@ -118,6 +118,56 @@ def auto_assign_ips(config, host):
     return c
 
 
+def first_subnet(subnets, version=4):
+    filtered_nets = []
+    for subnet in subnets:
+        try:
+            if version == 4:
+                ipaddress.IPv4Network(subnet)
+            else:
+                ipaddress.IPv6Network(subnet)
+            filtered_nets += [subnet]
+        except:
+            pass
+    if filtered_nets:
+        return filtered_nets[0]
+    return ""
+
+
+def to_records(config, host, version=4):
+    c = dict(config)
+    res = []
+
+    subnet = first_subnet(c.get('auto_assign_ips', []), version=version)
+    if not subnet:
+        return []
+
+    pubkey = None
+    if 'pubkey' in c:
+        pubkey = c['pubkey']
+    else:
+        try:
+            pubkey = c['peers'][host]['pubkey']
+        except KeyError:
+            pass
+
+    if pubkey:
+        res += [[host, gen_ip(pubkey, subnet=subnet)]]
+
+    for host, peervars in c.get('peers', dict()).items():
+        res += [[host, gen_ip(peervars['pubkey'], subnet=subnet)]]
+
+    return res
+
+
+def to_a_records(config, host):
+    return to_records(config, host, 4)
+
+
+def to_aaaa_records(config, host):
+    return to_records(config, host, 6)
+
+
 class FilterModule(object):
     """
     create a pseudo-random ip address from a string
@@ -128,4 +178,6 @@ class FilterModule(object):
             'gen_ip': gen_ip,
             'auto_assign_ips': auto_assign_ips,
             'remove_peer': remove_peer,
+            'to_a_records': to_a_records,
+            'to_aaaa_records': to_aaaa_records,
         }

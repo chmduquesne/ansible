@@ -49,5 +49,4 @@ wireguard_default:
       - fd1a:6126:2887::/48
       - "{{ vault_wg0_global_inet6_range }}"
     mtu: 1360
-    unbound_records: True
     iptables: iptable_raw

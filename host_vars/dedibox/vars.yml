@@ -39,6 +39,7 @@ wireguard_override:
     privkey: "{{ vault_wg0_privkey }}"
     listenport: 500
     out_gw: enp0s20
+    unbound_records: True
 
 wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
 
@@ -54,7 +55,6 @@ iptables_custom_rules:
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 
 unbound:
-  recursive: true
   controllers:
     - '::1'
     - 'fd1a:6126:2887::/48'
