@@ -1,0 +1,77 @@
+---
+
+- name: accept wireguard connections
+  iptables:
+    comment: "{{ wgnet }}_protocol"
+    chain: INPUT
+    protocol: udp
+    destination_port: "{{ conf.listenport }}"
+    ctstate: NEW
+    jump: ACCEPT
+    ip_version: "{{ item }}"
+  with_items:
+    - ipv4
+    - ipv6
+  when: ('listenport' in conf)
+
+- name: allow forwarding of packets that stay in the tunnel
+  iptables:
+    comment: "{{ wgnet }}_to_{{ wgnet }}"
+    chain: FORWARD
+    in_interface: "{{ wgnet }}"
+    out_interface: "{{ wgnet }}"
+    ctstate: NEW
+    jump: ACCEPT
+    ip_version: "{{ item }}"
+  with_items:
+    - ipv4
+    - ipv6
+  when: ('out_gw' in conf)
+
+- name: allow forwarding of packets from peers to the Internet
+  iptables:
+    comment: "{{ wgnet }}_to_{{ conf.out_gw }}"
+    chain: FORWARD
+    in_interface: "{{ wgnet }}"
+    out_interface: "{{ conf.out_gw }}"
+    ctstate: NEW
+    jump: ACCEPT
+    ip_version: "{{ item }}"
+  with_items:
+    - ipv4
+    - ipv6
+  when: ('out_gw' in conf)
+
+- name: masquerade v4 packets to the out interface
+  iptables:
+    comment: "{{ wgnet }}_masquerade"
+    table: nat
+    chain: POSTROUTING
+    out_interface: "{{ conf.out_gw }}"
+    jump: MASQUERADE
+    ip_version: ipv4
+  when: ('out_gw' in conf)
+
+- name: allow wifi traffic to be forwarded to wireguard
+  iptables:
+    comment: "{{ wgnet }}_wifi_to_vpn"
+    chain: FORWARD
+    in_interface: "{{ conf.in_gw }}"
+    out_interface: "{{ wgnet }}"
+    ctstate: NEW
+    jump: ACCEPT
+    ip_version: "{{ item }}"
+  with_items:
+    - ipv4
+    - ipv6
+  when: ('in_gw' in conf)
+
+- name: masquerade v4 packets to wireguard
+  iptables:
+    comment: "{{ wgnet }}_masquerade_wifi"
+    table: nat
+    chain: POSTROUTING
+    out_interface: "{{ wgnet }}"
+    jump: MASQUERADE
+    ip_version: ipv4
+  when: ('in_gw' in conf)

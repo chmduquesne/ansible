@@ -25,9 +25,8 @@
     - net.ipv4.ip_forward
   when: (('in_gw' in conf) or ('out_gw' in conf))
 
-# TODO: handle different types of firewall here
 - name: configure firewall
-  include_tasks: configure_firewall.yml
+  include_tasks: "configure_firewall_{{ wireguard_iptable_module }}.yml"
 
 - name: configure unbound records
   include_tasks: configure_unbound_records.yml

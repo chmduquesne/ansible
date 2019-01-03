@@ -20,6 +20,8 @@ sshd_config:
   AcceptEnv: "LANG LC_*"
   Subsystem: "sftp /usr/lib/sftp-server"
 
+wireguard_iptable_module: "iptables_raw"
+
 wireguard_default:
   wg0:
     peers:
@@ -49,5 +51,4 @@ wireguard_default:
       - fd1a:6126:2887::/48
       - "{{ vault_wg0_global_inet6_range }}"
     mtu: 1360
-    iptables: iptable_raw
     dns: "{{ vault_wg0_dns }}"
