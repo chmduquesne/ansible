@@ -21,4 +21,4 @@
   version: v0.8.0
 
 - src: oefenweb.dnsmasq
-  version: v2.2.8
+  version: v2.2.10
