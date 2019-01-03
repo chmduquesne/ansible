@@ -11,6 +11,7 @@ users:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
     home_create: yes
+    shell: /bin/bash
 promoted:
   - {name: "{{ ssh_user }}", promote: ALL, nopasswd: true}
 sshd_config:
