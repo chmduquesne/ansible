@@ -1,12 +1,12 @@
 ---
 
-- name: "collect the private key of {{ host }}"
+- name: "collect the private key of {{ peername }}"
   set_fact:
-    _privkey: "{{ wireguard[wgnet].peers[host].privkey | default('<your private key here>') }}"
+    _privkey: "{{ wireguard[wgnet].peers[peername].privkey | default('<your private key here>') }}"
 
-- name: "adjusting {{ host }} config variables"
+- name: "adjusting {{ peername }} config variables"
   set_fact:
-    _conf: "{{ wireguard[wgnet]|combine({'privkey': _privkey})|auto_assign_ips(host)|remove_peer(host) }}"
+    _conf: "{{ wireguard[wgnet]|combine({'privkey': _privkey})|auto_assign_ips(peername)|remove_peer(peername) }}"
     _conf_clean: {}
 
 - name: "removing the fields that are irrelevant for mobile devices"
@@ -19,15 +19,19 @@
   set_fact:
     _conf: "{{ _conf_clean|combine(wireguard_mobile_parameters[wgnet]|default(dict())) }}"
 
+- name: setting file name
+  set_fact:
+    template_dest: "{{ wireguard_mobile_conf_dir }}/{{ wgnet }}.{{ peername }}.conf"
+
 - name: "saving old conf"
   set_fact:
     old_conf: "{{ conf }}"
     conf: "{{ _conf }}"
 
-- name: "create {{ host }} config"
+- name: "create {{ peername }} config"
   template:
     src: templates/etc/wireguard/wgnet.conf.j2
-    dest: "{{ wireguard_mobile_conf_dir }}/{{ wgnet }}.{{host}}.conf"
+    dest: "{{ template_dest }}"
   delegate_to: 127.0.0.1
   become: false
   vars:

@@ -1,8 +1,10 @@
 #jinja2: lstrip_blocks: True
 # {{ ansible_managed }}
+{% if template_dest is defined %}
 
 # Use this configuration on a mobile device:
-# qrencode -o- < this_file | display
+# qrencode -o- < {{ template_dest | basename }} | display
+{% endif %}
 
 [Interface]
 PrivateKey = {{ conf.privkey }}

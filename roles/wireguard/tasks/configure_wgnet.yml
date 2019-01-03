@@ -36,5 +36,5 @@
   include_tasks: configure_mobile.yml
   with_items: "{{ conf.peers.keys()|list|sort }}"
   loop_control:
-    loop_var: host
-  when: wireguard_generate_mobile and wireguard[wgnet].peers[host].mobile|default(False)
+    loop_var: peername
+  when: wireguard_generate_mobile and wireguard[wgnet].peers[peername].mobile|default(False)
