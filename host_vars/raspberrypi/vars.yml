@@ -56,7 +56,7 @@ dnsmasq_dnsmasq_conf:
     domain-needed
     bogus-priv
     no-resolv
-    server={{ wireguard.wg0.dns }}
+    server={{ wireguard_default.wg0.dns }}
     dnssec
     conf-file=/usr/share/dnsmasq-base/trust-anchors.conf
     local=/rpi/
