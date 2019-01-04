@@ -9,8 +9,10 @@
 
 - name: create the unbound records file
   template:
-    src: templates/etc/unbound/records.d/wgnet.conf.j2
-    dest: "{{ wireguard_unbound_records_dir }}/{{ wgnet }}.conf"
+    src: templates/etc/unbound/records.d/wireguard_interface.conf.j2
+    dest: "{{ wireguard_unbound_records_dir }}/{{ wireguard_interface }}.conf"
     owner: root
     group: root
     mode: 0644
+  notify:
+    - restart unbound

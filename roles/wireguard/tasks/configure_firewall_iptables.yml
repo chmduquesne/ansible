@@ -2,76 +2,76 @@
 
 - name: accept wireguard connections
   iptables:
-    comment: "{{ wgnet }}_protocol"
+    comment: "{{ wireguard_interface }}_protocol"
     chain: INPUT
     protocol: udp
-    destination_port: "{{ conf.listenport }}"
+    destination_port: "{{ wireguard_conf.listenport }}"
     ctstate: NEW
     jump: ACCEPT
     ip_version: "{{ item }}"
   with_items:
     - ipv4
     - ipv6
-  when: ('listenport' in conf)
+  when: ('listenport' in wireguard_conf)
 
 - name: allow forwarding of packets that stay in the tunnel
   iptables:
-    comment: "{{ wgnet }}_to_{{ wgnet }}"
+    comment: "{{ wireguard_interface }}_to_{{ wireguard_interface }}"
     chain: FORWARD
-    in_interface: "{{ wgnet }}"
-    out_interface: "{{ wgnet }}"
+    in_interface: "{{ wireguard_interface }}"
+    out_interface: "{{ wireguard_interface }}"
     ctstate: NEW
     jump: ACCEPT
     ip_version: "{{ item }}"
   with_items:
     - ipv4
     - ipv6
-  when: ('out_gw' in conf)
+  when: ('out_gw' in wireguard_conf)
 
 - name: allow forwarding of packets from peers to the Internet
   iptables:
-    comment: "{{ wgnet }}_to_{{ conf.out_gw }}"
+    comment: "{{ wireguard_interface }}_to_{{ wireguard_conf.out_gw }}"
     chain: FORWARD
-    in_interface: "{{ wgnet }}"
-    out_interface: "{{ conf.out_gw }}"
+    in_interface: "{{ wireguard_interface }}"
+    out_interface: "{{ wireguard_conf.out_gw }}"
     ctstate: NEW
     jump: ACCEPT
     ip_version: "{{ item }}"
   with_items:
     - ipv4
     - ipv6
-  when: ('out_gw' in conf)
+  when: ('out_gw' in wireguard_conf)
 
 - name: masquerade v4 packets to the out interface
   iptables:
-    comment: "{{ wgnet }}_masquerade"
+    comment: "{{ wireguard_interface }}_masquerade"
     table: nat
     chain: POSTROUTING
-    out_interface: "{{ conf.out_gw }}"
+    out_interface: "{{ wireguard_conf.out_gw }}"
     jump: MASQUERADE
     ip_version: ipv4
-  when: ('out_gw' in conf)
+  when: ('out_gw' in wireguard_conf)
 
 - name: allow wifi traffic to be forwarded to wireguard
   iptables:
-    comment: "{{ wgnet }}_wifi_to_vpn"
+    comment: "{{ wireguard_interface }}_wifi_to_vpn"
     chain: FORWARD
-    in_interface: "{{ conf.in_gw }}"
-    out_interface: "{{ wgnet }}"
+    in_interface: "{{ wireguard_conf.in_gw }}"
+    out_interface: "{{ wireguard_interface }}"
     ctstate: NEW
     jump: ACCEPT
     ip_version: "{{ item }}"
   with_items:
     - ipv4
     - ipv6
-  when: ('in_gw' in conf)
+  when: ('in_gw' in wireguard_conf)
 
 - name: masquerade v4 packets to wireguard
   iptables:
-    comment: "{{ wgnet }}_masquerade_wifi"
+    comment: "{{ wireguard_interface }}_masquerade_wifi"
     table: nat
     chain: POSTROUTING
-    out_interface: "{{ wgnet }}"
+    out_interface: "{{ wireguard_interface }}"
     jump: MASQUERADE
     ip_version: ipv4
-  when: ('in_gw' in conf)
+  when: ('in_gw' in wireguard_conf)

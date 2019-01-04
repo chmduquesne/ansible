@@ -3,7 +3,7 @@
   include_tasks: "install_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
 
 - name: configure networks
-  include_tasks: configure_wgnet.yml
+  include_tasks: configure_wireguard_interface.yml
   with_items: "{{ wireguard.keys()|list|sort }}"
   loop_control:
-    loop_var: wgnet
+    loop_var: wireguard_interface
