@@ -1,11 +1,11 @@
 # {{ ansible_managed }}
 # ipv4
-{% for record in conf | to_a_records(inventory_hostname) %}
+{% for record in conf | dns_records(inventory_hostname, version=4) %}
 local-data: "{{ record.0 }}.{{wgnet}} A {{ record.1 }}"
 local-data-ptr: "{{ record.1 }} {{ record.0 }}.{{ wgnet }}"
 {% endfor %}
 # ipv6
-{% for record in conf | to_aaaa_records(inventory_hostname) %}
+{% for record in conf | dns_records(inventory_hostname, version=6) %}
 local-data: "{{ record.0 }}.{{wgnet}} AAAA {{ record.1 }}"
 local-data-ptr: "{{ record.1 }} {{ record.0 }}.{{ wgnet }}"
 {% endfor %}

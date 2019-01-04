@@ -9,28 +9,11 @@ import ipaddress
 import hashlib
 import sys
 import json
+import copy
 
 
 def sha256(s):
     return hashlib.sha256(s.encode()).digest()
-
-
-def gen_uint32(s, forbidden=[0, 253, 254, 255]):
-    """
-    - Hash the input
-    - Take the first 4 bytes of the result
-    - Interpret as a uint32
-
-    Can be reproduced in shell:
-
-    printf "%d" "0x$(echo -n "$1" | sha256sum | cut -b-4)"
-    """
-    h = hashlib.sha256(s.encode()).hexdigest()
-    res = int(h[:4], 16)
-    if res in forbidden:
-        return gen_uint32(h, forbidden)
-    else:
-        return res
 
 
 def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
@@ -43,11 +26,7 @@ def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
     if sys.version_info.major < 3:
         subnet = unicode(subnet)
 
-    try:
-        network = ipaddress.IPv4Network(subnet)
-    except:
-        network = ipaddress.IPv6Network(subnet)
-
+    network = ipaddress.ip_network(subnet)
     mask = network.netmask.packed
     head = network.network_address.packed
     tail = sha256(s + '\n')
@@ -64,7 +43,9 @@ def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
     res = to_text(cls(bytes(ip_bytes)))
 
     if with_prefixlen and with_maxprefixlen:
-        raise AnsibleFilterError("|gen_ip: you need to choose between prefixlen and maxprefixlen")
+        raise AnsibleFilterError(
+            "|gen_ip: you cannot include both prefixlen and maxprefixlen"
+            )
 
     if with_prefixlen:
         res += "/%d" % network.prefixlen
@@ -75,97 +56,94 @@ def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
     return to_text(res)
 
 
-def remove_peer(config, host):
+def remove_peer(config, peername):
+    """
+    Remove the given peer from the peers dictionary
+    """
     c = dict(config)
     peers = dict(c['peers'])
-    if host in peers:
-        del peers[host]
+    if peername in peers:
+        del peers[peername]
     c['peers'] = peers
     return c
 
 
-def auto_assign_ips(config, host):
-    c = dict(config)
+def get_pubkey(config, hostname):
+    """
+    Return the public key of the hostname
+    """
+    res = None
+    if 'pubkey' in config:
+        res = config['pubkey']
+    else:
+        if hostname in config['peers']:
+            res = config['peers'][hostname]['pubkey']
+    return res
 
+
+def auto_assign_ips(config, hostname):
+    # Make a copy of the config that we can safely modify
+    c = copy.deepcopy(config)
+
+    # If there is no ip to assign, return immediately
     subnets = c.get('auto_assign_ips', [])
     if not subnets:
         return c
 
-    if 'pubkey' in c:
-        pubkey = c['pubkey']
-    else:
-        if host not in c['peers']:
-            raise AnsibleFilterError('pubkey missing for "%s"' % host)
-        pubkey = c['peers'][host]['pubkey']
-
+    # Assign an ip to the host
+    pubkey = get_pubkey(c, hostname)
+    if not pubkey:
+        raise AnsibleFilterError(
+                '|auto_assign_ips: "%s": pubkey missing' % hostname)
     address = c.get('address', [])
     if not isinstance(address, list):
-        raise AnsibleFilterError('Expecting "address" to be a list')
-
+        raise AnsibleFilterError(
+                '|auto_assign_ips: "address" should be a list')
     for subnet in subnets:
-        address += [ gen_ip(pubkey, subnet=subnet, with_prefixlen=True) ]
+        generated = gen_ip(pubkey, subnet=subnet, with_prefixlen=True)
+        if generated not in address:
+            address += [generated]
     c['address'] = address
 
-    for host, peervars in c.get('peers', dict()).items():
+    # Assign allowedips to the peers
+    for peername, peervars in c.get('peers', dict()).items():
         allowedips = peervars.get('allowedips', [])
         if not isinstance(allowedips, list):
-            raise AnsibleFilterError('Expecting "allowedips" to be a list')
+            raise AnsibleFilterError(
+                    '|auto_assign_ips: "allowedips" should be a list')
 
         for subnet in subnets:
-            allowedips += [ gen_ip(peervars['pubkey'], subnet=subnet, with_maxprefixlen=True) ]
-        c['peers'][host]['allowedips'] = allowedips
+            generated = gen_ip(peervars['pubkey'], subnet=subnet, with_maxprefixlen=True)
+            if generated not in allowedips:
+                allowedips += [generated]
+        c['peers'][peername]['allowedips'] = allowedips
 
     return c
 
 
 def first_subnet(subnets, version=4):
-    filtered_nets = []
     for subnet in subnets:
-        try:
-            if version == 4:
-                ipaddress.IPv4Network(subnet)
-            else:
-                ipaddress.IPv6Network(subnet)
-            filtered_nets += [subnet]
-        except:
-            pass
-    if filtered_nets:
-        return filtered_nets[0]
+        network = ipaddress.ip_network(subnet)
+        if network.version == version:
+            return subnet
     return ""
 
 
-def to_records(config, host, version=4):
-    c = dict(config)
+def dns_records(config, hostname, version=4):
     res = []
 
-    subnet = first_subnet(c.get('auto_assign_ips', []), version=version)
+    subnet = first_subnet(config.get('auto_assign_ips', []), version=version)
     if not subnet:
         return []
 
-    pubkey = None
-    if 'pubkey' in c:
-        pubkey = c['pubkey']
-    else:
-        try:
-            pubkey = c['peers'][host]['pubkey']
-        except KeyError:
-            pass
-
+    pubkey = get_pubkey(config, hostname)
     if pubkey:
-        res += [[host, gen_ip(pubkey, subnet=subnet)]]
+        res += [[hostname, gen_ip(pubkey, subnet=subnet)]]
 
-    for host, peervars in c.get('peers', dict()).items():
-        res += [[host, gen_ip(peervars['pubkey'], subnet=subnet)]]
+    for peername, peervars in config.get('peers', dict()).items():
+        res += [[peername, gen_ip(peervars['pubkey'], subnet=subnet)]]
 
     return res
-
-
-def to_a_records(config, host):
-    return to_records(config, host, 4)
-
-
-def to_aaaa_records(config, host):
-    return to_records(config, host, 6)
 
 
 class FilterModule(object):
@@ -178,6 +156,5 @@ class FilterModule(object):
             'gen_ip': gen_ip,
             'auto_assign_ips': auto_assign_ips,
             'remove_peer': remove_peer,
-            'to_a_records': to_a_records,
-            'to_aaaa_records': to_aaaa_records,
+            'dns_records': dns_records,
         }
