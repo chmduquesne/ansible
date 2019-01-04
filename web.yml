@@ -8,7 +8,7 @@
       include_role: name=reallyenglish.dhclient
 
     - name: configure wireguard
-      include_role: name=wireguard
+      include_role: name=chmduquesne.ansible_wireguard
 
     - name: configure network
       include_role: name=chmduquesne.ansible-network-interfaces

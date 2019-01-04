@@ -22,3 +22,6 @@
 
 - src: oefenweb.dnsmasq
   version: v2.2.10
+
+- src: chmduquesne.ansible_wireguard
+  version: 0.0.1
