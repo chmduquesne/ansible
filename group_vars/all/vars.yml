@@ -45,6 +45,10 @@ wireguard_default:
         pubkey: "{{ vault_wg0_op3t_pubkey }}"
         privkey: "{{ vault_wg0_op3t_privkey }}"
         mobile: true
+      firetv:
+        pubkey: "{{ vault_wg0_firetv_pubkey }}"
+        privkey: "{{ vault_wg0_firetv_privkey }}"
+        mobile: true
       moviebox:
         pubkey: "{{ vault_wg0_moviebox_pubkey }}"
     auto_assign_ips:
