@@ -1,28 +1,19 @@
 # {{ ansible_managed }}
 
 server:
-  num-threads: 4
-
   interface: ::0
-  interface-automatic: no
-
   max-udp-size: 3072
 
-  access-control: ::0/0                 refuse
+  access-control: ::0/0 refuse
 {% for address in unbound.controllers %}
-  access-control: {{ address }}         allow
+  access-control: {{ address }} allow
 {% endfor %}
 
-  harden-glue: yes
-  harden-dnssec-stripped: yes
   harden-referral-path: yes
   unwanted-reply-threshold: 10000000
-
-  val-clean-additional: yes
   val-permissive-mode: yes
   val-log-level: 1
   prefetch-key: yes
-
   cache-min-ttl: 1800
   cache-max-ttl: 14400
   prefetch: yes
