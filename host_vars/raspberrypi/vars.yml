@@ -5,12 +5,13 @@
 wireguard_override:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
+    pubkey: "{{ wireguard_default.wg0.peers.raspberrypi.pubkey }}"
     in_gw: wlan0
     dns: False
     # Generate an uint32 from the interface name
     table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
 
-wireguard: "{{ wireguard_default|combine(wireguard_override, recursive=True) }}"
+wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
 
 iptables_custom_rules:
   - name: "wg0_dns"
@@ -19,6 +20,9 @@ iptables_custom_rules:
       -A INPUT -i {{ wireguard.wg0.in_gw }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
 
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"
+
+
+wlan0_inet6: "{{ wireguard_default.wg0.peers.raspberrypi.allowedips.0 }}"
 
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
@@ -35,8 +39,8 @@ network_interfaces_interfaces:
   - device: wlan0
     family: inet6
     method: static
-    address: "{{ wireguard.wg0.peers.raspberrypi.allowedips.0.split('::/')|first }}::1"
-    netmask: "{{ wireguard.wg0.peers.raspberrypi.allowedips.0.split('::/')|last }}"
+    address: "{{ wlan0_inet6.split('::/')|first }}::1"
+    netmask: "{{ wlan0_inet6.split('::/')|last }}"
     hostapd: /etc/hostapd/hostapd.conf
     post-up:
       - ip -6 rule add iif wlan0 lookup {{ wireguard.wg0.table }}
