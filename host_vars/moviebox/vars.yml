@@ -25,5 +25,6 @@ sshd_config_match:
 wireguard_override:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
+    pubkey: "{{ wireguard_default.wg0.peers.moviebox.pubkey }}"
 
-wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
+wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"

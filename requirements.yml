@@ -24,4 +24,4 @@
   version: v2.2.10
 
 - src: chmduquesne.ansible_wireguard
-  version: 0.0.3
+  version: 0.0.4

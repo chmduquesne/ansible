@@ -53,3 +53,12 @@ wireguard_default:
       - "{{ vault_wg0_global_inet6_range }}"
     mtu: 1360
     dns: "{{ vault_wg0_dns }}"
+
+
+wireguard_wg0_peers_client:
+  peers:
+    dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+
+wireguard_wg0_client: "{{ wireguard_default.wg0|combine(wireguard_wg0_peers_client) }}"
+
+wireguard_client: "{{ wireguard_default|combine({'wg0': wireguard_wg0_client}) }}"
