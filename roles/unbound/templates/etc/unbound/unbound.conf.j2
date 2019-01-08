@@ -1,21 +1,5 @@
 # {{ ansible_managed }}
 
-server:
-  interface: ::0
-  max-udp-size: 3072
-
-  access-control: ::0/0 refuse
-{% for address in unbound.controllers %}
-  access-control: {{ address }} allow
+{% for line in unbound_unbound_conf | default([]) %}
+{{ line }}
 {% endfor %}
-
-  harden-referral-path: yes
-  unwanted-reply-threshold: 10000000
-  val-permissive-mode: yes
-  val-log-level: 1
-  prefetch-key: yes
-  cache-min-ttl: 1800
-  cache-max-ttl: 14400
-  prefetch: yes
-
-  include: /etc/unbound/records.d/*.conf

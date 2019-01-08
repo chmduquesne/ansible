@@ -58,8 +58,22 @@ iptables_custom_rules:
 
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 
-unbound:
-  controllers:
-    - '::1'
-    - 'fd1a:6126:2887::/48'
-    - '10.0.0.0/8'
+unbound_unbound_conf:
+  - |
+    server:
+      interface: ::0
+      max-udp-size: 3072
+      access-control: ::0/0 refuse
+      access-control: ::1 allow
+      access-control: {{ wireguard.wg0.auto_assign_ips.0 }} allow
+      access-control: {{ wireguard.wg0.auto_assign_ips.1 }} allow
+      harden-referral-path: yes
+      unwanted-reply-threshold: 10000000
+      val-permissive-mode: yes
+      val-log-level: 1
+      prefetch-key: yes
+      cache-min-ttl: 1800
+      cache-max-ttl: 14400
+      prefetch: yes
+      include: /etc/unbound/records.d/*.conf
+
