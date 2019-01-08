@@ -1,8 +1,0 @@
----
-ansible_connection: local
-
-wireguard_override:
-  wg0:
-    privkey: "{{ vault_wg0_privkey }}"
-
-wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
