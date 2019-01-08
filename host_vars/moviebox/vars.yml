@@ -28,3 +28,11 @@ wireguard_override:
     pubkey: "{{ wireguard_default.wg0.peers.moviebox.pubkey }}"
 
 wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
+
+iptables_custom_rules:
+  - name: "tvheadend"
+    rules: |
+      -A INPUT -p tcp -m tcp --dport 9981 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
+
+ip6tables_custom_rules: "{{ iptables_custom_rules }}"
