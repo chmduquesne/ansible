@@ -3,6 +3,15 @@
   package: name=iptables-persistent state=latest
   when: ansible_os_family == "Debian"
 
+- name: reset iptables rules
+  iptables_raw:
+    name: '*'
+    table: '*'
+    state: absent
+    ipversion: '{{ item }}'
+  with_items: [4, 6]
+  when: iptables_reset|default(False)
+
 - name: Set custom iptables rules
   iptables_raw:
     name: 'iptables_custom_rules_{{ item.name }}'
