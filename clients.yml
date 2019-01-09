@@ -6,3 +6,6 @@
 
     - name: configure wireguard
       include_role: name=chmduquesne.ansible_wireguard
+
+    - name: configure tvheadend
+      include_role: name=tvheadend

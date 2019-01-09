@@ -10,8 +10,8 @@
     mode: 0600
     owner: hts
     group: hts
+  notify:
+    - restart tvheadend
 
 - name: enable service
   service: name=tvheadend enabled=yes use=service
-  notify:
-    - restart tvheadend

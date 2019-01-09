@@ -66,3 +66,6 @@ wireguard_wg0_peers_client:
 wireguard_wg0_client: "{{ wireguard_default.wg0|combine(wireguard_wg0_peers_client) }}"
 
 wireguard_client: "{{ wireguard_default|combine({'wg0': wireguard_wg0_client}) }}"
+
+tvheadend_username: "{{ vault_tvheadend_username }}"
+tvheadend_password: "{{ vault_tvheadend_password }}"

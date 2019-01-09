@@ -33,6 +33,8 @@ iptables_custom_rules:
   - name: "tvheadend"
     rules: |
       -A INPUT -p tcp -m tcp --dport 9981 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p udp -m udp --dport 9981 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p tcp -m tcp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p udp -m udp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
 
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"

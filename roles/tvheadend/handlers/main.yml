@@ -1,4 +1,4 @@
 ---
 # handlers file for tvheadend
 - name: restart tvheadend
-  service: name=tvheadend state=restarted
+  service: name=tvheadend state=restarted use=service
