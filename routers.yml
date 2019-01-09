@@ -11,7 +11,7 @@
       include_role: name=chmduquesne.ansible-network-interfaces
 
     - name: configure hostapd
-      include_role: name=hostapd
+      include_role: name=chmduquesne.ansible_hostapd
 
     - name: configure dnsmasq
       include_role: name=oefenweb.dnsmasq

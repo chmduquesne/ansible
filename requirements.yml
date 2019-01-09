@@ -25,3 +25,6 @@
 
 - src: chmduquesne.ansible_wireguard
   version: 0.0.5
+
+- src: chmduquesne.ansible_hostapd
+  version: 0.0.1
