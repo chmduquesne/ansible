@@ -52,9 +52,21 @@ network_interfaces_interfaces:
     post-up:
       - ip -4 rule add iif wlan0 lookup {{ wireguard.wg0.table }}
 
-hostapd:
-  ssid: "{{ vault_hostapd_ssid }}"
-  wpa_passphrase: "{{ vault_hostapd_wpa_passphrase }}"
+hostapd_conf:
+  - |
+    interface=wlan0
+    hw_mode=g
+    channel=10
+    ieee80211d=1
+    country_code=DE
+    ieee80211n=1
+    wmm_enabled=1
+    ssid={{ vault_hostapd_ssid }}
+    auth_algs=1
+    wpa=2
+    wpa_key_mgmt=WPA-PSK
+    rsn_pairwise=CCMP
+    wpa_passphrase={{ vault_hostapd_wpa_passphrase }}
 
 dnsmasq_dnsmasq_conf:
   - |
