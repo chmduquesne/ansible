@@ -1,2 +1,4 @@
 ---
 # handlers file for socks-proxy
+- name: restart socks-proxy
+  service: name=socks-proxy state=restarted

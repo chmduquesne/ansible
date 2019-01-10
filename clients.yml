@@ -9,3 +9,6 @@
 
     - name: configure tvheadend
       include_role: name=tvheadend
+
+    - name: install a socks-proxy
+      include_role: name=socks-proxy

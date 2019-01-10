@@ -1,2 +1,27 @@
 ---
 # tasks file for socks-proxy
+- name: create ssh keys for root
+  user:
+    name: root
+    generate_ssh_key: yes
+
+- name: authorize root to ssh to himself
+  file:
+    path: /root/.ssh/authorized_keys
+    state: link
+    src: /root/.ssh/id_rsa.pub
+
+- name: create service file
+  template:
+    src: templates//etc/systemd/system/socks-proxy.service.j2
+    dest: /etc/systemd/system/socks-proxy.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart socks-proxy
+
+- name: enable service
+  service: name=socks-proxy enabled=yes
+  notify:
+    - restart socks-proxy

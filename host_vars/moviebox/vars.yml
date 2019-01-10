@@ -29,6 +29,8 @@ wireguard_override:
 
 wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
 
+socks_proxy_port: 1080
+
 ip6tables_custom_rules:
   - name: "tvheadend"
     rules: |
@@ -38,6 +40,6 @@ ip6tables_custom_rules:
       -A INPUT -p udp -m udp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
   - name: "socks"
     rules: |
-      -A INPUT -p tcp -m tcp --dport 1080 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport {{ socks_proxy_port }} -m conntrack --ctstate NEW -j ACCEPT
 
 iptables_custom_rules: "{{ ip6tables_custom_rules }}"
