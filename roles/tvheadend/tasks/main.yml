@@ -3,6 +3,12 @@
 - name: install tvheadend
   package: name=tvheadend state=latest
 
+- name: add the user hts to the group video
+  user:
+    name: hts
+    groups: video
+    append: True
+
 - name: configure tvheadend superuser
   template:
     src: templates/var/lib/hts/.hts/tvheadend/superuser.j2
@@ -15,3 +21,17 @@
 
 - name: enable service
   service: name=tvheadend enabled=yes use=service
+
+# Should this be in a separate role?
+- name: Download usbstick firmare
+  get_url:
+    url: "https://github.com/OpenELEC/dvb-firmware/raw/master/firmware/{{ item.value }}"
+    dest: "/lib/firmware/{{ item.value }}"
+    checksum: "{{ item.key }}"
+    owner: root
+    group: root
+    mode: 0644
+    force: no
+  with_dict:
+    sha256:5bbcfee4a0dbd55ea9d88d6b7d618afed5937a1f02962f14cdf707e108895cf7: dvb-demod-si2168-02.fw
+    sha256:8507536630d75a316d0719d6b95c04b90c36baa5b457ad457c9bacadafcef134: dvb-demod-si2168-b40-01.fw
