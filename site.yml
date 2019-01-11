@@ -1,4 +1,4 @@
 ---
-- import_playbook: web.yml
-- import_playbook: routers.yml
-- import_playbook: clients.yml
+- import_playbook: playbooks/web.yml
+- import_playbook: playbooks/routers.yml
+- import_playbook: playbooks/clients.yml
