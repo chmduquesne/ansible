@@ -20,8 +20,8 @@
 - src: chmduquesne.wireguard
   version: 0.0.9
 
-- src: chmduquesne.ansible_hostapd
-  version: 0.0.1
+- src: chmduquesne.hostapd
+  version: 0.0.2
 
 - src: elboletaire.transmission
   version: 2.0.1
