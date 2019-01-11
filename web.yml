@@ -11,7 +11,7 @@
       include_role: name=chmduquesne.wireguard
 
     - name: configure network
-      include_role: name=chmduquesne.ansible-network-interfaces
+      include_role: name=chmduquesne.network_interfaces
 
     - name: configure unbound
       include_role: name=unbound
