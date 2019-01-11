@@ -62,3 +62,11 @@ ip6tables_custom_rules:
       -A OUTPUT -m owner --uid-owner pi -j REJECT
 
 iptables_custom_rules: "{{ ip6tables_custom_rules }}"
+
+host_roles:
+  - common
+  - chmduquesne.network_interfaces
+  - chmduquesne.wireguard
+  - tvheadend
+  - socks-proxy
+  - ansible-transmission

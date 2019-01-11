@@ -88,3 +88,10 @@ dnsmasq_dnsmasq_conf:
 
 dnsmasq_etc_default_options:
   - DNSMASQ_EXCEPT=lo
+
+host_roles:
+  - common
+  - chmduquesne.network_interfaces
+  - chmduquesne.wireguard
+  - chmduquesne.hostapd
+  - oefenweb.dnsmasq

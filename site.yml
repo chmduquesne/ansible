@@ -1,4 +1,9 @@
 ---
-- import_playbook: playbooks/web.yml
-- import_playbook: playbooks/routers.yml
-- import_playbook: playbooks/clients.yml
+- hosts: all
+  tasks:
+    - name: "apply host role"
+      include_role:
+        name: "{{ ansible_role }}"
+      with_items: "{{ host_roles }}"
+      loop_control:
+        loop_var: ansible_role
