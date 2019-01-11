@@ -35,7 +35,7 @@ transmission_rpc_whitelist_enabled: True
 transmission_rpc_whitelist: "192.168.1.*,10.*.*.*"
 transmission_rpc_auth_required: True
 transmission_user: pi
-transmission_password: raspberry
+transmission_password: "{{ vault_transmission_password }}"
 
 transmission_download_dir: /home/pi/transmission/downloads
 transmission_watch_dir: /home/pi/transmission/torrents
