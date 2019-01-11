@@ -3,6 +3,8 @@
 Description=socks proxy via ssh
 After=network.target
 [Service]
-ExecStart=/usr/bin/ssh -v -N -D {{ socks_proxy_port }} -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no localhost
+ExecStart=/usr/bin/ssh -v -N -D *:{{ socks_proxy_port }} -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no localhost
+Restart=always
+RestartSec=5
 [Install]
 WantedBy=multi-user.target
