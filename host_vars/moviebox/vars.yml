@@ -31,15 +31,34 @@ wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
 
 socks_proxy_port: 1080
 
+transmission_rpc_whitelist_enabled: True
+transmission_rpc_whitelist: "192.168.1.*,10.*.*.*"
+transmission_rpc_auth_required: True
+transmission_user: pi
+transmission_password: raspberry
+
+transmission_download_dir: /home/pi/transmission/downloads
+transmission_watch_dir: /home/pi/transmission/torrents
+transmission_incomplete_dir_enabled: True
+transmission_incomplete_dir: /home/pi/transmission/incomplete
+
 ip6tables_custom_rules:
-  - name: "tvheadend"
+  - name: tvheadend
     rules: |
       -A INPUT -p tcp -m tcp --dport 9981 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p udp -m udp --dport 9981 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p tcp -m tcp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p udp -m udp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
-  - name: "socks"
+  - name: socks
     rules: |
       -A INPUT -p tcp -m tcp --dport {{ socks_proxy_port }} -m conntrack --ctstate NEW -j ACCEPT
+  - name: transmission
+    rules: |
+      -A INPUT -p tcp -m tcp --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport 51413 -i wg0 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p udp -m udp --dport 51413 -i wg0 -m conntrack --ctstate NEW -j ACCEPT
+      -A OUTPUT -p tcp -m tcp --sport 9091 -m owner --uid-owner pi -j ACCEPT
+      -A OUTPUT -m owner --uid-owner pi -o wg0 -j ACCEPT
+      -A OUTPUT -m owner --uid-owner pi -j REJECT
 
 iptables_custom_rules: "{{ ip6tables_custom_rules }}"

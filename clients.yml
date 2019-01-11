@@ -12,3 +12,6 @@
 
     - name: install a socks-proxy
       include_role: name=socks-proxy
+
+    - name: install transmission
+      include_role: name=ansible-transmission
