@@ -1,19 +1,27 @@
 ---
 # tasks file for socks-proxy
-- name: create ssh keys for root
+- name: "setting up {{ socks_proxy_user }}"
   user:
-    name: root
+    name: "{{ socks_proxy_user }}"
+    shell: /usr/sbin/nologin
     generate_ssh_key: yes
 
-- name: authorize root to ssh to himself
-  file:
-    path: /root/.ssh/authorized_keys
-    state: link
-    src: /root/.ssh/id_rsa.pub
+- name: "get {{ socks_proxy_user }} public key"
+  shell: >
+    cat /home/{{ socks_proxy_user }}/.ssh/id_rsa.pub || echo "--- {{socks_proxy_user}} pubkey ---"
+  changed_when: false
+  check_mode: false
+  register: _ssh_pubkey
+
+- name: "authorize {{ socks_proxy_user }} to ssh to self"
+  lineinfile:
+    path: "/home/{{ socks_proxy_user }}/.ssh/authorized_keys"
+    line: "{{ _ssh_pubkey.stdout }}"
+    create: yes
 
 - name: create service file
   template:
-    src: templates//etc/systemd/system/socks-proxy.service.j2
+    src: templates/etc/systemd/system/socks-proxy.service.j2
     dest: /etc/systemd/system/socks-proxy.service
     owner: root
     group: root

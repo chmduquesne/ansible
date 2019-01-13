@@ -30,6 +30,7 @@ wireguard_override:
 wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
 
 socks_proxy_port: 1080
+socks_proxy_user: wgsocks
 
 transmission_rpc_whitelist_enabled: True
 transmission_rpc_whitelist: "192.168.1.*,10.*.*.*"
@@ -51,7 +52,10 @@ ip6tables_custom_rules:
       -A INPUT -p udp -m udp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
   - name: socks
     rules: |
-      -A INPUT -p tcp -m tcp --dport {{ socks_proxy_port }} -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport {{ socks_proxy_port }} -i eth0 -m conntrack --ctstate NEW -j ACCEPT
+      -A OUTPUT -p tcp -m tcp --sport {{ socks_proxy_port }} -o eth0 -j ACCEPT
+      -A OUTPUT -m owner --uid-owner {{ socks_proxy_user }} -o wg0 -j ACCEPT
+      -A OUTPUT -m owner --uid-owner {{ socks_proxy_user }} -j REJECT
   - name: transmission
     rules: |
       -A INPUT -p tcp -m tcp --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
