@@ -23,5 +23,5 @@
 - src: chmduquesne.hostapd
   version: 0.0.3
 
-- src: elboletaire.transmission
-  version: 2.0.1
+- src:  chmduquesne.transmission
+  version: 2.0.2
