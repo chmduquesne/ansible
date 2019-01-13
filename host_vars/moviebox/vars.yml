@@ -32,8 +32,7 @@ wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
 socks_proxy_port: 1080
 socks_proxy_user: wgsocks
 
-transmission_rpc_whitelist_enabled: True
-transmission_rpc_whitelist: "192.168.1.*,10.*.*.*"
+transmission_rpc_whitelist_enabled: False
 transmission_rpc_auth_required: True
 transmission_user: pi
 transmission_password: "{{ vault_transmission_password }}"
@@ -43,7 +42,7 @@ transmission_watch_dir: /home/pi/transmission/torrents
 transmission_incomplete_dir_enabled: True
 transmission_incomplete_dir: /home/pi/transmission/incomplete
 
-ip6tables_custom_rules:
+iptables_common_rules:
   - name: tvheadend
     rules: |
       -A INPUT -p tcp -m tcp --dport 9981 -m conntrack --ctstate NEW -j ACCEPT
@@ -58,14 +57,26 @@ ip6tables_custom_rules:
       -A OUTPUT -m owner --uid-owner {{ socks_proxy_user }} -j REJECT
   - name: transmission
     rules: |
-      -A INPUT -p tcp -m tcp --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport 9091 -i eth0 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p tcp -m tcp --dport 51413 -i wg0 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p udp -m udp --dport 51413 -i wg0 -m conntrack --ctstate NEW -j ACCEPT
       -A OUTPUT -p tcp -m tcp --sport 9091 -m owner --uid-owner pi -j ACCEPT
       -A OUTPUT -m owner --uid-owner pi -o wg0 -j ACCEPT
       -A OUTPUT -m owner --uid-owner pi -j REJECT
 
-iptables_custom_rules: "{{ ip6tables_custom_rules }}"
+iptables_custom_rules_v4_specific:
+  - name: transmission_rpc
+    rules: |
+      -A INPUT -p tcp -m tcp -s {{ wireguard.wg0.auto_assign_ips|ipv4|first }} --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
+
+iptables_custom_rules_v6_specific:
+  - name: transmission_rpc
+    rules: |
+      -A INPUT -p tcp -m tcp -s {{ wireguard.wg0.auto_assign_ips|ipv6|first }} --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
+
+iptables_custom_rules: "{{ iptables_common_rules }} + {{ iptables_custom_rules_v4_specific }}"
+
+ip6tables_custom_rules: "{{ iptables_common_rules }} + {{ iptables_custom_rules_v6_specific }}"
 
 host_roles:
   - common
