@@ -25,3 +25,6 @@
 
 - src:  chmduquesne.transmission
   version: 2.0.2
+
+- src: nginxinc.nginx
+  version: 0.10.1

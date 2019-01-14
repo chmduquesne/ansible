@@ -76,10 +76,13 @@ unbound_unbound_conf:
       prefetch: yes
       include: /etc/unbound/records.d/*.conf
 
+nginx_install_from: 'os_repository'
+
 host_roles:
   - common
   - reallyenglish.dhclient
   - chmduquesne.network_interfaces
   - chmduquesne.wireguard
   - unbound
+  - nginxinc.nginx
 
