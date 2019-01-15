@@ -41,7 +41,7 @@ wireguard_override:
     unbound_records: True
     dns: False
 
-wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
+wireguard: "{{ wireguard_default|combine(wireguard_override, recursive=True) }}"
 
 wireguard_generate_mobile: true
 wireguard_mobile_conf_dir: "wg_configs"
@@ -54,6 +54,10 @@ iptables_custom_rules:
     rules: |
       -A INPUT -i wg0 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -i wg0 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+  - name: "haproxy"
+    rules: |
+      -A INPUT -p tcp -m tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
 
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 
@@ -76,7 +80,28 @@ unbound_unbound_conf:
       prefetch: yes
       include: /etc/unbound/records.d/*.conf
 
-nginx_install_from: 'os_repository'
+haproxy_install:
+  - socat
+haproxy_global_chroot: /var/lib/haproxy
+haproxy_frontend:
+  - name: http
+    mode: http
+    description: Front-end for all HTTP traffic
+    bind:
+      - listen: ":80"
+    default_backend: github
+haproxy_backend:
+  - name: github
+    description: github
+    mode: http
+    balance: roundrobin
+    server:
+      - name: github0
+        listen: chmduquesne.github.io:443
+        param:
+          - check
+          - ssl
+          - verify none
 
 host_roles:
   - common
@@ -84,5 +109,5 @@ host_roles:
   - chmduquesne.network_interfaces
   - chmduquesne.wireguard
   - unbound
-  - nginxinc.nginx
+  - oefenweb.haproxy
 
