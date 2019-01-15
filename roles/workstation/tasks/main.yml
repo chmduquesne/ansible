@@ -1,0 +1,8 @@
+---
+# tasks file for workstation
+- name: create workstation user
+  user:
+    name: "{{ workstation_user }}"
+    groups: "{{ workstation_groups|default(omit) }}"
+    append: yes
+
