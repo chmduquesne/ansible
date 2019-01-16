@@ -15,6 +15,7 @@ users:
 promoted:
   - {name: "{{ ssh_user }}", promote: ALL, nopasswd: true}
 sshd_config:
+  PermitRootLogin: "no"
   PasswordAuthentication: "no"
   ChallengeResponseAuthentication: "no"
   UsePAM: "yes"
