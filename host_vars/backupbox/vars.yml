@@ -1,0 +1,28 @@
+---
+#ansible_user: pi
+#ansible_ssh_pass: raspberry
+
+network_interfaces_manage_devices: true
+network_interfaces_interfaces:
+  - device: eth0
+    family: inet
+    method: dhcp
+    triggers:
+      - allow-hotplug
+  - device: usb0
+    family: inet
+    method: dhcp
+    triggers:
+      - allow-hotplug
+
+        #wireguard_override:
+        #  wg0:
+        #    privkey: "{{ vault_wg0_privkey }}"
+        #    pubkey: "{{ wireguard_default.wg0.peers.moviebox.pubkey }}"
+        #
+        #wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
+
+host_roles:
+  - common
+  - chmduquesne.network_interfaces
+    #- chmduquesne.wireguard
