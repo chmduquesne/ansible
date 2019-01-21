@@ -15,14 +15,14 @@ network_interfaces_interfaces:
     triggers:
       - allow-hotplug
 
-        #wireguard_override:
-        #  wg0:
-        #    privkey: "{{ vault_wg0_privkey }}"
-        #    pubkey: "{{ wireguard_default.wg0.peers.moviebox.pubkey }}"
-        #
-        #wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
+wireguard_override:
+  wg0:
+    privkey: "{{ vault_wg0_privkey }}"
+    pubkey: "{{ wireguard_default.wg0.peers.backupbox.pubkey }}"
+
+wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
 
 host_roles:
   - common
   - chmduquesne.network_interfaces
-    #- chmduquesne.wireguard
+  - chmduquesne.wireguard
