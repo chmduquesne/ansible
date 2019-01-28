@@ -27,4 +27,4 @@
   version: 2.0.2
 
 - src: oefenweb.haproxy
-  version: v6.0.2
+  version: v6.0.3

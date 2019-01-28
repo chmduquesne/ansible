@@ -102,6 +102,11 @@ haproxy_backend:
           - check
           - ssl
           - verify none
+    reqrep:
+      - search: "^([^\\ :]*)\\ /(.*)"
+        string: "\\1\\ /blog.chmd.fr/\\2"
+      - search: "^Host:\\ (.*)"
+        string: "Host:\\ chmduquesne.github.io"
 
 host_roles:
   - common
