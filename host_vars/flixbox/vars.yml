@@ -1,0 +1,14 @@
+---
+ssh_user: "{{ desktop_user }}"
+ansible_user: "{{ ssh_user }}"
+users:
+  - username: "{{ ssh_user }}"
+    authorized_keys:
+      - "{{ ssh_pubkey_t450 }}"
+      - "{{ ssh_pubkey_work }}"
+    home_create: yes
+    shell: /bin/bash
+promoted:
+  - name: "{{ ssh_user }}"
+    promote: ALL
+    nopasswd: true
