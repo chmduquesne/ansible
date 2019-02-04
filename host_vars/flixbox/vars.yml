@@ -12,3 +12,7 @@ promoted:
   - name: "{{ ssh_user }}"
     promote: ALL
     nopasswd: true
+
+host_roles:
+  - common
+  - desktop
