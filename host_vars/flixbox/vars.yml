@@ -1,5 +1,11 @@
 ---
-ssh_user: "{{ desktop_user }}"
+# No longer Necessary after users/sudo are setup
+ansible_become_user: root
+ansible_become_method: su
+ansible_become_pass: "{{ vault_ansible_become_pass }}"
+ansible_user: "{{ vault_desktop_user }}"
+
+ssh_user: "{{ vault_desktop_user }}"
 ansible_user: "{{ ssh_user }}"
 users:
   - username: "{{ ssh_user }}"
