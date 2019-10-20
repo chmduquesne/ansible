@@ -1,2 +1,2 @@
 #!/bin/bash
-lpass show --password ansible-vault
+pass show code/ansible-vault | head -n1
