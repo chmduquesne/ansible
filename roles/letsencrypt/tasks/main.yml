@@ -15,16 +15,30 @@
     group: root
     mode: 0600
 
-- name: get required certbot packages
-  package: name={{ item }} state=latest
-  with_items:
-    - python3-certbot
-    - python3-certbot-dns-ovh
+# TODO: install it from unstable
+#- name: get required certbot packages
+#  package: name=python3-certbot state=latest
 
-- name: add renewal-hook for restarting haproxy
-  copy:
-    src: files/etc/letsencrypt/renewal-hooks/post/02-haproxy
-    dest: /etc/letsencrypt/renewal-hooks/post/02-haproxy
-    owner: root
-    group: root
-    mode: '0755'
+- name: get required certbot packages
+  package: name=python3-certbot-dns-ovh state=latest
+
+
+# TODO: use expect
+- name: register certbot
+  command: certbot register -m EMAIL
+  args:
+    creates: etc/letsencrypt/accounts
+
+#- name: Create /etc/letsencrypt/renewal-hooks/post
+#  file:
+#    path: /etc/certbot
+#    state: directory
+#    mode: '0755'
+#
+#- name: add renewal-hook for restarting haproxy
+#  copy:
+#    src: files/etc/letsencrypt/renewal-hooks/post/02-haproxy
+#    dest: /etc/letsencrypt/renewal-hooks/post/02-haproxy
+#    owner: root
+#    group: root
+#    mode: '0755'
