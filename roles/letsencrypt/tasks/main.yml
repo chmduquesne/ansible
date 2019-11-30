@@ -15,19 +15,32 @@
     group: root
     mode: 0600
 
-# TODO: install it from unstable
-#- name: get required certbot packages
-#  package: name=python3-certbot state=latest
+# Additional steps that are only required because python3-certbot-dns-ovh
+# requires the unstable version of python3-certbot
+
+###
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+
+- name: Install python-certbot from unstable
+  command: apt install -t unstable python3-certbot
+  when: "'python3-certbot-dns-ovh' not in ansible_facts.packages"
+###
 
 - name: get required certbot packages
   package: name=python3-certbot-dns-ovh state=latest
 
+  #- name: check if we
+  #  stat:
+  #    path: /Users/mdtutorials2/Documents/Ansible/prompt.yaml
+  #  register: file_details
 
 # TODO: use expect
 - name: register certbot
-  command: certbot register -m EMAIL
+  command: certbot register -m {{ vault_letsencrypt_email }} --agree-tos -n
   args:
-    creates: etc/letsencrypt/accounts
+    creates: /etc/letsencrypt/accounts
 
 #- name: Create /etc/letsencrypt/renewal-hooks/post
 #  file:
