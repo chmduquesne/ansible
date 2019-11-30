@@ -28,7 +28,7 @@
   when: "'python3-certbot-dns-ovh' not in ansible_facts.packages"
 ###
 
-- name: get required certbot packages
+- name: Get required certbot packages
   package: name=python3-certbot-dns-ovh state=latest
 
   #- name: check if we
@@ -37,21 +37,23 @@
   #  register: file_details
 
 # TODO: use expect
-- name: register certbot
+- name: Register to letsencrypt
   command: certbot register -m {{ vault_letsencrypt_email }} --agree-tos -n
   args:
     creates: /etc/letsencrypt/accounts
 
-#- name: Create /etc/letsencrypt/renewal-hooks/post
-#  file:
-#    path: /etc/certbot
-#    state: directory
-#    mode: '0755'
-#
-#- name: add renewal-hook for restarting haproxy
-#  copy:
-#    src: files/etc/letsencrypt/renewal-hooks/post/02-haproxy
-#    dest: /etc/letsencrypt/renewal-hooks/post/02-haproxy
-#    owner: root
-#    group: root
-#    mode: '0755'
+- name: Request certificates
+  command: certbot certonly --dns-ovh --dns-ovh-credentials /etc/certbot/ovh.ini {{ vault_letsencrypt_domain_options }}
+  args:
+    creates: /etc/letsencrypt/live
+
+- name: Install renewal-hooks
+  copy:
+    src: files/etc/letsencrypt/renewal-hooks/post/{{ item }}
+    dest: /etc/letsencrypt/renewal-hooks/post/{{ item }}
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - '01-combine-certificates'
+    - '02-reload-haproxy'

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# FIXME: get rid of this
+RENEWED_LINEAGE=${RENEWED_LINEAGE:-/etc/letsencrypt/live/chmd.fr}
+
+fullchain=${RENEWED_LINEAGE}/fullchain.pem
+key=${RENEWED_LINEAGE}/privkey.pem
+combined=${RENEWED_LINEAGE}/combined.pem
+
+cat "$key" "$fullchain" > "$combined"

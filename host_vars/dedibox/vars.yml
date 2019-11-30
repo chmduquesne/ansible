@@ -100,7 +100,7 @@ haproxy_conf:
         # An alternative list with additional directives can be obtained from
         #  https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy
         ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
-        ssl-default-bind-options no-sslv3
+        ssl-default-bind-options no-sslv3 no-tls-tickets
 
     defaults
         log     global
@@ -108,8 +108,8 @@ haproxy_conf:
         option  httplog
         option  dontlognull
         timeout connect 5000
-        timeout client  50000
-        timeout server  50000
+        timeout client  5000000
+        timeout server  5000000
         errorfile 400 /etc/haproxy/errors/400.http
         errorfile 403 /etc/haproxy/errors/403.http
         errorfile 408 /etc/haproxy/errors/408.http
@@ -117,16 +117,30 @@ haproxy_conf:
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
+        unique-id-format %{+X}o\ %Ts:%rt
+        unique-id-header X-Unique-ID
 
-    backend github
-        server github0 chmduquesne.github.io:443 ssl verify none
+    backend resume
+        server resume0 chmduquesne.github.io:443 ssl verify none
+        reqrep ^([^\ :]*)\ /(.*)     \1\ /resume.chmd.fr/\2
+        reqrep ^Host:\ (.*)   Host:\ chmduquesne.github.io
+
+    backend blog
+        server blog0 chmduquesne.github.io:443 ssl verify none
         reqrep ^([^\ :]*)\ /(.*)     \1\ /blog.chmd.fr/\2
+        reqrep ^Host:\ (.*)   Host:\ chmduquesne.github.io
+
+    backend chmd
+        server chmd0 chmduquesne.github.io:443 ssl verify none
+        reqrep ^([^\ :]*)\ /(.*)     \1\ /chmd.fr/\2
         reqrep ^Host:\ (.*)   Host:\ chmduquesne.github.io
 
     frontend http
         bind :::80
         bind :80
-        use_backend github
+        use_backend resume if { req.hdr(Host) -i -m str resume.chmd.fr }
+        use_backend blog   if { req.hdr(Host) -i -m str blog.chmd.fr }
+        use_backend chmd
 
 host_roles:
   - common
