@@ -1,21 +1,28 @@
 ---
-- name: create users
+- name: Create users
   include_role: name=weareinteractive.users
 
-- name: install sudoers
+- name: Install sudoers
   include_role: name=salamachinas.sudoers
 
-- name: configure ssh
+- name: Configure ssh
   include_role: name=reallyenglish.sshd
 
-- name: configure iptables
+- name: Configure iptables
   include_role: name=iptables
 
-- name: configure msmtp
+- name: Configure msmtp
   include_role: name=msmtp
 
-- name: install useful packages
+- name: Install useful packages
   package: name={{ item }} state=latest
   with_items:
     - vim
     - mlocate
+    - unattended-upgrades
+    - apt-listchanges
+
+- name: Ensure root gets mail from unattended-upgrades
+  lineinfile:
+    path: /etc/apt/apt.conf.d/50unattended-upgrades
+    line: 'Unattended-Upgrade::Mail "root";'
