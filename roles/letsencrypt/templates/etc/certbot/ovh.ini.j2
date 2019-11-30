@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
 
-{% for line in vault_letsencrypt_etc_certbot_ovh_ini | default([]) %}
+{% for line in letsencrypt_etc_certbot_ovh_ini | default([]) %}
 {{ line }}
 {% endfor %}

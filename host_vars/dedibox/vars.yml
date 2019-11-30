@@ -80,6 +80,8 @@ unbound_unbound_conf:
       prefetch: yes
       include: /etc/unbound/records.d/*.conf
 
+letsencrypt_etc_certbot_ovh_ini: "{{ vault_letsencrypt_etc_certbot_ovh_ini }}"
+
 haproxy_conf:
   - |
     global
