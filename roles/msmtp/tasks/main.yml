@@ -12,3 +12,9 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Forwarding root's mail
+  lineinfile:
+    path: /root/.forward
+    create: yes
+    line: "{{ msmtp_forward_root_email }}"
