@@ -120,6 +120,9 @@ haproxy_conf:
         unique-id-format %{+X}o\ %Ts:%rt
         unique-id-header X-Unique-ID
 
+    backend redir-https
+        http-request redirect scheme https
+
     backend resume
         server resume0 chmduquesne.github.io:443 ssl verify none
         reqrep ^([^\ :]*)\ /(.*)     \1\ /resume.chmd.fr/\2
@@ -135,12 +138,35 @@ haproxy_conf:
         reqrep ^([^\ :]*)\ /(.*)     \1\ /chmd.fr/\2
         reqrep ^Host:\ (.*)   Host:\ chmduquesne.github.io
 
+    backend ssh
+        mode tcp
+        option tcplog
+        server ssh0 127.0.0.1:22
+        timeout server 2h
+
     frontend http
         bind :::80
         bind :80
+        use_backend redir-https
+
+    frontend https
+        bind :::443 ssl crt /etc/letsencrypt/live/chmd.fr/combined.pem
+        bind :443 ssl crt /etc/letsencrypt/live/chmd.fr/combined.pem
+        #capture request header Host len 32
+        log-format "[%ID] %ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r"
         use_backend resume if { req.hdr(Host) -i -m str resume.chmd.fr }
         use_backend blog   if { req.hdr(Host) -i -m str blog.chmd.fr }
         use_backend chmd
+
+    frontend ssl
+        bind :::443 ssl crt /etc/letsencrypt/live/chmd.fr/combined.pem
+        bind :443 ssl crt /etc/letsencrypt/live/chmd.fr/combined.pem
+        mode tcp
+        option tcplog
+        tcp-request inspect-delay 30s
+        tcp-request content reject if HTTP
+        use_backend ssh if { payload(0,7) -m bin 5353482d322e30 }
+        use_backend ssh if !HTTP
 
 host_roles:
   - common
@@ -148,4 +174,5 @@ host_roles:
   - chmduquesne.network_interfaces
   - chmduquesne.wireguard
   - unbound
+  - letsencrypt
   - chmduquesne.haproxy
