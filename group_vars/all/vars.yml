@@ -72,3 +72,17 @@ wireguard_client: "{{ wireguard_default|combine({'wg0': wireguard_wg0_client}) }
 
 tvheadend_username: "{{ vault_tvheadend_username }}"
 tvheadend_password: "{{ vault_tvheadend_password }}"
+
+msmtprc:
+  - |
+    defaults
+    port 587
+    tls on
+    tls_trust_file /etc/ssl/certs/ca-certificates.crt
+    account gmail
+    host smtp.gmail.com
+    from {{ vault_msmtp_user }}@gmail.com
+    auth on
+    user {{ vault_msmtp_user }}
+    password {{ vault_msmtp_password }}
+    account default : gmail

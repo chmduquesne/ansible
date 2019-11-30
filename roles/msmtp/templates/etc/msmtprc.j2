@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+
+{% for line in msmtprc | default([]) %}
+{{ line }}
+{% endfor %}

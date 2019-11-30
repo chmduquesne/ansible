@@ -1,0 +1,14 @@
+---
+- name: Install required packages
+  package: name={{ item }} state=latest
+  loop:
+    - msmtp
+    - msmtp-mta
+
+- name: Configure /etc/msmtprc
+  template:
+    src: templates/etc/msmtprc.j2
+    dest: /etc/msmtprc
+    owner: root
+    group: root
+    mode: 0644

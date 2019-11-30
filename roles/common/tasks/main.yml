@@ -11,6 +11,9 @@
 - name: configure iptables
   include_role: name=iptables
 
+- name: configure msmtp
+  include_role: name=msmtp
+
 - name: install useful packages
   package: name={{ item }} state=latest
   with_items:
