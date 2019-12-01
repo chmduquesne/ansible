@@ -6,6 +6,22 @@
 #ansible_ssh_pass: "{{ vault_ansible_ssh_pass }}"
 #ansible_user: "{{ vault_ansible_user }}"
 
+irssi_user: "me"
+
+users:
+  - username: "{{ ssh_user }}"
+    authorized_keys:
+      - "{{ ssh_pubkey_t450 }}"
+      - "{{ ssh_pubkey_work }}"
+    home_create: yes
+    shell: /bin/bash
+  - username: "{{ irssi_user }}"
+    authorized_keys:
+      - "{{ ssh_pubkey_t450 }}"
+      - "{{ ssh_pubkey_work }}"
+    home_create: yes
+    shell: /bin/bash
+
 ansible_host: "{{ vault_ansible_host }}"
 
 dhclient_config:

@@ -1,0 +1,7 @@
+---
+- name: Install irssi
+  package: name=irssi state=latest
+  loop:
+    - irssi
+    - irssi-scripts
+    - dtach
