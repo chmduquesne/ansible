@@ -87,3 +87,4 @@ msmtp_msmtprc:
     user {{ vault_msmtp_user }}
     password {{ vault_msmtp_password }}
     account default : gmail
+    aliases /etc/aliases

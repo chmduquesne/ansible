@@ -2,6 +2,21 @@
 #ansible_user: pi
 #ansible_ssh_pass: raspberry
 
+users:
+  - username: "{{ ssh_user }}"
+    authorized_keys:
+      - "{{ ssh_pubkey_t450 }}"
+      - "{{ ssh_pubkey_work }}"
+    home_create: yes
+    shell: /bin/bash
+  - username: "android"
+    authorized_keys:
+      - "{{ ssh_pubkey_t450 }}"
+      - "{{ ssh_pubkey_work }}"
+    home_create: yes
+    shell: /bin/bash
+
+
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
   - device: eth0

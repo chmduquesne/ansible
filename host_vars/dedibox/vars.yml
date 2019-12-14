@@ -194,3 +194,4 @@ host_roles:
   - unbound
   - letsencrypt
   - chmduquesne.haproxy
+  - irssi

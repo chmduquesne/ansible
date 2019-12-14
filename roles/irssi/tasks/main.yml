@@ -1,7 +1,8 @@
 ---
 - name: Install irssi
-  package: name=irssi state=latest
+  package: name={{ item }} state=latest
   loop:
     - irssi
     - irssi-scripts
     - dtach
+    - sqlite3
