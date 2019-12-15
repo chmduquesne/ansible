@@ -13,6 +13,7 @@ users:
     authorized_keys:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
+      - "{{ ssh_pubkey_op3t_syncopoly }}"
     home_create: yes
     shell: /bin/bash
 
