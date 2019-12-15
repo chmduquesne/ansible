@@ -1,0 +1,20 @@
+---
+- name: Install mpop
+  package: name={{ item }} state=latest
+  loop:
+    - mpop
+
+- name: configure mpoprc
+  template:
+    src: templates/mpoprc.j2
+    dest: "/home/{{ mpop_user }}/.mpoprc"
+    owner: "{{ mpop_user }}"
+    group: "{{ mpop_user }}"
+    mode: 0600
+
+- name: schedule mpop to run every 10 minutes
+  cron:
+    name: "backup mail"
+    minute: "*/10"
+    job: "mpop -q"
+    user: "{{ mpop_user }}"

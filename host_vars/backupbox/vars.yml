@@ -16,6 +16,12 @@ users:
       - "{{ ssh_pubkey_op3t_syncopoly }}"
     home_create: yes
     shell: /bin/bash
+  - username: "mail"
+    authorized_keys:
+      - "{{ ssh_pubkey_t450 }}"
+      - "{{ ssh_pubkey_work }}"
+    home_create: yes
+    shell: /bin/bash
 
 
 network_interfaces_manage_devices: true
@@ -42,8 +48,27 @@ extrastorage:
   - path: "/mnt"
     src: "UUID={{ vault_sandisk_256G_uuid }}"
 
+mpop_user: "mail"
+mpop_mpoprc:
+  - |
+    # defaults
+    defaults
+    tls on
+    # gmail
+    account gmail
+    host pop.gmail.com
+    user {{ vault_msmtp_user }}
+    password {{ vault_msmtp_password }}
+    keep on
+    only_new off
+    tls_starttls off
+    delivery mbox /mnt/{{ mpop_user }}/{{ vault_msmtp_user }}@gmail.com.mbox
+    # Set a default account
+    account default : gmail
+
 host_roles:
   - common
   - chmduquesne.network_interfaces
   - chmduquesne.wireguard
   - extrastorage
+  - mpop
