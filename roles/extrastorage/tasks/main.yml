@@ -1,0 +1,14 @@
+---
+- name: Create mount points for the extra devices
+  mount:
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    fstype: ext4
+    state: present
+  loop: "{{ extrastorage }}"
+
+- name: Create a directory for each user in the mount points
+  include_tasks: create_user_dirs.yml
+  loop: "{{ extrastorage }}"
+  loop_control:
+    loop_var: mountpoint

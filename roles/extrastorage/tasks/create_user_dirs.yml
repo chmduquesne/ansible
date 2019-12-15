@@ -1,0 +1,9 @@
+---
+- name: Create user directories
+  file:
+    path: "{{ mountpoint.path }}/{{ item.username }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ item.username }}"
+    group: "{{ item.username }}"
+  loop: "{{ users }}"

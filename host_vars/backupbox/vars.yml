@@ -38,7 +38,12 @@ wireguard_override:
 
 wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
 
+extrastorage:
+  - path: "/mnt"
+    src: "UUID={{ vault_sandisk_256G_uuid }}"
+
 host_roles:
   - common
   - chmduquesne.network_interfaces
   - chmduquesne.wireguard
+  - extrastorage
