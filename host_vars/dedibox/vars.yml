@@ -21,6 +21,12 @@ users:
       - "{{ ssh_pubkey_work }}"
     home_create: yes
     shell: /bin/bash
+  - username: "restic"
+    authorized_keys:
+      - "{{ ssh_pubkey_t450 }}"
+      - "{{ ssh_pubkey_work }}"
+    home_create: yes
+    shell: /bin/bash
 
 ansible_host: "{{ vault_ansible_host }}"
 
