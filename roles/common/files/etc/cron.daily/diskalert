@@ -1,0 +1,9 @@
+#!/bin/sh
+
+df -H | grep -vE '^Filesystem|tmpfs|cdrom' | awk '{ print $5 " " $1 }' | while read line; do
+  percent=$(echo $line | awk '{ print $1}' | cut -d'%' -f1)
+  partition=$(echo $line | awk '{ print $2 }' )
+  if [ $percent -ge 90 ]; then
+    echo "Running out of space \"$partition ($percent%)\" on $(hostname) as on $(date)"
+  fi
+done

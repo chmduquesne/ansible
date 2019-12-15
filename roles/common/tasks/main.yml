@@ -26,3 +26,11 @@
   lineinfile:
     path: /etc/apt/apt.conf.d/50unattended-upgrades
     line: 'Unattended-Upgrade::Mail "root";'
+
+#- name: Email root when storage is running low
+#  copy:
+#    src: files/etc/cron.daily/diskalert
+#    dest: /etc/cron.daily/diskalert
+#    owner: root
+#    group: root
+#    mode: '0755'
