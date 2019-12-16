@@ -1,0 +1,9 @@
+---
+- name: Copy the remote rrsync to /usr/local/bin
+  copy:
+    src: /usr/share/doc/rsync/scripts/rrsync
+    remote_src: yes
+    dest: /usr/local/bin/rrsync
+    owner: root
+    group: root
+    mode: '0755'

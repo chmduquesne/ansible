@@ -13,7 +13,7 @@ users:
     authorized_keys:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
-      - "{{ ssh_pubkey_op3t_syncopoly }}"
+      - "command=\"/usr/local/bin/rrsync /mnt/android/\",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc,no-X11-forwarding {{ ssh_pubkey_op3t_syncopoly }}"
     home_create: yes
     shell: /bin/bash
   - username: "mail"
@@ -72,3 +72,4 @@ host_roles:
   - chmduquesne.wireguard
   - extrastorage
   - mpop
+  - rrsync
