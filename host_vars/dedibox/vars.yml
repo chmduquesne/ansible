@@ -13,18 +13,21 @@ users:
     authorized_keys:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
+      - "{{ ssh_pubkey_gpg }}"
     home_create: yes
     shell: /bin/bash
   - username: "{{ irssi_user }}"
     authorized_keys:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
+      - "{{ ssh_pubkey_gpg }}"
     home_create: yes
     shell: /bin/bash
   - username: "restic"
     authorized_keys:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
+      - "{{ ssh_pubkey_gpg }}"
     home_create: yes
     shell: /bin/bash
 
