@@ -22,7 +22,6 @@ sshd_config:
   PasswordAuthentication: "no"
   ChallengeResponseAuthentication: "no"
   UsePAM: "yes"
-  AcceptEnv: "LANG LC_*"
   Subsystem: "sftp /usr/lib/sftp-server"
 
 wireguard_iptable_module: "iptables_raw"
