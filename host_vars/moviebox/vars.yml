@@ -67,12 +67,12 @@ iptables_common_rules:
 iptables_custom_rules_v4_specific:
   - name: transmission_rpc
     rules: |
-      -A INPUT -p tcp -m tcp -s {{ wireguard.wg0.auto_assign_ips|ipv4|first }} --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp -s {{ wireguard.wg0.auto_assign_ranges|ipv4|first }} --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
 
 iptables_custom_rules_v6_specific:
   - name: transmission_rpc
     rules: |
-      -A INPUT -p tcp -m tcp -s {{ wireguard.wg0.auto_assign_ips|ipv6|first }} --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp -s {{ wireguard.wg0.auto_assign_ranges|ipv6|first }} --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
 
 iptables_custom_rules: "{{ iptables_common_rules }} + {{ iptables_custom_rules_v4_specific }}"
 

@@ -56,7 +56,7 @@ wireguard_default:
         pubkey: "{{ vault_wg0_moviebox_pubkey }}"
       backupbox:
         pubkey: "{{ vault_wg0_backupbox_pubkey }}"
-    auto_assign_ips:
+    auto_assign_ranges:
       - 10.0.0.0/8
       - fd1a:6126:2887::/48
       - "{{ vault_wg0_global_inet6_range }}"

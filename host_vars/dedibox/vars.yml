@@ -92,8 +92,8 @@ unbound_unbound_conf:
       max-udp-size: 3072
       access-control: ::0/0 refuse
       access-control: ::1 allow
-      access-control: {{ wireguard.wg0.auto_assign_ips.0 }} allow
-      access-control: {{ wireguard.wg0.auto_assign_ips.1 }} allow
+      access-control: {{ wireguard.wg0.auto_assign_ranges.0 }} allow
+      access-control: {{ wireguard.wg0.auto_assign_ranges.1 }} allow
       harden-referral-path: yes
       unwanted-reply-threshold: 10000000
       val-permissive-mode: yes
