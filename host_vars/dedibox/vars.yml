@@ -82,6 +82,9 @@ iptables_custom_rules:
     rules: |
       -A INPUT -p tcp -m tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p tcp -m tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+  - name: "mosh"
+    rules: |
+      -A INPUT -i enp0s20 -p udp -m udp --match multiport --dports 60000:61000 -m conntrack --ctstate NEW -j ACCEPT
 
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 
@@ -203,3 +206,4 @@ host_roles:
   - letsencrypt
   - chmduquesne.haproxy
   - irssi
+  - mosh
