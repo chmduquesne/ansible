@@ -1,8 +1,8 @@
 #!/bin/bash
-if [ -n "$VAULT_PASS" ]; then
-  echo "$VAULT_PASS"
-  exit
-fi
-echo "If you would like to remember the vault pass for the session" >&2
-echo "export VAULT_PASS=\$(pass show code/ansible-vault)" >&2
+[ -n "$VAULT_PASS" ] && echo "$VAULT_PASS" && exit
 pass show code/ansible-vault
+
+echo '###' >&2
+echo 'Consider running' >&2
+echo 'export VAULT_PASS=$(pass show code/ansible-vault)' >&2
+echo '###' >&2
