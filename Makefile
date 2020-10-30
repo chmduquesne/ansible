@@ -1,17 +1,12 @@
-ifneq (${TEST}, 0)
-	CHECK=--check --diff
+ifdef host
+	INVENTORY=-i ${host},
 endif
 
-ifdef HOST
-	INVENTORY=-i ${HOST},
+ifdef role
+	VARS=--extra-vars="host_roles=${role}"
 endif
 
-ifdef ROLE
-	VARS=--extra-vars="host_roles=${ROLE}"
-endif
-
-all:
-	ansible-playbook ${CHECK} ${INVENTORY} ${VARS} site.yml
+all: test
 
 test:
 	ansible-playbook --check --diff ${INVENTORY} ${VARS} site.yml
@@ -20,9 +15,9 @@ deploy:
 	ansible-playbook ${INVENTORY} ${VARS} site.yml
 
 debug:
-	@echo HOST=${HOST}
+	@echo host=${host}
+	@echo role=${role}
 	@echo INVENTORY=${INVENTORY}
-	@echo ROLE=${ROLE}
 	@echo VARS=${VARS}
 	@echo TEST=${TEST}
 	@echo CHECK=${CHECK}
@@ -35,7 +30,7 @@ help:
 	@echo   make deploy
 	@echo
 	@echo Deploy a role on a host:
-	@echo   HOST=myhost ROLE=myrole make deploy
+	@echo   host=myhost role=myrole make deploy
 	@echo
 	@echo Simulate deploying a role on a host:
-	@echo   HOST=myhost ROLE=myrole make test
+	@echo   host=myhost role=myrole make test

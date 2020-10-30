@@ -10,13 +10,12 @@ if [ "$role" != "" ]; then
     VARS=--extra-vars="host_roles=${role}"
 fi
 
+target=$(basename $1)
+
 set -x
 
-case $(basename $1) in
-    all)
-        ansible-playbook --check --diff ${INVENTORY} ${VARS} site.yml
-    ;;
-    test)
+case $target in
+    all|test)
         ansible-playbook --check --diff ${INVENTORY} ${VARS} site.yml
     ;;
     deploy)
