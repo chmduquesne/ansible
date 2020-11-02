@@ -1,3 +1,6 @@
 #!/bin/bash
-[ -f /etc/ansible-vault ] && sudo cat ansible-vault && exit
+
+# When I feel like storing the vault password in /etc/ansible-vault
+[ -f /etc/ansible-vault ] && sudo cat /etc/ansible-vault && exit
+# When I want it in pass
 pass show code/ansible-vault
