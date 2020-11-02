@@ -1,4 +1,3 @@
-#!/bin/sh
 exec >&2
 export ANSIBLE_FORCE_COLOR=True
 
