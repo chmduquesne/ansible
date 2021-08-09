@@ -2,6 +2,9 @@
 - name: get latest unbound
   package: name=unbound state=latest
 
+- name: get latest openresolv
+  package: name=openresolv state=latest
+
 - name: configure /etc/unbound/unbound.conf
   template:
     src: templates/etc/unbound/unbound.conf.j2
