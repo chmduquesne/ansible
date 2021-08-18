@@ -21,6 +21,17 @@ iptables_custom_rules:
 
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 
+# untested
+nftables_includes:
+  "wg0_dns":
+    - |
+      table inet wg0_dns {
+        chain input {
+            type filter hook input priority -1; policy continue;
+            iif {{ wireguard.wg0.in_gw }} udp dport 53 accept comment "accept udp dns requests on {{ wireguard.wg0.in_gw }}"
+            iif {{ wireguard.wg0.in_gw }} tcp dport 53 accept comment "accept tcp dns requests on {{ wireguard.wg0.in_gw }}"
+        }
+      }
 
 wlan0_inet6: "{{ wireguard_default.wg0.peers.raspberrypi.allowedips.0 }}"
 
