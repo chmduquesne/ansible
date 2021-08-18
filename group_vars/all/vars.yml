@@ -90,3 +90,31 @@ msmtp_msmtprc:
     password {{ vault_msmtp_password }}
     account default : gmail
     aliases /etc/aliases
+
+nftables_nftables_conf:
+  - |
+    flush ruleset
+    table inet filter {
+        chain input {
+            type filter hook input priority 0; policy drop;
+            ct state invalid counter drop comment "drop invalid packets"
+            ct state {established, related} counter accept comment "accept all connections related to those we opened"
+            iif lo accept comment "accept loopback"
+            iif != lo ip daddr 127.0.0.1/8 counter drop comment "drop v4 connections to loopback not coming from loopback"
+            iif != lo ip6 daddr ::1/128 counter drop comment "drop v6 connections to loopback not coming from loopback"
+            ip protocol icmp counter accept comment "accept ICMP"
+            ip6 nexthdr icmpv6 counter accept comment "accept ICMPv6"
+            ip protocol udp udp sport 67 udp dport 68 counter accept comment "accept DHCP"
+            ip6 nexthdr udp udp sport 547 udp dport 546 counter accept comment "accept DHCPv6"
+            tcp dport 22 counter accept comment "accept SSH"
+            counter comment "count dropped packets"
+        }
+        chain forward {
+            type filter hook forward priority 0; policy drop;
+            counter comment "count dropped packets"
+        }
+        chain output {
+            type filter hook output priority 0; policy accept;
+            counter comment "count accepted packets"
+        }
+    }

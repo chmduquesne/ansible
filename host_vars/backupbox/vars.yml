@@ -69,21 +69,6 @@ mpop_mpoprc:
     # Set a default account
     account default : gmail
 
-nftables_nftables_conf:
-  - |
-    flush ruleset
-    table inet filter {
-      chain input {
-        type filter hook input priority 0;
-      }
-      chain forward {
-        type filter hook forward priority 0;
-      }
-      chain output {
-        type filter hook output priority 0;
-      }
-    }
-
 host_roles:
   - common
   - chmduquesne.network_interfaces
