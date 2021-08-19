@@ -91,7 +91,7 @@ msmtp_msmtprc:
     account default : gmail
     aliases /etc/aliases
 
-nftables_nftables_conf:
+nftables_nftables_conf_head:
   - |
     flush ruleset
     table inet filter {
@@ -107,14 +107,16 @@ nftables_nftables_conf:
             ip protocol udp udp sport 67 udp dport 68 counter accept comment "accept DHCP"
             ip6 nexthdr udp udp sport 547 udp dport 546 counter accept comment "accept DHCPv6"
             tcp dport 22 counter accept comment "accept SSH"
-            counter comment "count dropped packets"
         }
         chain forward {
             type filter hook forward priority 0; policy drop;
-            counter comment "count dropped packets"
         }
         chain output {
             type filter hook output priority 0; policy accept;
-            counter comment "count accepted packets"
         }
     }
+nftables_nftables_conf_tail:
+  - |
+    add rule inet filter input counter accept comment "count dropped packets"
+    add rule inet filter forward counter accept comment "count dropped packets"
+    add rule inet filter output counter accept comment "count accepted packets"

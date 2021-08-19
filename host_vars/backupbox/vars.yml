@@ -69,6 +69,11 @@ mpop_mpoprc:
     # Set a default account
     account default : gmail
 
+nftables_includes:
+  http:
+    - |
+      add rule inet filter input tcp dport 80 counter accept comment "accept HTTP"
+
 host_roles:
   - common
   - chmduquesne.network_interfaces
