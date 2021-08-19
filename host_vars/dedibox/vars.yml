@@ -58,7 +58,7 @@ network_interfaces_interfaces:
     request_prefix: 1
     accept_ra: 2
 
-wireguard_override:
+_wireguard_custom:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     listenport: 500
@@ -66,7 +66,7 @@ wireguard_override:
     unbound_records: True
     dns: False
 
-wireguard: "{{ wireguard_default|combine(wireguard_override, recursive=True) }}"
+wireguard: "{{ wireguard_default|combine(_wireguard_custom, recursive=True) }}"
 
 wireguard_generate_mobile: true
 wireguard_mobile_parameters:

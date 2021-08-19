@@ -2,7 +2,7 @@
 #ansible_user: pi
 #ansible_ssh_pass: raspberry
 
-wireguard_override:
+_wireguard_custom:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     pubkey: "{{ wireguard_default.wg0.peers.raspberrypi.pubkey }}"
@@ -11,7 +11,7 @@ wireguard_override:
     # Generate an uint32 from the interface name
     table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
 
-wireguard: "{{ wireguard_client|combine(wireguard_override, recursive=True) }}"
+wireguard: "{{ wireguard_client|combine(_wireguard_custom, recursive=True) }}"
 
 iptables_custom_rules:
   - name: "wg0_dns"
