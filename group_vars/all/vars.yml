@@ -117,6 +117,8 @@ nftables_nftables_conf_head:
     }
 nftables_nftables_conf_tail:
   - |
+    add rule inet filter input limit rate 2/minute log prefix "dropped from input: "
     add rule inet filter input counter comment "count dropped packets"
+    add rule inet filter forward limit rate 2/minute log prefix "dropped from forward: "
     add rule inet filter forward counter comment "count dropped packets"
     add rule inet filter output counter comment "count accepted packets"
