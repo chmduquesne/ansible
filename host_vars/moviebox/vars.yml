@@ -41,6 +41,25 @@ transmission_watch_dir: /home/pi/transmission/torrents
 transmission_incomplete_dir_enabled: True
 transmission_incomplete_dir: /home/pi/transmission/incomplete
 
+
+nftables_includes:
+  tvheadend:
+    - |
+      add rule inet filter input tcp dport 9981-9982 accept comment "accept tvheadend"
+      add rule inet filter input udp dport 9981-9982 accept comment "accept tvheadend"
+  socks_proxy:
+    - |
+      add rule inet filter input iifname "eth0" tcp dport {{ socks_proxy_port }} accept comment "socks connections"
+      add rule inet filter output ct state {established, related} counter accept comment "accept all connections related to those we opened"
+      add rule inet filter output meta skuid "{{ socks_proxy_user }}" oifname != "wg0" drop comment "{{ socks_proxy_user }} must go through wg0"
+  transmission:
+    - |
+      add rule inet filter input tcp dport 9091 accept comment "transmission rpc"
+      add rule inet filter input tcp dport 51413 accept comment "transmission torrent"
+      add rule inet filter input udp dport 51413 accept comment "transmission torrent"
+      add rule inet filter output ct state {established, related} counter accept comment "accept all connections related to those we opened"
+      add rule inet filter output meta skuid "{{ transmission_user }}" oifname != "wg0" drop comment "{{ transmission_user }} must go through wg0"
+
 iptables_common_rules:
   - name: tvheadend
     rules: |
@@ -59,9 +78,9 @@ iptables_common_rules:
       -A INPUT -p tcp -m tcp --dport 9091 -i eth0 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p tcp -m tcp --dport 51413 -i wg0 -m conntrack --ctstate NEW -j ACCEPT
       -A INPUT -p udp -m udp --dport 51413 -i wg0 -m conntrack --ctstate NEW -j ACCEPT
-      -A OUTPUT -p tcp -m tcp --sport 9091 -m owner --uid-owner pi -j ACCEPT
-      -A OUTPUT -m owner --uid-owner pi -o wg0 -j ACCEPT
-      -A OUTPUT -m owner --uid-owner pi -j REJECT
+      -A OUTPUT -p tcp -m tcp --sport 9091 -m owner --uid-owner {{ transmission_user }} -j ACCEPT
+      -A OUTPUT -m owner --uid-owner {{ transmission_user }} -o wg0 -j ACCEPT
+      -A OUTPUT -m owner --uid-owner {{ transmission_user }} -j REJECT
 
 iptables_custom_rules_v4_specific:
   - name: transmission_rpc
@@ -84,3 +103,4 @@ host_roles:
   - tvheadend
   - socks-proxy
   - chmduquesne.transmission
+  - chmduquesne.nftables
