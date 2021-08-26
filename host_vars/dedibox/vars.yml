@@ -73,6 +73,33 @@ wireguard_mobile_parameters:
   wg0:
     dns: "{{ wireguard_default.wg0.dns }}"
 
+nftables_includes:
+  wireguard_dns:
+    - |
+      add rule inet filter input iifname "wg0" tcp dport 53 accept comment "dns from wg0"
+      add rule inet filter input iifname "wg0" udp dport 53 accept comment "dns from wg0"
+  haproxy:
+    - |
+      add rule inet filter input tcp dport 80 accept comment "http"
+      add rule inet filter input tcp dport 443 accept comment "https"
+  mosh:
+    - |
+      add rule inet filter input udp dport 60000-61000 accept comment "mosh"
+  wireguard:
+    - |
+      add rule inet filter forward ct state {established, related} accept comment "accept all forward connections related to those already opened"
+      add rule inet filter forward iifname "wg0" oifname "enp0s20" accept comment "let traffic forward from wg0 to enp0s20"
+      add rule inet filter forward iifname "wg0" oifname "wg0" accept comment "let traffic forward from wg0 to wg0"
+  masquerade:
+    - |
+      table ip nat {
+          chain postrouting {
+              type nat hook postrouting priority 100 ; policy accept;
+              oifname "enp0s20" counter masquerade comment "masquerade enp0s20"
+              counter comment "count accepted packets"
+          }
+      }
+
 iptables_custom_rules:
   - name: "wg0_dns"
     rules: |

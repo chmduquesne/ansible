@@ -8,8 +8,9 @@
 - name: Configure ssh
   include_role: name=reallyenglish.sshd
 
-- name: Configure iptables
-  include_role: name=iptables
+# iptables no longer a default
+#- name: Configure iptables
+#  include_role: name=iptables
 
 - name: Configure msmtp
   include_role: name=msmtp
