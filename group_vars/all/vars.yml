@@ -97,16 +97,16 @@ nftables_nftables_conf_head:
     table inet filter {
         chain input {
             type filter hook input priority 0; policy drop;
-            ct state invalid counter drop comment "drop invalid packets"
-            ct state {established, related} counter accept comment "accept all connections related to those we opened"
-            iif lo accept comment "accept loopback"
-            iif != lo ip daddr 127.0.0.1/8 counter drop comment "drop v4 connections to loopback not coming from loopback"
-            iif != lo ip6 daddr ::1/128 counter drop comment "drop v6 connections to loopback not coming from loopback"
-            ip protocol icmp counter accept comment "accept ICMP"
-            ip6 nexthdr icmpv6 counter accept comment "accept ICMPv6"
-            ip protocol udp udp sport 67 udp dport 68 counter accept comment "accept DHCP"
-            ip6 nexthdr udp udp sport 547 udp dport 546 counter accept comment "accept DHCPv6"
-            tcp dport 22 counter accept comment "accept SSH"
+            ct state invalid counter drop comment "drop invalid"
+            ct state {established, related} counter accept comment "already opened"
+            iif lo accept comment "loopback"
+            iif != lo ip daddr 127.0.0.1/8 counter drop comment "loopback must come from loopback"
+            iif != lo ip6 daddr ::1/128 counter drop comment "loopback must come from loopback"
+            ip protocol icmp counter accept comment "ICMP"
+            ip6 nexthdr icmpv6 counter accept comment "ICMPv6"
+            ip protocol udp udp sport 67 udp dport 68 counter accept comment "DHCP"
+            ip6 nexthdr udp udp sport 547 udp dport 546 counter accept comment "DHCPv6"
+            tcp dport 22 counter accept comment "SSH"
         }
         chain forward {
             type filter hook forward priority 0; policy drop;
@@ -117,8 +117,8 @@ nftables_nftables_conf_head:
     }
 nftables_nftables_conf_tail:
   - |
-    add rule inet filter input limit rate 2/minute log prefix "dropped from input: "
-    add rule inet filter input counter comment "count dropped packets"
-    add rule inet filter forward limit rate 2/minute log prefix "dropped from forward: "
-    add rule inet filter forward counter comment "count dropped packets"
-    add rule inet filter output counter comment "count accepted packets"
+    add rule inet filter input limit rate 2/minute log prefix "dropped input: "
+    add rule inet filter input counter
+    add rule inet filter forward limit rate 2/minute log prefix "dropped forward: "
+    add rule inet filter forward counter
+    add rule inet filter output counter
