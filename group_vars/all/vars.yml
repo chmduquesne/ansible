@@ -24,8 +24,6 @@ sshd_config:
   UsePAM: "yes"
   Subsystem: "sftp /usr/lib/sftp-server"
 
-wireguard_iptable_module: "iptables_raw"
-
 wireguard_default:
   wg0:
     peers:
