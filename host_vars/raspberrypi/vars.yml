@@ -6,7 +6,6 @@ _wireguard_custom:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     pubkey: "{{ wireguard_default.wg0.peers.raspberrypi.pubkey }}"
-    in_gw: wlan0
     dns: False
     # Generate an uint32 from the interface name
     table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
@@ -16,8 +15,8 @@ wireguard: "{{ wireguard_client|combine(_wireguard_custom, recursive=True) }}"
 iptables_custom_rules:
   - name: "wg0_dns"
     rules: |
-      -A INPUT -i {{ wireguard.wg0.in_gw }} -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -i {{ wireguard.wg0.in_gw }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -i wlan0 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+      -A INPUT -i wlan0 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
 
 ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 
@@ -28,8 +27,8 @@ nftables_includes:
       table inet wg0_dns {
         chain input {
             type filter hook input priority -1; policy continue;
-            iif {{ wireguard.wg0.in_gw }} udp dport 53 accept comment "accept udp dns requests on {{ wireguard.wg0.in_gw }}"
-            iif {{ wireguard.wg0.in_gw }} tcp dport 53 accept comment "accept tcp dns requests on {{ wireguard.wg0.in_gw }}"
+            iif wlan0 udp dport 53 accept comment "accept udp dns requests on wlan0"
+            iif wlan0 tcp dport 53 accept comment "accept tcp dns requests on wlan0"
         }
       }
 
@@ -93,7 +92,7 @@ dnsmasq_dnsmasq_conf:
     dhcp-range=192.168.1.2,192.168.1.254,12h
     dhcp-authoritative
     dhcp-range=::,constructor:wlan0,ra-stateless,ra-names,12h
-    dhcp-option={{ wireguard.wg0.in_gw }},26,{{ wireguard.wg0.mtu }}
+    dhcp-option=wlan0,26,{{ wireguard.wg0.mtu }}
     ra-param=mtu:{{ wireguard.wg0.mtu }}
     enable-ra
 
@@ -103,6 +102,7 @@ dnsmasq_etc_default_options:
 host_roles:
   - common
   - chmduquesne.network_interfaces
+  - chmduquesne.gateway
   - chmduquesne.wireguard
   - chmduquesne.hostapd
   - oefenweb.dnsmasq

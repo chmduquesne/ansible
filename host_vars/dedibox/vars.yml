@@ -62,7 +62,6 @@ _wireguard_custom:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     listenport: 500
-    out_gw: enp0s20
     unbound_records: True
     dns: False
 
@@ -229,6 +228,7 @@ host_roles:
   - common
   - reallyenglish.dhclient
   - chmduquesne.network_interfaces
+  - chmduquesne.gateway
   - chmduquesne.wireguard
   - unbound
   - letsencrypt
