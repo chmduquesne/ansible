@@ -68,9 +68,12 @@ _wireguard_custom:
 wireguard: "{{ wireguard_default|combine(_wireguard_custom, recursive=True) }}"
 
 wireguard_generate_mobile: true
+
 wireguard_mobile_parameters:
   wg0:
     dns: "{{ wireguard_default.wg0.dns }}"
+    peers:
+      dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
 
 nftables_includes:
   wireguard_dns:
