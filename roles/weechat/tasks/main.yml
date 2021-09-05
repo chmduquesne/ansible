@@ -1,0 +1,13 @@
+---
+- name: Install weechat
+  package: name=weechat state=present
+
+- name: Configure weechat for libera
+  ansible.builtin.command:
+    cmd: weechat -r "{{ item }};/EXIT"
+  become: yes
+  become_user: me
+  loop:
+    - "/server add libera irc.libera.chat/6697 -ssl;"
+
+

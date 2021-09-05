@@ -16,7 +16,7 @@
   include_role: name=msmtp
 
 - name: Install useful packages
-  package: name={{ item }} state=latest
+  package: name={{ item }} state=present
   with_items:
     - vim
     - mlocate
