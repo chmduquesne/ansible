@@ -4,6 +4,6 @@
     - name: "apply host role"
       include_role:
         name: "{{ ansible_role }}"
-      with_items: "{{ host_roles }}"
+      loop: "{{ host_roles }}"
       loop_control:
         loop_var: ansible_role

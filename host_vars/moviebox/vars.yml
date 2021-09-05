@@ -96,11 +96,11 @@ iptables_custom_rules: "{{ iptables_common_rules }} + {{ iptables_custom_rules_v
 
 ip6tables_custom_rules: "{{ iptables_common_rules }} + {{ iptables_custom_rules_v6_specific }}"
 
+# - tvheadend
 host_roles:
   - common
   - chmduquesne.network_interfaces
   - chmduquesne.wireguard
-  - tvheadend
   - socks-proxy
   - chmduquesne.transmission
   - chmduquesne.nftables

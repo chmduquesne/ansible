@@ -34,10 +34,10 @@ wireguard_default:
           - "0.0.0.0/0"
           - "::/0"
         persistentkeepalive: 20
-      raspberrypi:
-        pubkey: "{{ vault_wg0_raspberrypi_pubkey }}"
+      wifibox:
+        pubkey: "{{ vault_wg0_wifibox_pubkey }}"
         allowedips:
-          - "{{ vault_wg0_raspberrypi_inet6_range }}"
+          - "{{ vault_wg0_wifibox_inet6_range }}"
       t450:
         pubkey: "{{ vault_wg0_t450_pubkey }}"
         privkey: "{{ vault_wg0_t450_privkey }}"

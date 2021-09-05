@@ -9,10 +9,13 @@ endif
 all: test
 
 test:
-	ansible-playbook --check --diff ${INVENTORY} ${VARS} site.yml
+	ansible-playbook --check --diff ${INVENTORY} ${VARS} deploy.yml
 
 deploy:
-	ansible-playbook ${INVENTORY} ${VARS} site.yml
+	ansible-playbook ${INVENTORY} ${VARS} deploy.yml
+
+run:
+	ansible ${host} -a "${cmd}"
 
 debug:
 	@echo host=${host}

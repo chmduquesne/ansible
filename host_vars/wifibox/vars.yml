@@ -5,7 +5,7 @@
 _wireguard_custom:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
-    pubkey: "{{ wireguard_default.wg0.peers.raspberrypi.pubkey }}"
+    pubkey: "{{ wireguard_default.wg0.peers.wifibox.pubkey }}"
     dns: False
     # Generate an uint32 from the interface name
     table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
@@ -24,15 +24,10 @@ ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 nftables_includes:
   "wg0_dns":
     - |
-      table inet wg0_dns {
-        chain input {
-            type filter hook input priority -1; policy continue;
-            iif wlan0 udp dport 53 accept comment "accept udp dns requests on wlan0"
-            iif wlan0 tcp dport 53 accept comment "accept tcp dns requests on wlan0"
-        }
-      }
+      add rule inet filter input iif wlan0 udp dport 53 accept comment "udp dns on wlan0"
+      add rule inet filter input iif wlan0 tcp dport 53 accept comment "tcp dns on wlan0"
 
-wlan0_inet6: "{{ wireguard_default.wg0.peers.raspberrypi.allowedips.0 }}"
+wlan0_inet6: "{{ wireguard_default.wg0.peers.wifibox.allowedips.0 }}"
 
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
@@ -102,6 +97,7 @@ dnsmasq_etc_default_options:
 host_roles:
   - common
   - chmduquesne.network_interfaces
+  - chmduquesne.nftables
   - chmduquesne.gateway
   - chmduquesne.wireguard
   - chmduquesne.hostapd
