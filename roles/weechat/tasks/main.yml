@@ -2,12 +2,13 @@
 - name: Install weechat
   package: name=weechat state=present
 
-- name: Configure weechat for libera
-  ansible.builtin.command:
-    cmd: weechat -r "{{ item }};/EXIT"
+- name: Install acl because ansible needs it to become unpriviledged
+  package: name=acl state=present
+
+- name: Configure weechat for user {{ weechat_user }}
+  command: weechat -r "{{ weechat_commands | join('" -r "') }}" -r "/EXIT"
   become: yes
-  become_user: me
-  loop:
-    - "/server add libera irc.libera.chat/6697 -ssl;"
-
-
+  become_user: "{{ weechat_user }}"
+  args:
+    creates: "/home/{{ weechat_user }}/.weechat"
+  when: weechat_commands | default([]) | length > 0
