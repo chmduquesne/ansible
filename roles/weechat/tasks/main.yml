@@ -14,3 +14,45 @@
   args:
     creates: "/home/{{ item.key }}/.weechat"
   loop: "{{ weechat | default({}) | dict2items }}"
+
+- name: Install tmux autostart script
+  copy:
+    src: files/config/systemd/user/
+    dest: "/home/{{ item.key }}/.config/systemd/user/"
+    owner: "{{ item.key }}"
+    group: "{{ item.key }}"
+    mode: '0644'
+  when: item.value.tmuxautostart
+  loop: "{{ weechat | default({}) | dict2items }}"
+
+- name: Enable linger for users of the tmux autostart service
+  command: loginctl enable-linger {{ item.key }}
+  become: yes
+  become_user: root
+  args:
+    creates: "/var/lib/systemd/linger/{{ item.key }}"
+  when: item.value.tmuxautostart
+  loop: "{{ weechat | default({}) | dict2items }}"
+
+- name: Ensure the proper systemd directories exist
+  file:
+    path: "/home/{{ item.key }}/.config/systemd/user/default.target.wants"
+    state: directory
+    mode: '0755'
+    owner: "{{ item.key }}"
+    group: "{{ item.key }}"
+    recurse: yes
+  when: item.value.tmuxautostart
+  loop: "{{ weechat | default({}) | dict2items }}"
+
+- name: Enable the tmux autostart service
+  file:
+    path: "/home/{{ item.key }}/.config/systemd/user/default.target.wants/weechat.service"
+    src: "/home/{{ item.key }}/.config/systemd/user/weechat.service"
+    owner: "{{ item.key }}"
+    group: "{{ item.key }}"
+    state: link
+    follow: false
+  when: item.value.tmuxautostart
+  loop: "{{ weechat | default({}) | dict2items }}"
+
