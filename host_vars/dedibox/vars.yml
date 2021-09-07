@@ -233,21 +233,22 @@ haproxy_conf:
         use_backend weechat if { ssl_fc_sni_reg weechat.chmd.fr }
         use_backend ssh if !HTTP
 
-weechat_commands:
-  - /server add libera irc.libera.chat/6697 -ssl
-  - /set irc.server.libera.nicks "{{ vault_weechat_libera_nicks }}"
-  - /set irc.server.libera.username {{ vault_weechat_libera_username }}
-  - /set irc.server.libera.realname "{{ vault_weechat_libera_realname }}"
-  - /set irc.server.libera.autoconnect on
-  - /set irc.server.libera.sasl_username {{ vault_weechat_libera_username }}
-  - /secure set libera_password {{ vault_weechat_libera_password }}
-  - /set irc.server.libera.sasl_password "${sec.data.libera_password}"
-  - /set irc.server.libera.autojoin "{{ vault_weechat_libera_autojoin }}"
-  - /secure set relay {{ vault_weechat_relay_password }}
-  - /set relay.network.password "${sec.data.relay}"
-  - /relay add weechat 9000
-
-weechat_user: me
+weechat:
+  me:
+    init:
+      - /server add libera irc.libera.chat/6697 -ssl
+      - /set irc.server.libera.nicks "{{ vault_weechat_libera_nicks }}"
+      - /set irc.server.libera.username {{ vault_weechat_libera_username }}
+      - /set irc.server.libera.realname "{{ vault_weechat_libera_realname }}"
+      - /set irc.server.libera.autoconnect on
+      - /set irc.server.libera.sasl_username {{ vault_weechat_libera_username }}
+      - /secure set libera_password {{ vault_weechat_libera_password }}
+      - /set irc.server.libera.sasl_password "${sec.data.libera_password}"
+      - /set irc.server.libera.autojoin "{{ vault_weechat_libera_autojoin }}"
+      - /secure set relay {{ vault_weechat_relay_password }}
+      - /set relay.network.password "${sec.data.relay}"
+      - /relay add weechat 9000
+    tmuxautostart: true
 
 host_roles:
   - common

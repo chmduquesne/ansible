@@ -7,10 +7,10 @@
     - weechat
     - acl
 
-- name: Configure weechat for user {{ weechat_user }}
-  command: weechat -r "{{ weechat_commands | join('" -r "') }}" -r "/EXIT"
+- name: Initialize profiles
+  command: weechat -r "{{ item.value.init | join('" -r "') }}" -r "/EXIT"
   become: yes
-  become_user: "{{ weechat_user }}"
+  become_user: "{{ item.key }}"
   args:
-    creates: "/home/{{ weechat_user }}/.weechat"
-  when: weechat_user is defined and weechat_commands | default([]) | length > 0
+    creates: "/home/{{ item.key }}/.weechat"
+  loop: "{{ weechat | default({}) | dict2items }}"
