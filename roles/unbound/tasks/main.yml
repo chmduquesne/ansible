@@ -1,18 +1,18 @@
 ---
-- name: get latest unbound
-  package: name=unbound state=latest
+- name: Get unbound and related packages
+  package: name={{ item }} state=present
+  loop:
+    - unbound
+    - openresolv
 
-- name: get latest openresolv
-  package: name=openresolv state=latest
-
-- name: configure /etc/unbound/unbound.conf
+- name: Configure /etc/unbound/unbound.conf
   template:
     src: templates/etc/unbound/unbound.conf.j2
     dest: /etc/unbound/unbound.conf
   notify:
     - restart unbound
 
-- name: enable service
+- name: Enable service
   service: name=unbound enabled=yes use=service
   notify:
     - restart unbound

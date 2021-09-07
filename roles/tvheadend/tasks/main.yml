@@ -1,7 +1,7 @@
 ---
 # tasks file for tvheadend
 - name: install tvheadend
-  package: name=tvheadend state=latest
+  package: name=tvheadend state=present
 
 - name: add the user hts to the group video
   user:

@@ -1,6 +1,6 @@
 ---
 - name: Install irssi
-  package: name={{ item }} state=latest
+  package: name={{ item }} state=present
   loop:
     - irssi
     - irssi-scripts

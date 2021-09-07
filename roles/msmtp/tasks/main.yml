@@ -1,6 +1,6 @@
 ---
 - name: Install required packages
-  package: name={{ item }} state=latest
+  package: name={{ item }} state=present
   loop:
     - msmtp
     - msmtp-mta

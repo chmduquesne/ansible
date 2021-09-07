@@ -1,6 +1,6 @@
 ---
 - name: Install mpop
-  package: name={{ item }} state=latest
+  package: name={{ item }} state=present
   loop:
     - mpop
 
