@@ -1,9 +1,11 @@
 ---
-- name: Install weechat
-  package: name=weechat state=present
-
-- name: Install acl because ansible needs it to become unpriviledged
-  package: name=acl state=present
+# Note: acl is needed because ansible needs facl to execute commands as an
+# upriviledged user.
+- name: Install weechat related packages
+  package: name={{ item }} state=present
+  loop:
+    - weechat
+    - acl
 
 - name: Configure weechat for user {{ weechat_user }}
   command: weechat -r "{{ weechat_commands | join('" -r "') }}" -r "/EXIT"
@@ -11,4 +13,4 @@
   become_user: "{{ weechat_user }}"
   args:
     creates: "/home/{{ weechat_user }}/.weechat"
-  when: weechat_commands | default([]) | length > 0
+  when: weechat_user is defined and weechat_commands | default([]) | length > 0
