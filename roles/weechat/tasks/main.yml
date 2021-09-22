@@ -8,49 +8,49 @@
     - acl
 
 - name: Initialize profiles
-  command: weechat -r "{{ item.value.init | join('" -r "') }}" -r "/EXIT"
+  command: weechat -r "{{ item.init | join('" -r "') }}" -r "/EXIT"
   become: yes
-  become_user: "{{ item.key }}"
+  become_user: "{{ item.user }}"
   args:
-    creates: "/home/{{ item.key }}/.weechat"
-  loop: "{{ weechat | default({}) | dict2items }}"
+    creates: "/home/{{ item.user }}/.weechat"
+  loop: "{{ weechat | default([]) }}"
 
 - name: Ensure the proper systemd directories exist
   file:
-    path: "/home/{{ item.key }}/.config/systemd/user/default.target.wants"
+    path: "/home/{{ item.user }}/.config/systemd/user/default.target.wants"
     state: directory
-    owner: "{{ item.key }}"
-    group: "{{ item.key }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
     recurse: yes
-  when: item.value.tmuxautostart
-  loop: "{{ weechat | default({}) | dict2items }}"
+  when: item.tmuxautostart
+  loop: "{{ weechat | default([]) }}"
 
 - name: Install tmux autostart script
   copy:
     src: files/config/systemd/user/weechat.service
-    dest: "/home/{{ item.key }}/.config/systemd/user/weechat.service"
-    owner: "{{ item.key }}"
-    group: "{{ item.key }}"
-  when: item.value.tmuxautostart
-  loop: "{{ weechat | default({}) | dict2items }}"
+    dest: "/home/{{ item.user }}/.config/systemd/user/weechat.service"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+  when: item.tmuxautostart
+  loop: "{{ weechat | default([]) }}"
 
 - name: Enable linger for users of the tmux autostart service
-  command: loginctl enable-linger {{ item.key }}
+  command: loginctl enable-linger {{ item.user }}
   become: yes
   become_user: root
   args:
-    creates: "/var/lib/systemd/linger/{{ item.key }}"
-  when: item.value.tmuxautostart
-  loop: "{{ weechat | default({}) | dict2items }}"
+    creates: "/var/lib/systemd/linger/{{ item.user }}"
+  when: item.tmuxautostart
+  loop: "{{ weechat | default([]) }}"
 
 - name: Enable the tmux autostart service
   file:
-    path: "/home/{{ item.key }}/.config/systemd/user/default.target.wants/weechat.service"
-    src: "/home/{{ item.key }}/.config/systemd/user/weechat.service"
-    owner: "{{ item.key }}"
-    group: "{{ item.key }}"
+    path: "/home/{{ item.user }}/.config/systemd/user/default.target.wants/weechat.service"
+    src: "/home/{{ item.user }}/.config/systemd/user/weechat.service"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
     state: link
     follow: false
-  when: item.value.tmuxautostart
-  loop: "{{ weechat | default({}) | dict2items }}"
+  when: item.tmuxautostart
+  loop: "{{ weechat | default([]) }}"
 

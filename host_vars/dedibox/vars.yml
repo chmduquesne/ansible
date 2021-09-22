@@ -219,7 +219,7 @@ haproxy_conf:
         use_backend ssh if !HTTP
 
 weechat:
-  me:
+  - user: "{{ weechat_user }}"
     init:
       - /server add libera irc.libera.chat/6697 -ssl
       - /set irc.server.libera.nicks "{{ vault_weechat_libera_nicks }}"
