@@ -68,6 +68,29 @@ wireguard:
     auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
     mtu: "{{ wireguard_default.wg0.mtu }}"
 
+wireguard_mobile:
+  wg0:
+    t450:
+      privkey: "{{ vault_wg0_t450_privkey }}"
+      dns: "{{ wireguard_default.wg0.dns }}"
+      peers:
+        dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+    op3t:
+      privkey: "{{ vault_wg0_op3t_privkey }}"
+      dns: "{{ wireguard_default.wg0.dns }}"
+      peers:
+        dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+    op8t:
+      privkey: "{{ vault_wg0_op8t_privkey }}"
+      dns: "{{ wireguard_default.wg0.dns }}"
+      peers:
+        dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+    firetv:
+      privkey: "{{ vault_wg0_firetv_privkey }}"
+      dns: "{{ wireguard_default.wg0.dns }}"
+      peers:
+        dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+
 wireguard_generate_mobile: true
 
 wireguard_mobile_parameters:
