@@ -40,11 +40,14 @@ network_interfaces_interfaces:
     triggers:
       - allow-hotplug
 
-_wireguard_custom:
+wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
-
-wireguard: "{{ wireguard_client|combine(_wireguard_custom, recursive=True) }}"
+    peers:
+      dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+    auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_default.wg0.mtu }}"
+    dns: "{{ wireguard_default.wg0.dns }}"
 
 extrastorage:
   - path: "/mnt"

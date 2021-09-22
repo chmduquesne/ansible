@@ -65,14 +65,6 @@ wireguard_default:
     mtu: 1360
     dns: "{{ vault_wg0_dns }}"
 
-wireguard_client:
-  wg0:
-    peers:
-      dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
-    auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
-    mtu: "{{ wireguard_default.wg0.mtu }}"
-    dns: "{{ wireguard_default.wg0.dns }}"
-
 tvheadend_username: "{{ vault_tvheadend_username }}"
 tvheadend_password: "{{ vault_tvheadend_password }}"
 

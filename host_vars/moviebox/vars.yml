@@ -22,11 +22,14 @@ sshd_config_match:
       ForceCommand: "internal-sftp"
       ChrootDirectory: "/home"
 
-_wireguard_custom:
+wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
-
-wireguard: "{{ wireguard_client|combine(_wireguard_custom, recursive=True) }}"
+    peers:
+      dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+    auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_default.wg0.mtu }}"
+    dns: "{{ wireguard_default.wg0.dns }}"
 
 socks_proxy_port: 1080
 socks_proxy_user: wgsocks

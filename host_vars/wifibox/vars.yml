@@ -2,15 +2,16 @@
 #ansible_user: pi
 #ansible_ssh_pass: raspberry
 
-_wireguard_custom:
+wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
-    pubkey: "{{ wireguard_default.wg0.peers.wifibox.pubkey }}"
-    dns: False
     # Generate an uint32 from the interface name
     table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
-
-wireguard: "{{ wireguard_client|combine(_wireguard_custom, recursive=True) }}"
+    peers:
+      dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+    auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_default.wg0.mtu }}"
+    dns: False
 
 # untested
 nftables_includes:
