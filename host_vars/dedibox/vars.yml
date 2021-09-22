@@ -6,7 +6,7 @@
 #ansible_ssh_pass: "{{ vault_ansible_ssh_pass }}"
 #ansible_user: "{{ vault_ansible_user }}"
 
-irssi_user: "me"
+weechat_user: "me"
 
 users:
   - username: "{{ ssh_user }}"
@@ -16,7 +16,7 @@ users:
       - "{{ ssh_pubkey_gpg }}"
     home_create: yes
     shell: /bin/bash
-  - username: "{{ irssi_user }}"
+  - username: "{{ weechat_user }}"
     authorized_keys:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
@@ -102,21 +102,6 @@ nftables_includes:
               counter comment "count accepted packets"
           }
       }
-
-iptables_custom_rules:
-  - name: "wg0_dns"
-    rules: |
-      -A INPUT -i wg0 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -i wg0 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-  - name: "haproxy"
-    rules: |
-      -A INPUT -p tcp -m tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -p tcp -m tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
-  - name: "mosh"
-    rules: |
-      -A INPUT -i enp0s20 -p udp -m udp --match multiport --dports 60000:61000 -m conntrack --ctstate NEW -j ACCEPT
-
-ip6tables_custom_rules: "{{ iptables_custom_rules }}"
 
 unbound_unbound_conf:
   - |
@@ -259,6 +244,5 @@ host_roles:
   - unbound
   - letsencrypt
   - chmduquesne.haproxy
-  - irssi
   - mosh
   - weechat

@@ -60,42 +60,6 @@ nftables_includes:
       add rule inet filter output ct state {established, related} counter accept comment "accept all connections related to those we opened"
       add rule inet filter output meta skuid "{{ transmission_user }}" oifname != "wg0" drop comment "{{ transmission_user }} must go through wg0"
 
-iptables_common_rules:
-  - name: tvheadend
-    rules: |
-      -A INPUT -p tcp -m tcp --dport 9981 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -p udp -m udp --dport 9981 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -p tcp -m tcp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -p udp -m udp --dport 9982 -m conntrack --ctstate NEW -j ACCEPT
-  - name: socks
-    rules: |
-      -A INPUT -p tcp -m tcp --dport {{ socks_proxy_port }} -i eth0 -m conntrack --ctstate NEW -j ACCEPT
-      -A OUTPUT -p tcp -m tcp --sport {{ socks_proxy_port }} -o eth0 -j ACCEPT
-      -A OUTPUT -m owner --uid-owner {{ socks_proxy_user }} -o wg0 -j ACCEPT
-      -A OUTPUT -m owner --uid-owner {{ socks_proxy_user }} -j REJECT
-  - name: transmission
-    rules: |
-      -A INPUT -p tcp -m tcp --dport 9091 -i eth0 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -p tcp -m tcp --dport 51413 -i wg0 -m conntrack --ctstate NEW -j ACCEPT
-      -A INPUT -p udp -m udp --dport 51413 -i wg0 -m conntrack --ctstate NEW -j ACCEPT
-      -A OUTPUT -p tcp -m tcp --sport 9091 -m owner --uid-owner {{ transmission_user }} -j ACCEPT
-      -A OUTPUT -m owner --uid-owner {{ transmission_user }} -o wg0 -j ACCEPT
-      -A OUTPUT -m owner --uid-owner {{ transmission_user }} -j REJECT
-
-iptables_custom_rules_v4_specific:
-  - name: transmission_rpc
-    rules: |
-      -A INPUT -p tcp -m tcp -s {{ wireguard.wg0.auto_assign_ranges|ipv4|first }} --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
-
-iptables_custom_rules_v6_specific:
-  - name: transmission_rpc
-    rules: |
-      -A INPUT -p tcp -m tcp -s {{ wireguard.wg0.auto_assign_ranges|ipv6|first }} --dport 9091 -m conntrack --ctstate NEW -j ACCEPT
-
-iptables_custom_rules: "{{ iptables_common_rules }} + {{ iptables_custom_rules_v4_specific }}"
-
-ip6tables_custom_rules: "{{ iptables_common_rules }} + {{ iptables_custom_rules_v6_specific }}"
-
 # - tvheadend
 host_roles:
   - common
