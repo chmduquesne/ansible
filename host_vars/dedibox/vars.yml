@@ -58,14 +58,15 @@ network_interfaces_interfaces:
     request_prefix: 1
     accept_ra: 2
 
-_wireguard_custom:
+wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     listenport: 500
     unbound_records: True
     dns: False
-
-wireguard: "{{ wireguard_default|combine(_wireguard_custom, recursive=True) }}"
+    peers: "{{ wireguard_default.wg0.peers }}"
+    auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_default.wg0.mtu }}"
 
 wireguard_generate_mobile: true
 
