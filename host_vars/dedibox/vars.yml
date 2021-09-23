@@ -68,6 +68,45 @@ wireguard:
     auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
     mtu: "{{ wireguard_default.wg0.mtu }}"
 
+wireguard_wg0_dedibox_android:
+  pubkey: "{{ wireguard_default.wg0.peers.dedibox.pubkey }}"
+  endpoint: "{{ wireguard_default.wg0.peers.dedibox.endpoint }}"
+  persistentkeepalive: "{{ wireguard_default.wg0.peers.dedibox.persistentkeepalive }}"
+  # everything except local subnetworks
+  allowedips:
+    - ::/0
+    - 10.0.0.0/8
+    - 0.0.0.0/5
+    - 8.0.0.0/7
+    - 11.0.0.0/8
+    - 12.0.0.0/6
+    - 16.0.0.0/4
+    - 32.0.0.0/3
+    - 64.0.0.0/2
+    - 128.0.0.0/3
+    - 160.0.0.0/5
+    - 168.0.0.0/6
+    - 172.0.0.0/12
+    - 172.32.0.0/11
+    - 172.64.0.0/10
+    - 172.128.0.0/9
+    - 173.0.0.0/8
+    - 174.0.0.0/7
+    - 176.0.0.0/4
+    - 192.0.0.0/9
+    - 192.128.0.0/11
+    - 192.160.0.0/13
+    - 192.169.0.0/16
+    - 192.170.0.0/15
+    - 192.172.0.0/14
+    - 192.176.0.0/12
+    - 192.192.0.0/10
+    - 193.0.0.0/8
+    - 194.0.0.0/7
+    - 196.0.0.0/6
+    - 200.0.0.0/5
+    - 208.0.0.0/4
+
 wireguard_mobile:
   wg0:
     t450:
@@ -80,28 +119,20 @@ wireguard_mobile:
       privkey: "{{ vault_wg0_op3t_privkey }}"
       dns: "{{ wireguard_default.wg0.dns }}"
       peers:
-        dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+        dedibox: "{{ wireguard_wg0_dedibox_android }}"
       auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
     op8t:
       privkey: "{{ vault_wg0_op8t_privkey }}"
       dns: "{{ wireguard_default.wg0.dns }}"
       peers:
-        dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+        dedibox: "{{ wireguard_wg0_dedibox_android }}"
       auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
     firetv:
       privkey: "{{ vault_wg0_firetv_privkey }}"
       dns: "{{ wireguard_default.wg0.dns }}"
       peers:
-        dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
+        dedibox: "{{ wireguard_wg0_dedibox_android }}"
       auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
-
-wireguard_generate_mobile: true
-
-wireguard_mobile_parameters:
-  wg0:
-    dns: "{{ wireguard_default.wg0.dns }}"
-    peers:
-      dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
 
 nftables_includes:
   wireguard_dns:
