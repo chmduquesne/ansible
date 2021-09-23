@@ -64,14 +64,14 @@ wireguard:
     listenport: 500
     unbound_records: True
     dns: False
-    peers: "{{ wireguard_default.wg0.peers }}"
-    auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
-    mtu: "{{ wireguard_default.wg0.mtu }}"
+    peers: "{{ wireguard_global_settings.wg0.peers }}"
+    auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_global_settings.wg0.mtu }}"
 
 wireguard_wg0_dedibox_android:
-  pubkey: "{{ wireguard_default.wg0.peers.dedibox.pubkey }}"
-  endpoint: "{{ wireguard_default.wg0.peers.dedibox.endpoint }}"
-  persistentkeepalive: "{{ wireguard_default.wg0.peers.dedibox.persistentkeepalive }}"
+  pubkey: "{{ wireguard_global_settings.wg0.peers.dedibox.pubkey }}"
+  endpoint: "{{ wireguard_global_settings.wg0.peers.dedibox.endpoint }}"
+  persistentkeepalive: "{{ wireguard_global_settings.wg0.peers.dedibox.persistentkeepalive }}"
   # everything except local subnetworks
   allowedips:
     - ::/0
@@ -111,28 +111,28 @@ wireguard_mobile:
   wg0:
     t450:
       privkey: "{{ vault_wg0_t450_privkey }}"
-      dns: "{{ wireguard_default.wg0.dns }}"
+      dns: "{{ wireguard_global_settings.wg0.dns }}"
       peers:
-        dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
-      auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
+        dedibox: "{{ wireguard_global_settings.wg0.peers.dedibox }}"
+      auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
     op3t:
       privkey: "{{ vault_wg0_op3t_privkey }}"
-      dns: "{{ wireguard_default.wg0.dns }}"
+      dns: "{{ wireguard_global_settings.wg0.dns }}"
       peers:
         dedibox: "{{ wireguard_wg0_dedibox_android }}"
-      auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
+      auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
     op8t:
       privkey: "{{ vault_wg0_op8t_privkey }}"
-      dns: "{{ wireguard_default.wg0.dns }}"
+      dns: "{{ wireguard_global_settings.wg0.dns }}"
       peers:
         dedibox: "{{ wireguard_wg0_dedibox_android }}"
-      auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
+      auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
     firetv:
       privkey: "{{ vault_wg0_firetv_privkey }}"
-      dns: "{{ wireguard_default.wg0.dns }}"
+      dns: "{{ wireguard_global_settings.wg0.dns }}"
       peers:
         dedibox: "{{ wireguard_wg0_dedibox_android }}"
-      auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
+      auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
 
 nftables_includes:
   wireguard_dns:

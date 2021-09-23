@@ -8,9 +8,9 @@ wireguard:
     # Generate an uint32 from the interface name
     table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
     peers:
-      dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
-    auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
-    mtu: "{{ wireguard_default.wg0.mtu }}"
+      dedibox: "{{ wireguard_global_settings.wg0.peers.dedibox }}"
+    auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_global_settings.wg0.mtu }}"
     dns: False
 
 # untested
@@ -20,7 +20,7 @@ nftables_includes:
       add rule inet filter input iif wlan0 udp dport 53 accept comment "udp dns on wlan0"
       add rule inet filter input iif wlan0 tcp dport 53 accept comment "tcp dns on wlan0"
 
-wlan0_inet6: "{{ wireguard_default.wg0.peers.wifibox.allowedips.0 }}"
+wlan0_inet6: "{{ wireguard_global_settings.wg0.peers.wifibox.allowedips.0 }}"
 
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:
@@ -71,7 +71,7 @@ dnsmasq_dnsmasq_conf:
     domain-needed
     bogus-priv
     no-resolv
-    server={{ wireguard_default.wg0.dns }}
+    server={{ wireguard_global_settings.wg0.dns }}
     dnssec
     conf-file=/usr/share/dnsmasq-base/trust-anchors.conf
     local=/rpi/

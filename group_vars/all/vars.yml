@@ -24,7 +24,7 @@ sshd_config:
   UsePAM: "yes"
   Subsystem: "sftp /usr/lib/sftp-server"
 
-wireguard_default:
+wireguard_global_settings:
   wg0:
     peers:
       dedibox:

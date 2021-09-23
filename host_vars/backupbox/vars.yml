@@ -44,10 +44,10 @@ wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
     peers:
-      dedibox: "{{ wireguard_default.wg0.peers.dedibox }}"
-    auto_assign_ranges: "{{ wireguard_default.wg0.auto_assign_ranges }}"
-    mtu: "{{ wireguard_default.wg0.mtu }}"
-    dns: "{{ wireguard_default.wg0.dns }}"
+      dedibox: "{{ wireguard_global_settings.wg0.peers.dedibox }}"
+    auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_global_settings.wg0.mtu }}"
+    dns: "{{ wireguard_global_settings.wg0.dns }}"
 
 extrastorage:
   - path: "/mnt"
