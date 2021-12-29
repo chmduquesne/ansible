@@ -5,6 +5,7 @@ ssh_pubkey_t450: "{{ vault_ssh_pubkey_t450 }}"
 ssh_pubkey_work: "{{ vault_ssh_pubkey_work }}"
 ssh_pubkey_op3t_syncopoly: "{{ vault_ssh_pubkey_op3t_syncopoly }}"
 ssh_pubkey_gpg: "{{ vault_ssh_pubkey_gpg }}"
+ssh_pubkey_t14s: "{{ vault_ssh_pubkey_t14s }}"
 
 ansible_user: "{{ ssh_user }}"
 users:
@@ -13,6 +14,7 @@ users:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
       - "{{ ssh_pubkey_gpg }}"
+      - "{{ ssh_pubkey_t14s }}"
     home_create: yes
     shell: /bin/bash
 promoted:

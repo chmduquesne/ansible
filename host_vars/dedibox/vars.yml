@@ -14,6 +14,7 @@ users:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
       - "{{ ssh_pubkey_gpg }}"
+      - "{{ ssh_pubkey_t14s }}"
     home_create: yes
     shell: /bin/bash
   - username: "{{ weechat_user }}"
@@ -21,6 +22,7 @@ users:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
       - "{{ ssh_pubkey_gpg }}"
+      - "{{ ssh_pubkey_t14s }}"
     home_create: yes
     shell: /bin/bash
   - username: "restic"
@@ -28,6 +30,7 @@ users:
       - "{{ ssh_pubkey_t450 }}"
       - "{{ ssh_pubkey_work }}"
       - "{{ ssh_pubkey_gpg }}"
+      - "{{ ssh_pubkey_t14s }}"
     home_create: yes
     shell: /bin/bash
 
