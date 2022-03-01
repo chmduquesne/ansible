@@ -9,28 +9,21 @@
 weechat_user: "me"
 
 users:
-  - username: "{{ ssh_user }}"
-    authorized_keys:
-      - "{{ ssh_pubkey_t450 }}"
-      - "{{ ssh_pubkey_work }}"
-      - "{{ ssh_pubkey_gpg }}"
-      - "{{ ssh_pubkey_t14s }}"
-    home_create: yes
-    shell: /bin/bash
+  - "{{ admin }}"
   - username: "{{ weechat_user }}"
     authorized_keys:
-      - "{{ ssh_pubkey_t450 }}"
-      - "{{ ssh_pubkey_work }}"
-      - "{{ ssh_pubkey_gpg }}"
-      - "{{ ssh_pubkey_t14s }}"
+      - "{{ vault_ssh_pubkey_t450 }}"
+      - "{{ vault_ssh_pubkey_work }}"
+      - "{{ vault_ssh_pubkey_gpg }}"
+      - "{{ vault_ssh_pubkey_t14s }}"
     home_create: yes
     shell: /bin/bash
   - username: "restic"
     authorized_keys:
-      - "{{ ssh_pubkey_t450 }}"
-      - "{{ ssh_pubkey_work }}"
-      - "{{ ssh_pubkey_gpg }}"
-      - "{{ ssh_pubkey_t14s }}"
+      - "{{ vault_ssh_pubkey_t450 }}"
+      - "{{ vault_ssh_pubkey_work }}"
+      - "{{ vault_ssh_pubkey_gpg }}"
+      - "{{ vault_ssh_pubkey_t14s }}"
     home_create: yes
     shell: /bin/bash
 

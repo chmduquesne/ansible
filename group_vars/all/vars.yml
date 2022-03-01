@@ -1,24 +1,21 @@
 ---
-# vault imported stuff
-ssh_user: "{{ vault_ssh_user }}"
-ssh_pubkey_t450: "{{ vault_ssh_pubkey_t450 }}"
-ssh_pubkey_work: "{{ vault_ssh_pubkey_work }}"
-ssh_pubkey_op3t_syncopoly: "{{ vault_ssh_pubkey_op3t_syncopoly }}"
-ssh_pubkey_gpg: "{{ vault_ssh_pubkey_gpg }}"
-ssh_pubkey_t14s: "{{ vault_ssh_pubkey_t14s }}"
+ansible_user: "{{ vault_ssh_user }}"
 
-ansible_user: "{{ ssh_user }}"
+admin:
+  username: "{{ vault_ssh_user }}"
+  authorized_keys:
+    - "{{ vault_ssh_pubkey_t450 }}"
+    - "{{ vault_ssh_pubkey_work }}"
+    - "{{ vault_ssh_pubkey_gpg }}"
+    - "{{ vault_ssh_pubkey_t14s }}"
+  home_create: yes
+  shell: /bin/bash
+
 users:
-  - username: "{{ ssh_user }}"
-    authorized_keys:
-      - "{{ ssh_pubkey_t450 }}"
-      - "{{ ssh_pubkey_work }}"
-      - "{{ ssh_pubkey_gpg }}"
-      - "{{ ssh_pubkey_t14s }}"
-    home_create: yes
-    shell: /bin/bash
+  - "{{ admin }}"
+
 promoted:
-  - {name: "{{ ssh_user }}", promote: ALL, nopasswd: true}
+  - {name: "{{ vault_ssh_user }}", promote: ALL, nopasswd: true}
 sshd_config:
   PermitRootLogin: "no"
   PasswordAuthentication: "no"
