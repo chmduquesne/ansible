@@ -227,18 +227,18 @@ haproxy_conf:
 
     backend resume
         server resume0 chmduquesne.github.io:443 ssl verify none
-        reqrep ^([^\ :]*)\ /(.*)     \1\ /resume.chmd.fr/\2
-        reqrep ^Host:\ (.*)   Host:\ chmduquesne.github.io
+        http-request set-path /resume.chmd.fr/%[path]
+        http-request set-header Host chmduquesne.github.io
 
     backend blog
         server blog0 chmduquesne.github.io:443 ssl verify none
-        reqrep ^([^\ :]*)\ /(.*)     \1\ /blog.chmd.fr/\2
-        reqrep ^Host:\ (.*)   Host:\ chmduquesne.github.io
+        http-request set-path /blog.chmd.fr/%[path]
+        http-request set-header Host chmduquesne.github.io
 
     backend chmd
         server chmd0 chmduquesne.github.io:443 ssl verify none
-        reqrep ^([^\ :]*)\ /(.*)     \1\ /chmd.fr/\2
-        reqrep ^Host:\ (.*)   Host:\ chmduquesne.github.io
+        http-request set-path /chmd.fr/%[path]
+        http-request set-header Host chmduquesne.github.io
 
     backend weechat
         mode tcp
