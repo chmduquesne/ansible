@@ -8,26 +8,23 @@
 
 weechat_user: "me"
 
-users:
+common_users:
   - "{{ admin }}"
-  - username: "{{ weechat_user }}"
+  - name: "{{ weechat_user }}"
     authorized_keys:
       - "{{ vault_ssh_pubkey_t450 }}"
-      - "{{ vault_ssh_pubkey_work }}"
-      - "{{ vault_ssh_pubkey_gpg }}"
-      - "{{ vault_ssh_pubkey_t14s }}"
       - "{{ vault_ssh_pubkey_keychain }}"
       - "{{ vault_ssh_pubkey_desktop }}"
       - "{{ vault_ssh_pubkey_backup }}"
-    home_create: yes
+    create_home: yes
     shell: /bin/bash
-  - username: "restic"
+  - name: "restic"
     authorized_keys:
       - "{{ vault_ssh_pubkey_t450 }}"
       - "{{ vault_ssh_pubkey_work }}"
       - "{{ vault_ssh_pubkey_gpg }}"
       - "{{ vault_ssh_pubkey_t14s }}"
-    home_create: yes
+    create_home: yes
     shell: /bin/bash
 
 ansible_host: "{{ vault_ansible_host }}"

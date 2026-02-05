@@ -1,27 +1,27 @@
 ---
 - name: Create users
   ansible.builtin.user:
-    name: "{{ item.username }}"
-    create_home: yes
-    shell: /bin/bash
-  loop: "{{ users }}"
+    name: "{{ item.name }}"
+    create_home: "{{ item.create_home }}"
+    shell: "{{ item.shell }}"
+  loop: "{{ common_users }}"
 
 - name: Set authorized keys
   ansible.posix.authorized_key:
-    user: "{{ item.username }}"
+    user: "{{ item.name }}"
     state: present
     exclusive: true
     key: "{{ item.authorized_keys | join('\n') }}"
-  loop: "{{ users }}"
+  loop: "{{ common_users }}"
 
-- name: Setup sudoers
+- name: Setup sudo
   community.general.sudoers:
     name: "promote-{{ item.name }}"
-    state: present
     user: "{{ item.name }}"
-    commands: "{{ item.promote }}"
-    runas: "ALL"
-  loop: "{{ promoted }}"
+    commands: "{{ item.sudo.commands}}"
+    runas: "{{ item.sudo.runas}}"
+  loop: "{{ common_users }}"
+  when: "'sudo' in item"
 
 - name: Configure ssh
   include_role: name=reallyenglish.sshd

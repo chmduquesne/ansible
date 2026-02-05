@@ -2,24 +2,23 @@
 #ansible_user: pi
 #ansible_ssh_pass: raspberry
 
-users:
+common_users:
   - "{{ admin }}"
-  - username: "android"
+  - name: "android"
     authorized_keys:
       - "{{ vault_ssh_pubkey_t450 }}"
       - "{{ vault_ssh_pubkey_work }}"
       - "{{ vault_ssh_pubkey_gpg }}"
       - "command=\"/usr/local/bin/rrsync /mnt/android/\",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc,no-X11-forwarding {{ vault_ssh_pubkey_op3t_syncopoly }}"
-    home_create: yes
+    create_home: yes
     shell: /bin/bash
-  - username: "mail"
+  - name: "mail"
     authorized_keys:
       - "{{ vault_ssh_pubkey_t450 }}"
       - "{{ vault_ssh_pubkey_work }}"
       - "{{ vault_ssh_pubkey_gpg }}"
-    home_create: yes
+    create_home: yes
     shell: /bin/bash
-
 
 network_interfaces_manage_devices: true
 network_interfaces_interfaces:

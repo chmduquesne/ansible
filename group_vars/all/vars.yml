@@ -2,20 +2,21 @@
 ansible_user: "{{ vault_ssh_user }}"
 
 admin:
-  username: "{{ vault_ssh_user }}"
+  name: "{{ vault_ssh_user }}"
+  create_home: yes
+  shell: /bin/bash
   authorized_keys:
     - "{{ vault_ssh_pubkey_t450 }}"
     - "{{ vault_ssh_pubkey_keychain }}"
     - "{{ vault_ssh_pubkey_desktop }}"
     - "{{ vault_ssh_pubkey_backup }}"
-  home_create: yes
-  shell: /bin/bash
+  sudo:
+    commands: ALL
+    runas: ALL:ALL
 
-users:
+common_users:
   - "{{ admin }}"
 
-promoted:
-  - {name: "{{ vault_ssh_user }}", promote: ALL, nopasswd: true}
 sshd_config:
   PermitRootLogin: "no"
   PasswordAuthentication: "no"
