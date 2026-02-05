@@ -24,10 +24,12 @@
   when: "'sudo' in item"
 
 - name: Configure ssh
-  include_role: name=reallyenglish.sshd
+  ansible.builtin.import_role:
+    name: reallyenglish.sshd
 
 - name: Configure msmtp
-  include_role: name=msmtp
+  ansible.builtin.import_role:
+    name: msmtp
 
 - name: Install useful packages
   ansible.builtin.apt:
