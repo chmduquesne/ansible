@@ -18,8 +18,8 @@
   community.general.sudoers:
     name: "promote-{{ item.name }}"
     user: "{{ item.name }}"
-    commands: "{{ item.sudo.commands}}"
-    runas: "{{ item.sudo.runas}}"
+    commands: "{{ item.sudo.commands }}"
+    runas: "{{ item.sudo.runas }}"
   loop: "{{ common_users }}"
   when: "'sudo' in item"
 
