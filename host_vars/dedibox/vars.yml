@@ -295,7 +295,7 @@ weechat:
 
 host_roles:
   - common
-  - reallyenglish.dhclient
+  - dhclient
   - chmduquesne.network_interfaces
   - chmduquesne.gateway
   - chmduquesne.wireguard

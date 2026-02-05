@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+# handlers file for dhclient
+- name: restart networking
+  ansible.builtin.service:
+    name: networking
+    state: restarted

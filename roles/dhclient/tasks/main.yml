@@ -1,0 +1,15 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Install dhclient
+  ansible.builtin.package:
+    name: isc-dhcp-client
+    state: present
+
+- name: Configure dhclient
+  ansible.builtin.template:
+    src: dhclient.conf.j2
+    dest: /etc/dhcp/dhclient.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart networking

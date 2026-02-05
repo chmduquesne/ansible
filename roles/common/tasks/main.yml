@@ -1,9 +1,26 @@
 ---
 - name: Create users
-  include_role: name=weareinteractive.users
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    create_home: yes
+    shell: /bin/bash
+  loop: "{{ users }}"
 
-- name: Install sudoers
-  include_role: name=salamachinas.sudoers
+- name: Set authorized keys
+  ansible.posix.authorized_key:
+    user: "{{ item.username }}"
+    state: present
+    exclusive: true
+    key: "{{ item.authorized_keys | join('\n') }}"
+  loop: "{{ users }}"
+
+- name: Setup sudoers
+  community.general.sudoers:
+    name: "promote-{{ item.name }}"
+    state: present
+    user: "{{ item.name }}"
+    commands: "{{ item.promote }}"
+  loop: "{{ promoted }}"
 
 - name: Configure ssh
   include_role: name=reallyenglish.sshd
@@ -12,13 +29,14 @@
   include_role: name=msmtp
 
 - name: Install useful packages
-  package: name={{ item }} state=present
-  with_items:
-    - vim
-    - tmux
-    - mlocate
-    - unattended-upgrades
-    - apt-listchanges
+  ansible.builtin.apt:
+    name:
+      - vim
+      - tmux
+      - mlocate
+      - unattended-upgrades
+      - apt-listchanges
+    state: present
 
 - name: Ensure root gets mail from unattended-upgrades
   lineinfile:
