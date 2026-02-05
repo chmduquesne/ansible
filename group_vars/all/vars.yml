@@ -5,9 +5,6 @@ admin:
   username: "{{ vault_ssh_user }}"
   authorized_keys:
     - "{{ vault_ssh_pubkey_t450 }}"
-    - "{{ vault_ssh_pubkey_work }}"
-    - "{{ vault_ssh_pubkey_gpg }}"
-    - "{{ vault_ssh_pubkey_t14s }}"
     - "{{ vault_ssh_pubkey_keychain }}"
     - "{{ vault_ssh_pubkey_desktop }}"
     - "{{ vault_ssh_pubkey_backup }}"

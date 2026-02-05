@@ -7,3 +7,4 @@
       loop: "{{ host_roles }}"
       loop_control:
         loop_var: ansible_role
+        label: "{{ ansible_role }}"

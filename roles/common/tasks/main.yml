@@ -20,6 +20,7 @@
     state: present
     user: "{{ item.name }}"
     commands: "{{ item.promote }}"
+    runas: "ALL"
   loop: "{{ promoted }}"
 
 - name: Configure ssh
