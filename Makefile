@@ -3,7 +3,7 @@ ifdef host
 endif
 
 ifdef role
-	VARS=--extra-vars="host_roles=['${role}']"
+	VARS=--extra-vars='{"host_roles": ["${role}"]}'
 endif
 
 all: test
