@@ -1,28 +1,30 @@
 ---
 - name: Install required packages
-  package: name={{ item }} state=present
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
   loop:
     - msmtp
     - msmtp-mta
 
 - name: Configure /etc/msmtprc
-  template:
+  ansible.builtin.template:
     src: templates/etc/msmtprc.j2
     dest: /etc/msmtprc
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
 #- name: Forwarding root's mail
-#  lineinfile:
+#  ansible.builtin.lineinfile:
 #    path: /root/.forward
-#    create: yes
+#    create: true
 #    line: "{{ msmtp_forward_root_email }}"
 
 - name: Setting aliases
-  template:
+  ansible.builtin.template:
     src: templates/etc/aliases.j2
     dest: /etc/aliases
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
