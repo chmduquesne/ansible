@@ -1,0 +1,25 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for proxmox
+- name: Remove Enterprise Repo
+  file:
+    path: /etc/apt/sources.list.d/{{ item }}
+    state: absent
+  loop:
+    - pve-enterprise.sources
+    - ceph.sources
+    - pve-enterprise.list
+    - ceph.list
+
+- name: Add No-Subscription Repo
+  apt_repository:
+    repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
+    state: present
+
+- name: Install Python dependencies for Proxmox
+  apt:
+    name:
+      - python3-proxmoxer
+      - python3-requests
+    state: present
+    update_cache: yes
