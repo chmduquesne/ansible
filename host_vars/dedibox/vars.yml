@@ -162,9 +162,12 @@ unbound_unbound_conf:
   - |
     server:
       interface: ::0
+      interface: 0.0.0.0
       max-udp-size: 3072
       access-control: ::0/0 refuse
+      access-control: 0.0.0.0/0 refuse
       access-control: ::1 allow
+      access-control: 127.0.0.1 allow
       access-control: {{ wireguard.wg0.auto_assign_ranges.0 }} allow
       access-control: {{ wireguard.wg0.auto_assign_ranges.1 }} allow
       harden-referral-path: yes
@@ -193,13 +196,10 @@ haproxy_conf:
         # Default SSL material locations
         ca-base /etc/ssl/certs
         crt-base /etc/ssl/private
-        # Default ciphers to use on SSL-enabled listening sockets.
-        # For more information, see ciphers(1SSL). This list is from:
-        #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
-        # An alternative list with additional directives can be obtained from
-        #  https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy
-        ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
-        ssl-default-bind-options no-sslv3 no-tls-tickets
+        # See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=int>
+        ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:E>
+        ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHAC>
+        ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
 
     defaults
         log     global
