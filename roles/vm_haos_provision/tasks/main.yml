@@ -1,0 +1,69 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Ensure extraction tools are present
+  apt:
+    name: xz-utils
+    state: present
+
+- name: Fetch HAOS stable version metadata
+  uri:
+    url: https://raw.githubusercontent.com/home-assistant/version/master/stable.json
+    return_content: yes
+  register: haos_version_json
+  check_mode: false
+
+- name: set HAOS version variable
+  set_fact:
+    haos_version: "{{ (haos_version_json.content | from_json).hassos.ova }}"
+
+- name: Download HAOS image {{ haos_version }}
+  get_url:
+    url: "https://github.com/home-assistant/operating-system/releases/download/{{ haos_version }}/haos_ova-{{ haos_version }}.qcow2.xz"
+    dest: "/tmp/haos.qcow2.xz"
+    mode: '0644'
+
+- name: Extract HAOS Image
+  shell: "unxz -f /tmp/haos.qcow2.xz"
+  args:
+    creates: "/tmp/haos.qcow2"
+
+- name: Create VM container
+  command: >
+    qm create {{ vm_haos_provision_vmid }}
+    --name haos
+    --net0 virtio,bridge=vmbr0
+    --scsihw virtio-scsi-pci
+    --ostype l26
+    --memory {{ vm_haos_provision_memory }}
+    --cores {{ vm_haos_provision_cores }}
+    --bios ovmf
+    --efidisk0 {{ vm_haos_provision_storage }}:0
+    --tablet 0
+  args:
+    creates: "/etc/pve/qemu-server/{{ vm_haos_provision_vmid }}.conf"
+
+- name: Get current VM configuation
+  command: "qm config {{ vm_haos_provision_vmid }}"
+  register: qm_config_out
+  failed_when: false
+  changed_when: false
+  check_mode: no
+
+- name: Provision the HAOS Disk
+  # Use a block to group import and attach
+  block:
+    - name: Import HAOS Disk to Storage
+      command: "qm importdisk {{ vm_haos_provision_vmid }} /tmp/haos.qcow2 {{ vm_haos_provision_storage }}"
+
+    - name: Find imported volume name
+      shell: "pvesm list {{ vm_haos_provision_storage }} | grep 'vm-{{ vm_haos_provision_vmid }}-disk' | tail -n 1 | awk '{print $1}'"
+      register: disk_id_raw
+      changed_when: false
+
+    - name: Attach Disk and Set Boot
+      shell: |
+        qm set {{ vm_haos_provision_vmid }} --scsi0 {{ disk_id_raw.stdout }},discard=on
+        qm set {{ vm_haos_provision_vmid }} --boot order=scsi0
+        qm start {{ vm_haos_provision_vmid }}
+
+  when: qm_config_out.stdout is not search('^scsi0:', multiline=True)
